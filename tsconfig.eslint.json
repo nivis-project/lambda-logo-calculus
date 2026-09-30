@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowJs": true,
+    "checkJs": false,
+    "types": ["node"]
+  },
+  "include": [
+    "packages/**/*.ts",
+    "apps/**/*.ts",
+    "test/**/*.ts",
+    "e2e/**/*.ts",
+    "scripts/**/*.mjs",
+    "*.ts",
+    "*.js"
+  ],
+  "exclude": ["**/dist/**", "**/node_modules/**"]
+}

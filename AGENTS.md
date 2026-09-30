@@ -31,14 +31,19 @@ Everything runs inside the dev shell.
 
 ```sh
 nix develop -c pnpm install
-nix develop -c pnpm dev           # the studio on a local port
-nix develop -c pnpm test          # vitest, unit and property tests
-nix develop -c pnpm test:cov      # with coverage thresholds
+nix develop -c pnpm dev           # the studio on 127.0.0.1:5173
+nix develop -c pnpm test          # vitest: unit, property and boundary tests
+nix develop -c pnpm test:cov      # with the coverage thresholds
 nix develop -c pnpm e2e           # playwright against the built studio
-nix develop -c pnpm lint          # eslint, includes the core boundary rule
+nix develop -c pnpm lint          # eslint, includes the core boundary rules
 nix develop -c pnpm build
-nix flake check                   # the ship gate: build, tests, coverage, lint
+nix flake check                   # the ship gate, in the sandbox, no network
 ```
+
+The gate runs build, lint, the test suite with coverage, the built-bundle
+boundary check and the end-to-end suite. The dependency hash it needs lives in
+`nix/gate.nix`; a change that touches `package.json` or `pnpm-lock.yaml` updates
+that hash in the same change.
 
 ## Version control
 

@@ -28,7 +28,7 @@
 
           packages = with pkgs; [
             nodejs_24
-            pnpm
+            pnpm_12
             jujutsu
             git
           ] ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
@@ -50,8 +50,13 @@
 
       formatter = forAllSystems ({ pkgs, ... }: pkgs.nixpkgs-fmt);
 
-      checks = forAllSystems ({ system, ... }: {
+      checks = forAllSystems ({ pkgs, system }: {
         devshell-builds = self.devShells.${system}.default;
+
+        gate = import ./nix/gate.nix {
+          inherit pkgs;
+          src = self;
+        };
       });
     };
 }

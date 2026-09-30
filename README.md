@@ -42,13 +42,13 @@ Everything runs inside the Nix dev shell.
 
 ```sh
 nix develop -c pnpm install
-nix develop -c pnpm dev           # the studio on a local port
-nix develop -c pnpm test          # unit and property tests
+nix develop -c pnpm dev           # the studio on 127.0.0.1:5173
+nix develop -c pnpm test          # unit, property and boundary tests
 nix develop -c pnpm test:cov      # with the coverage thresholds
 nix develop -c pnpm e2e           # Playwright against the built studio
 nix develop -c pnpm lint
 nix develop -c pnpm build
-nix flake check                   # build, lint, tests and coverage
+nix flake check                   # the whole gate, in the Nix sandbox
 ```
 
 ## How the work is organised

@@ -8,6 +8,11 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- A gate that cannot be skipped: `nix flake check` builds, lints, runs the test
+  suite with coverage thresholds and drives the studio in a real browser, all
+  inside the Nix sandbox with no network.
+- `scripts/ship-change.sh`, which refuses to archive or commit anything when the
+  gate is red or a task is still unchecked.
 - A pnpm workspace under strict TypeScript, with the geometry core's purity
   enforced twice: a lint rule while you type, and a test that reads the built
   bundle and cannot be switched off by editing a config.

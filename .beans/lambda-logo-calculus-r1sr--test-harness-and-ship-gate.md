@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-r1sr
 title: Test harness and ship gate
-status: todo
+status: in-progress
 type: epic
 priority: normal
 created_at: 2026-09-30T22:01:37Z
-updated_at: 2026-09-30T22:01:37Z
+updated_at: 2026-09-30T22:22:44Z
 parent: lambda-logo-calculus-cste
 blocked_by:
     - lambda-logo-calculus-oedm
