@@ -1,0 +1,9 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/templates" },
+    { "path": "./packages/core" },
+    { "path": "./packages/render-svg" },
+    { "path": "./packages/export" }
+  ]
+}

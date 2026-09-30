@@ -8,6 +8,9 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- A pnpm workspace under strict TypeScript, with the geometry core's purity
+  enforced twice: a lint rule while you type, and a test that reads the built
+  bundle and cannot be switched off by editing a config.
 - A Nix flake with a dev shell carrying Node 24, pnpm, jj, git and Playwright
   browsers, so every machine and every check resolve the same toolchain.
 - The documents every later epic reads from: agent instructions, the brief, the

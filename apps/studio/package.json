@@ -1,0 +1,17 @@
+{
+  "name": "@trefoil/studio",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@trefoil/core": "workspace:*",
+    "@trefoil/export": "workspace:*",
+    "@trefoil/render-svg": "workspace:*",
+    "@trefoil/templates": "workspace:*"
+  }
+}

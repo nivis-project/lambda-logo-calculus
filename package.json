@@ -1,0 +1,25 @@
+{
+  "name": "trefoil-studio",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.3.4",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "tsc --build && pnpm --filter @trefoil/studio build",
+    "clean": "tsc --build --clean && rm -rf packages/*/dist apps/*/dist",
+    "dev": "pnpm --filter @trefoil/studio dev",
+    "lint": "eslint .",
+    "test": "node scripts/check-core-boundary.mjs",
+    "test:boundary": "node scripts/check-core-boundary.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.1",
+    "globals": "^17.12.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vite": "^7.1.9"
+  }
+}
