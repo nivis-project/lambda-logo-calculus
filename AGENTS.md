@@ -20,7 +20,16 @@ Every piece of work travels the same road. Do not skip a station.
 2. **OpenSpec change.** One change per epic. `/opsx:propose` writes it. No
    implementation starts without a change under `openspec/changes/`.
 3. **Ship.** `/mip:ship <change-name>` runs apply, changelog, gate, archive,
-   commit, push and bean closure as one gated step.
+   bean closure, commit and push as one gated step. Underneath it runs:
+
+   ```sh
+   bash scripts/ship-change.sh <change-name> "<commit subject>" <bean-id>
+   ```
+
+   The bean id is optional, and passing it is what makes the commit hold the
+   code, the archived change, the changelog entry and the bean file together.
+   The script refuses an unknown change name, an unknown bean id, and a change
+   with unchecked tasks, each before it stages anything.
 
 The gate is `nix flake check`. It is never bypassed. A red gate means the code
 is wrong, not that the gate is wrong.
