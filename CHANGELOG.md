@@ -8,6 +8,10 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- Nesting now has a second route. A curve that is not star-shaped about its
+  centre, which the polar ratio silently gets wrong, is nested by searching for
+  the largest scale at which the rotated copy still fits inside its parent. The
+  studio is told which route was taken and why.
 - Four more base curves: rose, superellipse, supershape and rounded polygon. The
   trefoil is the rose at three lobes, which is now a test rather than a claim.
 - A template's symmetry can depend on its own parameters, so the rose follows its

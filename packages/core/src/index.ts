@@ -32,13 +32,18 @@ export type {
 } from './template/types.js';
 export { createTemplateRegistry, symmetryOf } from './template/registry.js';
 export { maxRadius, pointAt, radiusAt, sampleCurve } from './template/sample.js';
-export type { NestingInput, NestingResult } from './template/nesting.js';
+export type { NestingInput, NestingResult, NestingRoute, RoutedFit } from './template/nesting.js';
 export {
   PERFECT_FIT_SAMPLES,
   computeNesting,
   effectiveScale,
+  fitForCurve,
   perfectFit,
 } from './template/nesting.js';
+export { ON_EDGE_EPSILON, isOnSegment, pointInPolygon, polygonInPolygon } from './template/geometry.js';
+export type { CurveValidation } from './template/validate.js';
+export { validateCurve } from './template/validate.js';
+export { PARAMETRIC_SAMPLES, SEARCH_STEPS, parametricFit } from './template/parametric.js';
 export type { PerfectFitMemo } from './template/memo.js';
 export { createPerfectFitMemo } from './template/memo.js';
 
