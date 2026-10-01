@@ -8,6 +8,11 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- A designer can type their own base curve. The formula is parsed into an
+  expression tree and walked, never executed as code: no `eval`, no `Function`,
+  no dynamic import, and the build fails if any of the three appears in the core.
+  Only a declared parameter, the curve variable or one of fourteen whitelisted
+  names resolves; everything else is refused with the position in the text.
 - Nesting now has a second route. A curve that is not star-shaped about its
   centre, which the polar ratio silently gets wrong, is nested by searching for
   the largest scale at which the rotated copy still fits inside its parent. The

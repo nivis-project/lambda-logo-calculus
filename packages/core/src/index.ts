@@ -156,3 +156,26 @@ export type { LockupInput, LockupResult, MarkBounds, MarkSettings } from './layo
 export { OPTICAL_ENLARGEMENT, layoutLockup } from './layout/lockup.js';
 export type { SceneInput } from './scene/build.js';
 export { buildScene } from './scene/build.js';
+
+export type { Token, TokenKind } from './formula/tokenise.js';
+export { FormulaError, tokenise } from './formula/tokenise.js';
+export type { WhitelistedFunction } from './formula/whitelist.js';
+export {
+  CONSTANTS,
+  CONSTANT_NAMES,
+  FUNCTIONS,
+  FUNCTION_NAMES,
+  acceptsArity,
+  describeArity,
+} from './formula/whitelist.js';
+export type { Expression, ParsedFormula } from './formula/parse.js';
+export { MAX_DEPTH, parseFormula } from './formula/parse.js';
+export type { Bindings, EvaluationResult } from './formula/evaluate.js';
+export { FormulaEvaluationError, evaluateFormula } from './formula/evaluate.js';
+export type { CustomTemplate, CustomTemplateDefinition } from './formula/template.js';
+export {
+  DEFAULT_CUSTOM_SAFETY,
+  PARAMETRIC_VARIABLE,
+  POLAR_VARIABLE,
+  buildCustomTemplate,
+} from './formula/template.js';

@@ -28,6 +28,9 @@ const FORBIDDEN_CALLS = [
   ['Math.random', /\bMath\s*\.\s*random\s*\(/],
   ['Date.now', /\bDate\s*\.\s*now\s*\(/],
   ['new Date', /\bnew\s+Date\s*\(/],
+  ['eval', /(?<![.\w$])eval\s*\(/],
+  ['Function constructor', /(?<![.\w$])(?:new\s+)?Function\s*\(/],
+  ['dynamic import', /(?<![.\w$])import\s*\(/],
 ];
 
 async function collectJs(dir) {
