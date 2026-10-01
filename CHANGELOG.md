@@ -8,6 +8,13 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- The panels are generated from parameter definitions, not written by hand. A
+  parameter added to any registered module gets a control, a lock, a value
+  readout and a reset without a line of UI code. Double-click a slider to type
+  an exact value; out of range is clamped and says so.
+- A stage list that switches, reorders and edits each stage, and a template
+  gallery with live thumbnails drawn at the project's own copies, rotation and
+  palette.
 - The studio has a shell: a top bar, a shape panel, a canvas with three
   artboards, a letters and lockup panel, and a bottom strip with the text field
   and a preview at 16, 32, 64 and 128 pixels on light and dark. Zoom, pan,

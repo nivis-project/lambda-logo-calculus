@@ -1,12 +1,28 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { GRID, sampleCurve, type Scene, type Vec2, type WorkingSkeleton } from '@trefoil/core';
+import {
+  BUILT_IN_ENDINGS,
+  BUILT_IN_JOINS,
+  BUILT_IN_PALETTES,
+  GRID,
+  resolveParams,
+  sampleCurve,
+  type ParamDef,
+  type Scene,
+  type ShapeTemplate,
+  type Vec2,
+  type WorkingSkeleton,
+} from '@trefoil/core';
 import {
   sceneFromProject,
   skeletonsFromProject,
   type ProjectStore,
   type SceneRegistries,
 } from '@trefoil/store';
-import { SceneView, useSceneImage } from './SceneSymbol.js';
+import { SceneView, sceneToDataUrl, useSceneImage } from './SceneSymbol.js';
+import { ParamPanel } from './controls/ParamPanel.js';
+import { StageList } from './controls/StageList.js';
+import { Gallery } from './controls/Gallery.js';
+import { NESTING_PARAMS } from './nestingParams.js';
 import { useStoreState } from './useStore.js';
 import {
   NO_OVERLAYS,
@@ -26,6 +42,44 @@ const EMPTY_SCENE: Scene = {
   viewBox: [0, 0, 1, 1],
   root: { kind: 'group', children: [] },
 };
+
+const LETTER_PARAMS: readonly ParamDef[] = [
+  {
+    id: 'ending',
+    label: 'Stroke ending',
+    kind: 'enum',
+    options: BUILT_IN_ENDINGS.map((e) => e.id),
+    default: 'round',
+    lockable: true,
+    group: 'Letters',
+  },
+  {
+    id: 'join',
+    label: 'Join',
+    kind: 'enum',
+    options: ['none', ...BUILT_IN_JOINS.map((j) => j.id)],
+    default: 'loop',
+    lockable: true,
+    group: 'Letters',
+  },
+  {
+    id: 'palette',
+    label: 'Palette',
+    kind: 'enum',
+    options: BUILT_IN_PALETTES.map((p) => p.id),
+    default: 'analogous',
+    lockable: true,
+    group: 'Colour',
+  },
+  {
+    id: 'shapePen',
+    label: 'Shape as pen',
+    kind: 'bool',
+    default: true,
+    lockable: true,
+    group: 'Letters',
+  },
+];
 
 const LOCKUPS = [
   { id: 'side', label: 'Horizontal lockup' },
@@ -91,6 +145,36 @@ export function App({ store, registries }: AppProps): JSX.Element {
   const wordmark = useMemo(() => decorate(wordmarkBase), [decorate, wordmarkBase]);
   const mark = useMemo(() => decorate(markBase), [decorate, markBase]);
   const previewUrl = useSceneImage(wordmarkBase);
+
+  const template = registries.templates.get(project.templateId);
+  const ending = BUILT_IN_ENDINGS.find((e) => e.id === project.endingId);
+
+  const thumbnails = useMemo(() => {
+    const made = new Map<string, Scene>();
+    for (const candidate of registries.templates.list()) {
+      made.set(
+        candidate.id,
+        sceneFromProject(
+          {
+            ...project,
+            templateId: candidate.id,
+            templateParams: resolveParams(candidate.params, {}).values,
+            text: 'o',
+          },
+          registries,
+        ),
+      );
+    }
+    return made;
+  }, [project.copies, project.rotation, project.paletteId, project.shapePen, registries]);
+
+  const thumbnailFor = useCallback(
+    (candidate: ShapeTemplate): string => {
+      const scene = thumbnails.get(candidate.id);
+      return scene === undefined ? '' : sceneToDataUrl(scene);
+    },
+    [thumbnails],
+  );
 
   const zoomBy = useCallback((factor: number) => {
     setZoom((current) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, current * factor)));
@@ -169,8 +253,59 @@ export function App({ store, registries }: AppProps): JSX.Element {
       </header>
 
       <aside className="panel panel-left" data-testid="panel-left">
-        <h2>Shape</h2>
-        <p data-testid="template-name">{project.templateId}</p>
+        <p data-testid="template-name" hidden>
+          {project.templateId}
+        </p>
+
+        <Gallery
+          templates={registries.templates.list()}
+          activeId={project.templateId}
+          thumbnailFor={thumbnailFor}
+          onChoose={(chosen) => {
+            store.dispatch({
+              kind: 'setTemplate',
+              templateId: chosen.id,
+              params: { ...resolveParams(chosen.params, {}).values },
+            });
+          }}
+        />
+
+        <ParamPanel
+          title="Shape"
+          testId="panel-template"
+          defs={template.params}
+          values={project.templateParams}
+          locked={project.locked}
+          onChange={(paramId, value) => {
+            store.dispatch({ kind: 'setTemplateParam', paramId, value });
+          }}
+          onLock={(paramId, on) => {
+            store.dispatch({ kind: 'setLock', paramId, locked: on });
+          }}
+        />
+
+        <ParamPanel
+          title="Nesting"
+          testId="panel-nesting"
+          defs={NESTING_PARAMS}
+          values={{
+            copies: project.copies,
+            rotation: project.rotation,
+            fit: project.fit,
+            alpha: project.alpha,
+          }}
+          locked={project.locked}
+          onChange={(paramId, value) => {
+            const found = NESTING_PARAMS.find((p) => p.id === paramId);
+            if (found !== undefined && typeof value === 'number') {
+              store.dispatch({ kind: 'setNumber', field: found.field, value });
+            }
+          }}
+          onLock={(paramId, on) => {
+            store.dispatch({ kind: 'setLock', paramId, locked: on });
+          }}
+        />
+
         <h2>Overlays</h2>
         {OVERLAY_IDS.map((id) => (
           <label className="toggle" key={id}>
@@ -229,10 +364,78 @@ export function App({ store, registries }: AppProps): JSX.Element {
       </main>
 
       <aside className="panel panel-right" data-testid="panel-right">
-        <h2>Letters and lockup</h2>
-        <p data-testid="ending-name">{project.endingId}</p>
-        <p data-testid="palette-name">{project.paletteId}</p>
-        <p data-testid="copies-count">{project.copies}</p>
+        <p data-testid="ending-name" hidden>
+          {project.endingId}
+        </p>
+        <p data-testid="palette-name" hidden>
+          {project.paletteId}
+        </p>
+        <p data-testid="copies-count" hidden>
+          {project.copies}
+        </p>
+
+        <ParamPanel
+          title="Letters"
+          testId="panel-letters"
+          defs={LETTER_PARAMS}
+          values={{
+            ending: project.endingId,
+            join: project.joinId ?? 'none',
+            palette: project.paletteId,
+            shapePen: project.shapePen,
+          }}
+          locked={project.locked}
+          onChange={(paramId, value) => {
+            if (paramId === 'ending' && typeof value === 'string') {
+              store.dispatch({ kind: 'setEnding', endingId: value });
+            }
+            if (paramId === 'join' && typeof value === 'string') {
+              store.dispatch({ kind: 'setJoin', joinId: value === 'none' ? null : value });
+            }
+            if (paramId === 'palette' && typeof value === 'string') {
+              store.dispatch({ kind: 'setPalette', paletteId: value });
+            }
+            if (paramId === 'shapePen' && typeof value === 'boolean') {
+              store.dispatch({ kind: 'setShapePen', on: value });
+            }
+          }}
+          onLock={(paramId, on) => {
+            store.dispatch({ kind: 'setLock', paramId, locked: on });
+          }}
+        />
+
+        <ParamPanel
+          title="Ending settings"
+          testId="panel-ending"
+          defs={ending?.params ?? []}
+          values={{}}
+          locked={project.locked}
+          onChange={() => undefined}
+          onLock={(paramId, on) => {
+            store.dispatch({ kind: 'setLock', paramId, locked: on });
+          }}
+        />
+
+        <StageList
+          entries={project.stages}
+          stages={registries.stages.list()}
+          onToggle={(stageId, enabled) => {
+            store.dispatch({ kind: 'setStageEnabled', stageId, enabled });
+          }}
+          onReorder={(entries) => {
+            store.dispatch({ kind: 'setStages', stages: entries });
+          }}
+          onParam={(stageId, paramId, value) => {
+            store.dispatch({
+              kind: 'setStages',
+              stages: project.stages.map((entry) =>
+                entry.id === stageId
+                  ? { ...entry, params: { ...entry.params, [paramId]: value } }
+                  : entry,
+              ),
+            });
+          }}
+        />
       </aside>
 
       <footer className="bottom" data-testid="bottom">
