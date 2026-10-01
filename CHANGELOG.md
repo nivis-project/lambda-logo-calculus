@@ -8,6 +8,10 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- The studio has state, and every change to it is a command. Undo, redo,
+  autosave and variant snapshots all come from one log, so no feature has to
+  implement them again. The project state is frozen, so the only way to change
+  it is through a command.
 - A designer can type their own base curve. The formula is parsed into an
   expression tree and walked, never executed as code: no `eval`, no `Function`,
   no dynamic import, and the build fails if any of the three appears in the core.

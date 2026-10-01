@@ -1,63 +1,16 @@
-import {
-  GRID,
-  buildScene,
-  computeNesting,
-  createGlyphSetRegistry,
-  createPaletteRegistry,
-  createStageRegistry,
-  createTemplateRegistry,
-  loopJoin,
-  prototypeModulation,
-  resolveParams,
-  roundEnding,
-} from '@trefoil/core';
-import { builtInShapeTemplates, latinGlyphSet } from '@trefoil/templates';
+import { createProjectStore, sceneFromProject } from '@trefoil/store';
 import { createSvgRenderer } from '@trefoil/render-svg';
+import { createRegistries } from './registries.js';
+import { browserStorage } from './storage.js';
 
-const DEG = Math.PI / 180;
-
-const templates = createTemplateRegistry();
-for (const template of builtInShapeTemplates) templates.register(template);
-
-const glyphSets = createGlyphSetRegistry();
-glyphSets.register(latinGlyphSet);
-
-const palettes = createPaletteRegistry();
-const stages = createStageRegistry();
-
-const trefoil = templates.get('trefoil');
-const { values } = resolveParams(trefoil.params, {});
-const rotation = 24 * DEG;
-const nesting = computeNesting({ template: trefoil, params: values, rotation, copies: 6, fit: 0 });
-
-const scene = buildScene({
-  text: 'Trefoil Type 26',
-  glyphs: glyphSets.get('latin-basic'),
-  metrics: GRID,
-  template: trefoil,
-  templateParams: values,
-  rotation,
-  nesting,
-  modulation: prototypeModulation({ amplitude: 3, fit: 0, metrics: GRID }),
-  stages,
-  ending: roundEnding,
-  join: loopJoin,
-  palette: palettes.get('analogous'),
-  alpha: 0.22,
-  shapePen: true,
-});
+const registries = createRegistries();
+const store = createProjectStore({ storage: browserStorage() });
 
 const root = document.querySelector<HTMLDivElement>('#app');
 
 if (root) {
   const status = document.createElement('p');
   status.id = 'status';
-  status.textContent = [
-    `Templates registered: ${templates.list().length}.`,
-    `perfectFit: ${nesting.perfectFit.toFixed(4)}.`,
-    `Copies: ${nesting.scales.length}.`,
-    `Glyph groups: ${scene.root.children.length}.`,
-  ].join(' ');
 
   const canvas = document.createElement('div');
   canvas.id = 'canvas';
@@ -66,5 +19,22 @@ if (root) {
 
   const renderer = createSvgRenderer();
   renderer.mount(canvas);
-  renderer.draw(scene);
+
+  const draw = (): void => {
+    const project = store.getProject();
+    const scene = sceneFromProject(project, registries);
+    status.textContent = [
+      `Templates registered: ${registries.templates.list().length}.`,
+      `Template: ${project.templateId}.`,
+      `Copies: ${project.copies}.`,
+      `Glyph groups: ${scene.root.children.length}.`,
+      `Undo: ${store.canUndo() ? 'yes' : 'no'}.`,
+    ].join(' ');
+    renderer.draw(scene);
+  };
+
+  store.subscribe(draw);
+  draw();
+
+  Object.assign(window as unknown as Record<string, unknown>, { trefoilStore: store });
 }

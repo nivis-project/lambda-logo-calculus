@@ -1,9 +1,20 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/core" },
-    { "path": "./packages/templates" },
-    { "path": "./packages/render-svg" },
-    { "path": "./packages/export" }
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/templates"
+    },
+    {
+      "path": "./packages/store"
+    },
+    {
+      "path": "./packages/render-svg"
+    },
+    {
+      "path": "./packages/export"
+    }
   ]
 }

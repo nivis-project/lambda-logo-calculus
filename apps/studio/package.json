@@ -12,6 +12,7 @@
     "@trefoil/core": "workspace:*",
     "@trefoil/export": "workspace:*",
     "@trefoil/render-svg": "workspace:*",
+    "@trefoil/store": "workspace:*",
     "@trefoil/templates": "workspace:*"
   }
 }

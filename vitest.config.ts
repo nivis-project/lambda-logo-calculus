@@ -6,7 +6,13 @@ export default defineConfig({
       {
         test: {
           name: 'node',
-          include: ['packages/core/test/**/*.test.ts', 'packages/templates/test/**/*.test.ts', 'packages/export/test/**/*.test.ts', 'test/**/*.test.ts'],
+          include: [
+            'packages/core/test/**/*.test.ts',
+            'packages/templates/test/**/*.test.ts',
+            'packages/store/test/**/*.test.ts',
+            'packages/export/test/**/*.test.ts',
+            'test/**/*.test.ts',
+          ],
           environment: 'node',
         },
       },
