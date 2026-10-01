@@ -52,12 +52,18 @@ bowls, counters, diagonals, round and flat terminals, and digits in one line.
 A snapshot changing is not a failure by itself. It is a question: was this
 intended?
 
+Snapshots live in `test/snapshots/` and are written by `test/snapshots.test.ts`.
+They are large, because the stroker emits dense polylines; the curve fitter in
+milestone 06 will shrink them considerably.
+
 **Approving a snapshot change:**
 
 1. Regenerate with `pnpm test -u` and look at the visual diff, not the text
-   diff. The diff of an SVG path is unreadable; the picture is not.
+   diff. The diff of an SVG path is unreadable; the picture is not. Open the old
+   and the new file side by side in a browser.
 2. Confirm the change is what the OpenSpec change under implementation asked
-   for. A snapshot that moved for a reason not in the change is a bug.
+   for. A snapshot that moved for a reason not in the change is a bug, and the
+   right response is to find out why it moved, not to accept it.
 3. Commit the new snapshot in the same commit as the code that moved it, and
    name the movement in the changelog entry.
 
@@ -79,12 +85,50 @@ does.
 Milestone 02 carries one more obligation. The ported core rendering the default
 settings must reproduce `reference/trefoil-type.html` within a stated tolerance.
 
-The tolerance is defined and justified in the parity epic, not chosen while
-staring at a failure. A parity test that is loosened to pass has proved nothing.
+The harness runs the prototype itself. `scripts/record-parity.mjs` loads
+`reference/trefoil-type.html` into Chromium, drives its real controls, reads
+back the values its sliders actually took, and writes what it renders to
+`test/parity/prototype-output.json`. `test/parity.test.ts` compares that against
+what the core computes. Nothing of the prototype is reimplemented, because a
+reimplementation would only prove that two transcriptions agree.
 
-Parity is a one-time gate. Once milestone 02 is archived, the golden snapshots
-take over as the baseline and the prototype stops being authoritative for
-anything except reading.
+The recording is a committed file rather than a live browser run, because
+Chromium inside the Nix sandbox closes the page on navigating to the prototype,
+while navigating to the studio on the same server works. The alternative was to
+move parity outside the gate, which would have been worse. `reference/
+trefoil-type.html` is frozen, so a recording of it is as current as re-running
+it; `pnpm parity:record` regenerates it.
+
+Two guards keep the recording honest. It stores the values the prototype's
+sliders actually took rather than the values asked for, and a test fails when
+those differ, so a snapped slider is never silently compared against an
+unsnapped expectation. And a test asserts the recording covers several
+amplitudes, rotations and glyphs, so it cannot shrink to one easy case.
+
+**The tolerance is 0.02 font units, and it is derived rather than chosen.**
+
+The prototype rounds every coordinate it writes to two decimal places through
+its `f2()` helper. A coordinate can therefore be out by up to 0.005 in each
+axis, which is a distance of `sqrt(2) * 0.005 = 0.00707` font units. That is the
+floor: no comparison against the prototype's output can be tighter than it,
+however correct both implementations are.
+
+The measured worst difference across the whole settings matrix is **0.006953
+font units**, which sits just under that floor. The two implementations agree
+exactly, and what is left is the prototype's own rounding.
+
+The tolerance is set at 0.02, roughly three times the rounding floor. It is
+tight enough to catch an error of one five-hundredth of a stroke width. A test
+confirms that nudging a single coordinate by one font unit fails.
+
+Two comparisons are exact rather than tolerant, because they are pure arithmetic
+over the same formula: `perfectFit` and the effective scale agree to the three
+decimal places the prototype displays, across a matrix of thirteen settings.
+
+**Parity is a one-time gate.** Once milestone 02 is archived, the golden
+snapshots take over as the baseline, and the prototype stops being authoritative
+for anything except reading. The parity suite stays in the repository as the
+record of the port, not as the thing later changes are measured against.
 
 ## Coverage
 

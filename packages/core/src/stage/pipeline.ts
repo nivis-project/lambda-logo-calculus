@@ -5,6 +5,7 @@ import { bendStage } from './bend.js';
 import { bowlsStage } from './bowls.js';
 import { curvesStage } from './curves.js';
 import { proportionsStage } from './proportions.js';
+import { splitStage } from './split.js';
 import {
   emptyWorking,
   type SkeletonStage,
@@ -18,6 +19,7 @@ export const BUILT_IN_STAGES: readonly SkeletonStage[] = [
   bowlsStage,
   bendStage,
   proportionsStage,
+  splitStage,
 ];
 
 export const DEFAULT_STAGE_LIST: readonly StageListEntry[] = BUILT_IN_STAGES.map((stage) => ({

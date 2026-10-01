@@ -115,6 +115,15 @@ importers:
       '@playwright/test':
         specifier: ^1.63.0
         version: 1.63.0
+      '@trefoil/core':
+        specifier: workspace:*
+        version: link:packages/core
+      '@trefoil/render-svg':
+        specifier: workspace:*
+        version: link:packages/render-svg
+      '@trefoil/templates':
+        specifier: workspace:*
+        version: link:packages/templates
       '@types/node':
         specifier: ^26.6.3
         version: 26.6.3

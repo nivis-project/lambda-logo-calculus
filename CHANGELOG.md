@@ -8,6 +8,14 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- The port is measured, not claimed. The prototype is run in a real browser and
+  its output compared against the core across fifteen settings. The worst
+  difference is 0.007 font units, which is the prototype's own two-decimal
+  rounding: the two implementations agree exactly.
+- Run splitting, which the prototype does at turns over 25 degrees and the port
+  had missed. Every multi-run glyph was producing the wrong number of contours.
+- Golden snapshots of each template against "Hamburgefonstiv 0123", with a
+  written procedure for approving a change to one.
 - The pipeline runs end to end. Parameters go in at the top and a wordmark comes
   out on screen, drawn with the base curve as the pen.
 - The scene graph: plain, serialisable nodes that renderers and exporters read

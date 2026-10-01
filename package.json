@@ -14,11 +14,15 @@
     "test": "vitest run",
     "test:boundary": "node scripts/check-core-boundary.mjs",
     "test:cov": "vitest run --coverage",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "parity:record": "node scripts/record-parity.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.63.0",
+    "@trefoil/core": "workspace:*",
+    "@trefoil/render-svg": "workspace:*",
+    "@trefoil/templates": "workspace:*",
     "@types/node": "^26.6.3",
     "@vitest/coverage-v8": "^5.0.2",
     "eslint": "^10.0.1",

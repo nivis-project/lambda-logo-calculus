@@ -22,6 +22,8 @@ import {
   remapY,
   runStages,
   sampleArc,
+  splitRun,
+  SPLIT_PARAMS,
   strokeToPolyline,
   type ArcSegment,
   type BowlPrimitive,
@@ -114,12 +116,14 @@ describe('the stage registry and list', () => {
       'bowls',
       'bend',
       'proportions',
+      'split',
     ]);
     expect(createStageRegistry().list().map((s) => s.id).sort()).toEqual([
       'bend',
       'bowls',
       'curves',
       'proportions',
+      'split',
     ]);
   });
 
@@ -136,6 +140,7 @@ describe('the stage registry and list', () => {
         { id: 'curves', enabled: true },
         { id: 'bowls', enabled: true },
         { id: 'bend', enabled: true },
+        { id: 'split', enabled: true },
       ],
       registry,
       ctx,
@@ -532,5 +537,49 @@ describe('stage invariants over the whole pipeline', () => {
         },
       ),
     );
+  });
+});
+
+describe('the Split stage', () => {
+  const sharp: Polyline = [
+    [0, 0],
+    [0, 50],
+    [40, 50],
+  ];
+  const smooth: Polyline = [
+    [0, 0],
+    [0, 50],
+    [2, 100],
+  ];
+
+  it('splits a run at a sharp turn and shares the split point', () => {
+    const parts = splitRun(sharp, 25);
+    expect(parts).toHaveLength(2);
+    expect(parts[0]?.[parts[0].length - 1]).toEqual(parts[1]?.[0]);
+  });
+
+  it('leaves a run with no sharp turn alone', () => {
+    expect(splitRun(smooth, 25)).toEqual([smooth]);
+  });
+
+  it('leaves a two-point run alone, because two points cannot turn', () => {
+    const two: Polyline = [
+      [0, 0],
+      [0, 10],
+    ];
+    expect(splitRun(two, 25)).toEqual([two]);
+    expect(splitRun([[0, 0]], 25)).toEqual([]);
+  });
+
+  it('splits nothing when the threshold is above every turn', () => {
+    expect(splitRun(sharp, 180)).toEqual([sharp]);
+  });
+
+  it('declares the prototype threshold as its default', () => {
+    expect(SPLIT_PARAMS.find((p) => p.id === 'threshold')?.default).toBe(25);
+  });
+
+  it('runs last in the default list', () => {
+    expect(DEFAULT_STAGE_LIST[DEFAULT_STAGE_LIST.length - 1]?.id).toBe('split');
   });
 });

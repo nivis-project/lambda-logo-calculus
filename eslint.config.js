@@ -104,4 +104,10 @@ export default tseslint.config(
       globals: globals.browser,
     },
   },
+  {
+    files: ['scripts/record-parity.mjs'],
+    languageOptions: {
+      globals: { ...globals.nodeBuiltin, ...globals.browser },
+    },
+  },
 );

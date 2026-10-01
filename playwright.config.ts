@@ -4,7 +4,8 @@ const PORT = 4173;
 
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: true,
+  fullyParallel: false,
+  workers: 1,
   forbidOnly: Boolean(process.env['CI']),
   retries: 0,
   reporter: [['list']],
@@ -15,7 +16,13 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1440, height: 900 },
+        launchOptions: {
+          args: ['--disable-dev-shm-usage', '--no-sandbox', '--disable-gpu'],
+        },
+      },
     },
   ],
   webServer: {

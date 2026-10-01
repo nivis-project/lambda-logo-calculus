@@ -73,6 +73,7 @@ export { emptyWorking } from './stage/types.js';
 export { CURVES_PARAMS, curvesStage, sampleArc, strokeToPolyline } from './stage/curves.js';
 export { BOWLS_PARAMS, bowlsStage, buildBowl, shapeRho } from './stage/bowls.js';
 export { BEND_PARAMS, bendRun, bendStage } from './stage/bend.js';
+export { SPLIT_PARAMS, splitRun, splitStage } from './stage/split.js';
 export type { ModulationInput } from './stage/proportions.js';
 export {
   IDENTITY_MODULATION,
