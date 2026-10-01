@@ -87,3 +87,35 @@ export {
   createStageRegistry,
   runStages,
 } from './stage/pipeline.js';
+
+export type { Pen } from './stroke/pen.js';
+export { SUPPORT_ENTRIES, roundPen, shapePen, supportAt } from './stroke/pen.js';
+export type { Contour, StrokeResult, WidthProfile } from './stroke/stroker.js';
+export { UNIFORM_WIDTH, strokeRing, strokeRun } from './stroke/stroker.js';
+export type { ProfileOptions } from './stroke/profile.js';
+export { MIN_WIDTH_FACTOR, PROTOTYPE_PROFILE, flareProfile, taperProfile } from './stroke/profile.js';
+export type { EndContext, Ending, EndingBuildContext } from './stroke/endings.js';
+export {
+  BUILT_IN_ENDINGS,
+  angledEnding,
+  ballEnding,
+  createEndingRegistry,
+  flaredEnding,
+  flatEnding,
+  hairlineEnding,
+  roundEnding,
+  slabEnding,
+  taperedEnding,
+  wedgeEnding,
+} from './stroke/endings.js';
+export type { Corner, Join, JoinBuildContext } from './stroke/joins.js';
+export {
+  BUILT_IN_JOINS,
+  CORNER_THRESHOLD_DEGREES,
+  createJoinRegistry,
+  findCorners,
+  loopJoin,
+  turnBetween,
+} from './stroke/joins.js';
+export type { GlyphOutline, OutlineOptions, RenderStyle } from './stroke/outline.js';
+export { outlineSkeleton } from './stroke/outline.js';

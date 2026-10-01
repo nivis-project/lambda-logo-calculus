@@ -8,6 +8,16 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- Letters now have width. The support-function stroker turns a skeleton into an
+  outline, and the base curve can act as the pen, so the same shape that draws
+  the mark decides how thick each letter is in each direction.
+- All nine stroke endings, each in a plain and a shape-built form, plus the
+  looped join. Serifs on vertical stems lie flat; balls appear only on curved
+  ends.
+- Taper and flare are a width profile on the stroker rather than added geometry,
+  so a tapered end narrows the stroke itself.
+- One pipeline from skeleton to outline. Ornaments are a style applied to its
+  output, not a second code path.
 - The four transformations that give the letterforms their character are now an
   ordered, switchable list of pure functions: curves warps arcs by the base
   curve, bowls builds counters from it, bend bows straight runs, proportions
