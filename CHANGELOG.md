@@ -8,6 +8,12 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- The four transformations that give the letterforms their character are now an
+  ordered, switchable list of pure functions: curves warps arcs by the base
+  curve, bowls builds counters from it, bend bows straight runs, proportions
+  scales width and remaps height. None of them reads a global any more.
+- Eight numbers the prototype hard-coded are now named parameters under an
+  Advanced flag, with the prototype's values as defaults.
 - The whole alphabet is data: 69 glyph skeletons of strokes, bowls, dots and cut
   regions on a shared grid, with arcs stored as centre, radii and angles rather
   than as points someone already sampled. A glyph no longer depends on the
