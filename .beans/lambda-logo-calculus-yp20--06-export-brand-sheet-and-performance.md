@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-yp20
 title: 06 Export, brand sheet and performance
-status: in-progress
+status: completed
 type: milestone
 priority: normal
 created_at: 2026-09-30T22:01:03Z
-updated_at: 2026-10-01T11:19:19Z
+updated_at: 2026-10-01T12:33:39Z
 ---
 
 The studio produces files a designer can hand over: SVG, PNG at 1x, 2x and 4x,
