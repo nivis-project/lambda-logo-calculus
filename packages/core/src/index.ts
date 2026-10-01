@@ -41,3 +41,20 @@ export {
 } from './template/nesting.js';
 export type { PerfectFitMemo } from './template/memo.js';
 export { createPerfectFitMemo } from './template/memo.js';
+
+export type {
+  ArcSegment,
+  BowlPrimitive,
+  CutRegion,
+  DotPrimitive,
+  GlyphSet,
+  GlyphSkeleton,
+  GridMetrics,
+  PointSegment,
+  SkeletonPrimitive,
+  StrokePrimitive,
+  StrokeSegment,
+} from './glyph/types.js';
+export { GRID, NOTDEF } from './glyph/types.js';
+export { GlyphError, validateGlyph, validateGlyphs } from './glyph/validate.js';
+export { createGlyphSetRegistry, glyphFor } from './glyph/registry.js';

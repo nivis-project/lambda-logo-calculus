@@ -8,6 +8,12 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- The whole alphabet is data: 69 glyph skeletons of strokes, bowls, dots and cut
+  regions on a shared grid, with arcs stored as centre, radii and angles rather
+  than as points someone already sampled. A glyph no longer depends on the
+  amplitude, the rotation or which stages happen to be switched on.
+- An unknown character falls back to a notdef glyph instead of breaking the
+  render.
 - The base curve is a registered template rather than a formula written out in
   four places. The trefoil ships as the first one, with the prototype's nesting
   mathematics: `perfectFit` over 720 angles and the effective scale the fit

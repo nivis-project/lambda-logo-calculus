@@ -1,5 +1,6 @@
 import type { ShapeTemplate } from '@trefoil/core';
 import { trefoil } from './shapes/trefoil.js';
+import { latinGlyphSet } from './glyphs/latin.js';
 
 export const TEMPLATES_PACKAGE_VERSION = 0 as const;
 
@@ -16,3 +17,6 @@ export const builtInTemplates: readonly TemplateManifest[] = builtInShapeTemplat
 }));
 
 export { trefoil, TREFOIL_LOBES } from './shapes/trefoil.js';
+export { latinGlyphSet, latinGlyphs } from './glyphs/latin.js';
+
+export const builtInGlyphSets = [latinGlyphSet] as const;
