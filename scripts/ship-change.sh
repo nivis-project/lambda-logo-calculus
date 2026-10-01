@@ -27,28 +27,31 @@ if [[ -n "$BEAN" ]] && ! beans show "$BEAN" >/dev/null 2>&1; then
   exit 1
 fi
 
-echo "==> [1/6] stage working tree (so nix flake sees new files)"
+echo "==> [1/7] validate the OpenSpec change"
+openspec validate "${CHANGE}" --type change --strict
+
+echo "==> [2/7] stage working tree (so nix flake sees new files)"
 git add -A
 
-echo "==> [2/6] gate: nix flake check, then the browser suite"
+echo "==> [3/7] gate: nix flake check, then the browser suite"
 nix flake check
 nix develop -c pnpm e2e
 
-echo "==> [3/6] archive OpenSpec change: ${CHANGE}"
+echo "==> [4/7] archive OpenSpec change: ${CHANGE}"
 openspec archive "${CHANGE}" --yes
 
 if [[ -n "$BEAN" ]]; then
-  echo "==> [4/6] close bean: ${BEAN}"
+  echo "==> [5/7] close bean: ${BEAN}"
   beans update "$BEAN" -s completed >/dev/null
 else
-  echo "==> [4/6] no bean given, skipping"
+  echo "==> [5/7] no bean given, skipping"
 fi
 
-echo "==> [5/6] commit"
+echo "==> [6/7] commit"
 git add -A
 jj commit -m "${SUBJECT}"
 
-echo "==> [6/6] push main"
+echo "==> [7/7] push main"
 jj bookmark set main -r @-
 jj git push --bookmark main
 

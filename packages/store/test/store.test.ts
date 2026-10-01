@@ -515,3 +515,71 @@ describe('variants with thumbnails', () => {
     expect(store.removeVariant('nothing')).toBe(false);
   });
 });
+
+describe('patches and pairs', () => {
+  const PATCH: Command = {
+    kind: 'setPatch',
+    character: 'T',
+    patch: { offset: [12, -4], scale: 1.2, advance: 70, endingId: 'slab' },
+  };
+  const PAIRS: Command = {
+    kind: 'setPairs',
+    pairs: [{ before: 'A', after: 'v', extra: 14 }],
+  };
+
+  it('round-trips through JSON', () => {
+    const store = createProjectStore();
+    store.dispatch(PATCH);
+    store.dispatch(PAIRS);
+
+    const project = store.getProject();
+    const copy = JSON.parse(JSON.stringify(project)) as ProjectState;
+    expect(copy).toEqual(project);
+    expect(copy.patches['T']).toEqual({ offset: [12, -4], scale: 1.2, advance: 70, endingId: 'slab' });
+    expect(copy.pairs).toEqual([{ before: 'A', after: 'v', extra: 14 }]);
+  });
+
+  it('keeps patches for one character apart from another', () => {
+    const store = createProjectStore();
+    store.dispatch(PATCH);
+    store.dispatch({ kind: 'setPatch', character: 'o', patch: { scale: 0.8 } });
+    expect(Object.keys(store.getProject().patches).sort()).toEqual(['T', 'o']);
+  });
+
+  it('drops a patch that has nothing left in it', () => {
+    const store = createProjectStore();
+    store.dispatch(PATCH);
+    store.dispatch({ kind: 'setPatch', character: 'T', patch: {} });
+    expect(store.getProject().patches).toEqual({});
+
+    store.dispatch(PATCH);
+    store.dispatch({ kind: 'setPatch', character: 'T', patch: null });
+    expect(store.getProject().patches).toEqual({});
+  });
+
+  it('undoes and redoes a patch and a pair list', () => {
+    const store = createProjectStore();
+    store.dispatch(PATCH);
+    store.dispatch(PAIRS);
+
+    store.undo();
+    expect(store.getProject().pairs).toEqual([]);
+    expect(store.getProject().patches).toHaveProperty('T');
+
+    store.undo();
+    expect(store.getProject().patches).toEqual({});
+
+    store.redo();
+    expect(store.getProject().patches).toHaveProperty('T');
+    store.redo();
+    expect(store.getProject().pairs).toHaveLength(1);
+  });
+
+  it('is still a project state with patches and pairs on it', () => {
+    const store = createProjectStore();
+    store.dispatch(PATCH);
+    expect(isProjectState(store.getProject())).toBe(true);
+    expect(isProjectState({ ...DEFAULT_PROJECT, patches: [] })).toBe(false);
+    expect(isProjectState({ ...DEFAULT_PROJECT, pairs: {} })).toBe(false);
+  });
+});

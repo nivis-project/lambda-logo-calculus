@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-efhp
 title: Per-glyph overrides and spacing pairs
-status: todo
+status: completed
 type: epic
 priority: normal
 created_at: 2026-09-30T22:04:36Z
-updated_at: 2026-09-30T22:04:45Z
+updated_at: 2026-10-01T11:09:39Z
 parent: lambda-logo-calculus-ujb5
 blocked_by:
     - lambda-logo-calculus-6kcm

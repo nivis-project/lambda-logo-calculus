@@ -1,10 +1,13 @@
 import type { GlyphSet, GridMetrics } from '../glyph/types.js';
 import { glyphFor } from '../glyph/registry.js';
+import { advanceWithPairs, type GlyphPatches, type SpacingPair } from '../overrides/types.js';
 
 export interface LayoutMetrics {
   readonly set: GlyphSet;
   readonly metrics: GridMetrics;
   readonly widthFactor: number;
+  readonly patches?: GlyphPatches;
+  readonly pairs?: readonly SpacingPair[];
 }
 
 export function advanceOf(character: string, layout: LayoutMetrics): number {
@@ -13,8 +16,17 @@ export function advanceOf(character: string, layout: LayoutMetrics): number {
 }
 
 export function widthOf(text: string, layout: LayoutMetrics): number {
+  const characters = Array.from(text);
   let total = 0;
-  for (const character of text) total += advanceOf(character, layout);
+  for (const [index, character] of characters.entries()) {
+    total += advanceWithPairs(
+      characters,
+      index,
+      advanceOf(character, layout),
+      layout.patches?.[character],
+      layout.pairs ?? [],
+    );
+  }
   return total;
 }
 

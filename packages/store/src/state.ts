@@ -1,4 +1,11 @@
-import { PROTOTYPE_PRESET, type ModulationEntry, type ParamValues, type StageListEntry } from '@trefoil/core';
+import {
+  PROTOTYPE_PRESET,
+  type GlyphPatches,
+  type ModulationEntry,
+  type ParamValues,
+  type SpacingPair,
+  type StageListEntry,
+} from '@trefoil/core';
 
 export interface MarkState {
   readonly enabled: boolean;
@@ -23,6 +30,8 @@ export interface ProjectState {
   readonly shapePen: boolean;
   readonly mark: MarkState;
   readonly modulation: readonly ModulationEntry[];
+  readonly patches: GlyphPatches;
+  readonly pairs: readonly SpacingPair[];
   readonly locked: readonly string[];
   readonly seed: string;
 }
@@ -59,6 +68,8 @@ const DEFAULTS: ProjectState = {
   shapePen: true,
   mark: { enabled: true, distance: 0, height: 1, size: 1 },
   modulation: [...PROTOTYPE_PRESET],
+  patches: {},
+  pairs: [],
   locked: [],
   seed: 'trefoil',
 };
@@ -86,6 +97,8 @@ export function isProjectState(value: unknown): value is ProjectState {
     typeof value['shapePen'] === 'boolean' &&
     isRecord(value['mark']) &&
     Array.isArray(value['modulation']) &&
+    isRecord(value['patches']) &&
+    Array.isArray(value['pairs']) &&
     Array.isArray(value['locked']) &&
     typeof value['seed'] === 'string'
   );

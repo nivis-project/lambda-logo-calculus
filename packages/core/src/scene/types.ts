@@ -22,6 +22,7 @@ export interface GroupNode {
   readonly kind: 'group';
   readonly children: readonly SceneNode[];
   readonly transform?: Transform;
+  readonly glyph?: { readonly character: string; readonly index: number };
 }
 
 export type SceneNode = PathNode | GroupNode;
@@ -38,8 +39,17 @@ export function pathNode(
   return { kind: 'path', contours, style };
 }
 
-export function groupNode(children: readonly SceneNode[], transform?: Transform): GroupNode {
-  return transform === undefined ? { kind: 'group', children } : { kind: 'group', children, transform };
+export function groupNode(
+  children: readonly SceneNode[],
+  transform?: Transform,
+  glyph?: GroupNode['glyph'],
+): GroupNode {
+  return {
+    kind: 'group',
+    children,
+    ...(transform === undefined ? {} : { transform }),
+    ...(glyph === undefined ? {} : { glyph }),
+  };
 }
 
 export function countNodes(node: SceneNode): number {

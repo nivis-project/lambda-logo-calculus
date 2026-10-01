@@ -191,5 +191,8 @@ export function sceneFromProject(project: ProjectState, registries: SceneRegistr
     palette: registries.palettes.get(project.paletteId),
     alpha: project.alpha,
     shapePen: project.shapePen,
+    patches: project.patches,
+    pairs: project.pairs,
+    endingFor: (id) => registries.endings.get(id),
   });
 }

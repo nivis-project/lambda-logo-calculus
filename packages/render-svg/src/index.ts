@@ -68,6 +68,10 @@ export function createSvgRenderer(): Renderer {
     if (node.transform !== undefined) {
       group.setAttribute('transform', transformToAttribute(node.transform));
     }
+    if (node.glyph !== undefined) {
+      group.setAttribute('data-glyph', node.glyph.character);
+      group.setAttribute('data-glyph-index', String(node.glyph.index));
+    }
     for (const child of node.children) group.append(buildNode(document, child));
     return group;
   };

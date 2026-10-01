@@ -4,8 +4,11 @@ import {
   resolveParams,
   type ParamDef,
   type ParamValue,
+  isEmptyPatch,
+  type GlyphPatch,
   type ModulationEntry,
   type ParamValues,
+  type SpacingPair,
   type StageListEntry,
 } from '@trefoil/core';
 import { deepFreeze, type MarkState, type ProjectState } from './state.js';
@@ -27,6 +30,8 @@ export type Command =
   | { readonly kind: 'setLock'; readonly paramId: string; readonly locked: boolean }
   | { readonly kind: 'setSeed'; readonly seed: string }
   | { readonly kind: 'setModulation'; readonly entries: readonly ModulationEntry[] }
+  | { readonly kind: 'setPatch'; readonly character: string; readonly patch: GlyphPatch | null }
+  | { readonly kind: 'setPairs'; readonly pairs: readonly SpacingPair[] }
   | {
       readonly kind: 'randomize';
       readonly seed: string;
@@ -135,6 +140,21 @@ function reduce(draft: ProjectState, command: Command): void {
       mutable.modulation = command.entries.map((entry) => ({ ...entry }));
       return;
 
+    case 'setPatch': {
+      const next = Object.fromEntries(
+        Object.entries(mutable.patches).filter(([ch]) => ch !== command.character),
+      );
+      if (command.patch !== null && !isEmptyPatch(command.patch)) {
+        next[command.character] = { ...command.patch };
+      }
+      mutable.patches = next;
+      return;
+    }
+
+    case 'setPairs':
+      mutable.pairs = command.pairs.map((pair) => ({ ...pair }));
+      return;
+
     case 'randomize': {
       const locked = new Set(mutable.locked);
 
@@ -207,6 +227,8 @@ const KINDS = new Set<string>([
   'setLock',
   'setSeed',
   'setModulation',
+  'setPatch',
+  'setPairs',
   'randomize',
   'replaceState',
 ]);

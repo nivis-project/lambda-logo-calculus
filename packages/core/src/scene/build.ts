@@ -7,6 +7,12 @@ import type { Registry } from '../registry/registry.js';
 import type { ShapeTemplate } from '../template/types.js';
 import type { NestingResult } from '../template/nesting.js';
 import { outlineSkeleton, type RenderStyle } from '../stroke/outline.js';
+import {
+  advanceWithPairs,
+  applyPatch,
+  type GlyphPatches,
+  type SpacingPair,
+} from '../overrides/types.js';
 import type { Ending } from '../stroke/endings.js';
 import type { Join } from '../stroke/joins.js';
 import { roundPen, shapePen } from '../stroke/pen.js';
@@ -44,6 +50,9 @@ export interface SceneInput {
   readonly alpha: number;
   readonly shapePen: boolean;
   readonly style?: RenderStyle;
+  readonly patches?: GlyphPatches;
+  readonly pairs?: readonly SpacingPair[];
+  readonly endingFor?: (endingId: string) => Ending | undefined;
 }
 
 export function buildScene(input: SceneInput): Scene {
@@ -94,21 +103,33 @@ export function buildScene(input: SceneInput): Scene {
 
   let cursor = 0;
   let charIndex = -1;
-  for (const character of characters) {
-    const advance = advanceOf(character, layout);
+  for (const [position, character] of characters.entries()) {
+    const patch = input.patches?.[character];
+    const advance = advanceWithPairs(
+      characters,
+      position,
+      advanceOf(character, layout),
+      patch,
+      input.pairs ?? [],
+    );
     if (character === ' ') {
       cursor += advance;
       continue;
     }
 
     charIndex++;
-    const skeleton = runStages(
+    const unpatched = runStages(
       glyphFor(input.glyphs, character),
       input.stageList ?? DEFAULT_STAGE_LIST,
       input.stages,
       contextFor(charIndex),
       modulationAt(charIndex).stageParams ?? {},
     );
+    const skeleton = applyPatch(unpatched, patch);
+    const ending =
+      patch?.endingId === undefined
+        ? input.ending
+        : (input.endingFor?.(patch.endingId) ?? input.ending);
 
     const passes: SceneNode[] = [];
     for (let copy = 0; copy < copies; copy++) {
@@ -117,7 +138,7 @@ export function buildScene(input: SceneInput): Scene {
 
       const outline = outlineSkeleton(skeleton, {
         pen,
-        ending: input.ending,
+        ending,
         ...(input.join === undefined ? {} : { join: input.join }),
         shapeBuilt: input.shapePen,
         template: input.template,
@@ -138,7 +159,10 @@ export function buildScene(input: SceneInput): Scene {
     }
 
     glyphGroups.push(
-      groupNode(passes, { translate: [cursor + input.metrics.sideBearing, 0] }),
+      groupNode(passes, { translate: [cursor + input.metrics.sideBearing, 0] }, {
+        character,
+        index: position,
+      }),
     );
     cursor += advance;
   }

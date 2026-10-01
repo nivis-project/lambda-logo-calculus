@@ -208,3 +208,11 @@ export {
   prototypeXHeight,
   sourceValue,
 } from './modulation/evaluate.js';
+
+export type { GlyphPatch, GlyphPatches, SpacingPair } from './overrides/types.js';
+export {
+  EMPTY_PATCH,
+  advanceWithPairs,
+  applyPatch,
+  isEmptyPatch,
+} from './overrides/types.js';

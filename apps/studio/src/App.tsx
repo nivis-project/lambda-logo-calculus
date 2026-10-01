@@ -24,6 +24,7 @@ import { ParamPanel } from './controls/ParamPanel.js';
 import { StageList } from './controls/StageList.js';
 import { Gallery } from './controls/Gallery.js';
 import { ModulationList } from './controls/ModulationList.js';
+import { GlyphOverrides } from './controls/GlyphOverrides.js';
 import { NESTING_PARAMS } from './nestingParams.js';
 import { useStoreState } from './useStore.js';
 import {
@@ -100,6 +101,7 @@ export function App({ store, registries }: AppProps): JSX.Element {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState<Vec2>([0, 0]);
   const [overlays, setOverlays] = useState<OverlayState>(NO_OVERLAYS);
+  const [selected, setSelected] = useState<string | null>(null);
 
   const [wordmarkBase, setWordmarkBase] = useState<Scene>(EMPTY_SCENE);
   const [markBase, setMarkBase] = useState<Scene>(EMPTY_SCENE);
@@ -359,6 +361,11 @@ export function App({ store, registries }: AppProps): JSX.Element {
       <main
         className="canvas"
         data-testid="canvas"
+        onClick={(event) => {
+          const group = (event.target as Element).closest('[data-glyph]');
+          const character = group?.getAttribute('data-glyph') ?? null;
+          if (character !== null) setSelected(character);
+        }}
         onPointerDown={(event) => {
           if (event.button !== 1 && !event.altKey) return;
           const start: Vec2 = [event.clientX - pan[0], event.clientY - pan[1]];
@@ -450,6 +457,15 @@ export function App({ store, registries }: AppProps): JSX.Element {
           onLock={(paramId, on) => {
             store.dispatch({ kind: 'setLock', paramId, locked: on });
           }}
+        />
+
+        <GlyphOverrides
+          character={selected}
+          patch={selected === null ? undefined : project.patches[selected]}
+          onChange={(patch) => {
+            if (selected !== null) store.dispatch({ kind: 'setPatch', character: selected, patch });
+          }}
+          onClose={() => { setSelected(null); }}
         />
 
         <ModulationList

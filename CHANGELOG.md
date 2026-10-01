@@ -6,6 +6,12 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+- One letter can be wrong without the system being wrong. A per-glyph patch
+  nudges, scales, respaces or re-ends a single character on top of whatever the
+  parameters produced, so it survives a template change instead of freezing the
+  glyph. Click a letter on the canvas to open it. Spacing pairs do the same
+  between two characters, and they run inside layout, so they change the
+  wrapping and the lockup rather than being nudged in afterwards.
 - The prototype's two hidden links are visible and editable. The amplitude
   driving letter width and the fit size driving the x-height are now two entries
   in a modulation list a designer can retarget, weaken or delete. A new entry can
@@ -22,6 +28,9 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- The ship script validates the OpenSpec change before it runs the gate, so a
+  malformed delta stops the ship in a second rather than after the build, the
+  lint, the test suite and the browser suite have all run.
 - The panels are generated from parameter definitions, not written by hand. A
   parameter added to any registered module gets a control, a lock, a value
   readout and a reset without a line of UI code. Double-click a slider to type
