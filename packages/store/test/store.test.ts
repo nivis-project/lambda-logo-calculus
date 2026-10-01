@@ -325,6 +325,7 @@ describe('the store surface', () => {
       'getProject',
       'getState',
       'redo',
+      'removeVariant',
       'restoreVariant',
       'subscribe',
       'takeVariant',
@@ -343,5 +344,174 @@ describe('the store surface', () => {
     stop();
     store.dispatch(SET_A);
     expect(seen).toBe(1);
+  });
+});
+
+const TEMPLATE_DEFS = [
+  { id: 'A', label: 'Amplitude', kind: 'number', min: 1, max: 20, default: 3, lockable: true },
+] as const;
+
+const NESTING_DEFS = [
+  { id: 'copies', label: 'Copies', kind: 'int', min: 1, max: 12, default: 6, lockable: true },
+  {
+    id: 'rotation',
+    label: 'Rotation',
+    kind: 'angle',
+    min: 0,
+    max: 180,
+    step: 1,
+    default: 24,
+    lockable: true,
+  },
+  { id: 'fit', label: 'Fit', kind: 'number', min: -1, max: 1, default: 0, lockable: true },
+  {
+    id: 'alpha',
+    label: 'Alpha',
+    kind: 'number',
+    min: 0,
+    max: 1,
+    default: 0.22,
+    lockable: true,
+    randomize: { min: 0.2, max: 0.3 },
+  },
+] as const;
+
+const CHOICE_DEFS = [
+  {
+    id: 'palette',
+    label: 'Palette',
+    kind: 'enum',
+    options: ['analogous', 'warm', 'cool', 'triadic'],
+    default: 'analogous',
+    lockable: true,
+  },
+  { id: 'shapePen', label: 'Pen', kind: 'bool', default: true, lockable: true },
+  {
+    id: 'ending',
+    label: 'Ending',
+    kind: 'enum',
+    options: ['round', 'flat'],
+    default: 'round',
+    lockable: true,
+    randomize: false,
+  },
+] as const;
+
+function randomizeCommand(seed: string, nextSeed = `${seed}+`): Command {
+  return {
+    kind: 'randomize',
+    seed,
+    nextSeed,
+    templateDefs: [...TEMPLATE_DEFS],
+    nestingDefs: [...NESTING_DEFS],
+    choiceDefs: [...CHOICE_DEFS],
+  };
+}
+
+describe('randomize', () => {
+  it('produces one log entry and advances the seed', () => {
+    const store = createProjectStore();
+    store.dispatch(randomizeCommand('one', 'two'));
+    expect(store.getState().log).toHaveLength(1);
+    expect(store.getProject().seed).toBe('two');
+  });
+
+  it('is undone by a single undo', () => {
+    const store = createProjectStore();
+    const before = store.getProject();
+    store.dispatch(randomizeCommand('one'));
+    expect(store.getProject()).not.toEqual(before);
+    store.undo();
+    expect(store.getProject()).toEqual(before);
+  });
+
+  it('round-trips through JSON', () => {
+    const command = randomizeCommand('rt');
+    const parsed = JSON.parse(JSON.stringify(command)) as Command;
+    expect(applyCommand(DEFAULT_PROJECT, parsed).state).toEqual(
+      applyCommand(DEFAULT_PROJECT, command).state,
+    );
+  });
+
+  it('leaves a locked parameter exactly as it was', () => {
+    let state = applyCommand(DEFAULT_PROJECT, { kind: 'setLock', paramId: 'copies', locked: true }).state;
+    state = applyCommand(state, { kind: 'setNumber', field: 'copies', value: 4 }).state;
+    for (const seed of ['a', 'b', 'c', 'd', 'e']) {
+      expect(applyCommand(state, randomizeCommand(seed)).state.copies, seed).toBe(4);
+    }
+  });
+
+  it('changes nothing but the seed when everything is locked', () => {
+    let state = DEFAULT_PROJECT;
+    for (const id of ['A', 'copies', 'rotation', 'fit', 'alpha', 'palette', 'shapePen', 'ending']) {
+      state = applyCommand(state, { kind: 'setLock', paramId: id, locked: true }).state;
+    }
+    const after = applyCommand(state, randomizeCommand('locked', 'next')).state;
+    expect({ ...after, seed: state.seed }).toEqual(state);
+    expect(after.seed).toBe('next');
+  });
+
+  it('moves an unlocked parameter across repeated runs', () => {
+    const seen = new Set(
+      ['a', 'b', 'c', 'd', 'e', 'f'].map(
+        (seed) => applyCommand(DEFAULT_PROJECT, randomizeCommand(seed)).state.copies,
+      ),
+    );
+    expect(seen.size).toBeGreaterThan(1);
+  });
+
+  it('honours a declared randomize range', () => {
+    for (const seed of ['a', 'b', 'c', 'd', 'e', 'f']) {
+      const alpha = applyCommand(DEFAULT_PROJECT, randomizeCommand(seed)).state.alpha;
+      expect(alpha, seed).toBeGreaterThanOrEqual(0.2);
+      expect(alpha, seed).toBeLessThanOrEqual(0.3);
+    }
+  });
+
+  it('leaves a parameter that opted out alone', () => {
+    for (const seed of ['a', 'b', 'c', 'd']) {
+      expect(applyCommand(DEFAULT_PROJECT, randomizeCommand(seed)).state.endingId).toBe(
+        DEFAULT_PROJECT.endingId,
+      );
+    }
+  });
+
+  it('gives the same result for the same seed and values', () => {
+    expect(applyCommand(DEFAULT_PROJECT, randomizeCommand('same')).state).toEqual(
+      applyCommand(DEFAULT_PROJECT, randomizeCommand('same')).state,
+    );
+  });
+
+  it('differs on a second press, because the seed advanced', () => {
+    const first = applyCommand(DEFAULT_PROJECT, randomizeCommand('one', 'two')).state;
+    const second = applyCommand(first, randomizeCommand(first.seed, 'three')).state;
+    expect({ ...second, seed: '' }).not.toEqual({ ...first, seed: '' });
+  });
+
+  it('records the seed it drew from in the log', () => {
+    const store = createProjectStore();
+    store.dispatch(randomizeCommand('recorded', 'after'));
+    const entry = store.getState().log[0];
+    expect(entry?.command.kind).toBe('randomize');
+    expect(entry?.command.kind === 'randomize' ? entry.command.seed : '').toBe('recorded');
+  });
+});
+
+describe('variants with thumbnails', () => {
+  it('carries a thumbnail when one is given', () => {
+    const store = createProjectStore();
+    store.takeVariant('one', 'data:image/svg+xml,thumb');
+    expect(store.getState().variants[0]?.thumbnail).toBe('data:image/svg+xml,thumb');
+  });
+
+  it('removes one and leaves the others', () => {
+    const store = createProjectStore();
+    store.takeVariant('a');
+    store.takeVariant('b');
+    store.takeVariant('c');
+
+    expect(store.removeVariant('b')).toBe(true);
+    expect(store.getState().variants.map((v) => v.name)).toEqual(['a', 'c']);
+    expect(store.removeVariant('nothing')).toBe(false);
   });
 });

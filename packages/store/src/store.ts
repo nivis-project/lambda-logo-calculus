@@ -11,6 +11,7 @@ export interface LogEntry {
 export interface Variant {
   readonly name: string;
   readonly state: ProjectState;
+  readonly thumbnail?: string;
 }
 
 export interface Storage {
@@ -66,8 +67,9 @@ export interface ProjectStore {
   redo(): boolean;
   canUndo(): boolean;
   canRedo(): boolean;
-  takeVariant(name: string): void;
+  takeVariant(name: string, thumbnail?: string): void;
   restoreVariant(name: string): boolean;
+  removeVariant(name: string): boolean;
   flushAutosave(): void;
   subscribe(listener: (state: StoreState) => void): () => void;
 }
@@ -172,14 +174,22 @@ export function createProjectStore(options: StoreOptions = {}): ProjectStore {
     redo,
     canUndo: () => api.getState().position > 0,
     canRedo: () => api.getState().position < api.getState().log.length,
-    takeVariant(name) {
+    takeVariant(name, thumbnail) {
       const current = api.getState();
       api.setState({
         variants: [
           ...current.variants.filter((v) => v.name !== name),
-          { name, state: current.project },
+          thumbnail === undefined
+            ? { name, state: current.project }
+            : { name, state: current.project, thumbnail },
         ],
       });
+    },
+    removeVariant(name) {
+      const current = api.getState();
+      if (!current.variants.some((v) => v.name === name)) return false;
+      api.setState({ variants: current.variants.filter((v) => v.name !== name) });
+      return true;
     },
     restoreVariant(name) {
       const found = api.getState().variants.find((v) => v.name === name);

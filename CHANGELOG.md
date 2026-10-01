@@ -6,6 +6,10 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+- Randomize, which respects every lock, draws from the seed stored in the
+  project, and puts each result in a variant strip so none is lost. One press is
+  one undo. Variants restore on click, can be kept by hand, and can be removed.
+
 ### Added
 
 - The panels are generated from parameter definitions, not written by hand. A

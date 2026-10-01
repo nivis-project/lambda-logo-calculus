@@ -92,7 +92,8 @@ export interface AppProps {
 }
 
 export function App({ store, registries }: AppProps): JSX.Element {
-  const project = useStoreState(store).project;
+  const state = useStoreState(store);
+  const project = state.project;
 
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState<Vec2>([0, 0]);
@@ -176,6 +177,28 @@ export function App({ store, registries }: AppProps): JSX.Element {
     [thumbnails],
   );
 
+  const keepVariant = useCallback(
+    (prefix: string) => {
+      const name = `${prefix} ${String(store.getState().variants.length + 1)}`;
+      store.takeVariant(name, sceneToDataUrl(sceneFromProject(store.getProject(), registries)));
+    },
+    [store, registries],
+  );
+
+  const randomize = useCallback(() => {
+    const current = store.getProject();
+    const active = registries.templates.get(current.templateId);
+    store.dispatch({
+      kind: 'randomize',
+      seed: current.seed,
+      nextSeed: `${current.seed}+`,
+      templateDefs: active.params,
+      nestingDefs: NESTING_PARAMS,
+      choiceDefs: LETTER_PARAMS,
+    });
+    keepVariant('random');
+  }, [store, registries, keepVariant]);
+
   const zoomBy = useCallback((factor: number) => {
     setZoom((current) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, current * factor)));
   }, []);
@@ -248,6 +271,12 @@ export function App({ store, registries }: AppProps): JSX.Element {
         </button>
         <button type="button" data-testid="reset-view" onClick={resetView}>
           Reset view
+        </button>
+        <button type="button" data-testid="randomize" onClick={randomize}>
+          Randomize
+        </button>
+        <button type="button" data-testid="take-variant" onClick={() => { keepVariant('kept'); }}>
+          Keep
         </button>
         <span data-testid="zoom-level">{zoom.toFixed(2)}</span>
       </header>
@@ -450,6 +479,34 @@ export function App({ store, registries }: AppProps): JSX.Element {
             }}
           />
         </div>
+        <div className="variants" data-testid="variants">
+          {state.variants.map((variant) => (
+            <figure
+              className="variant"
+              key={variant.name}
+              data-testid={`variant-${variant.name.replace(' ', '-')}`}
+            >
+              <button
+                type="button"
+                data-testid={`restore-${variant.name.replace(' ', '-')}`}
+                onClick={() => { store.restoreVariant(variant.name); }}
+              >
+                <img src={variant.thumbnail ?? ''} alt="" />
+              </button>
+              <figcaption>
+                {variant.name}
+                <button
+                  type="button"
+                  data-testid={`remove-${variant.name.replace(' ', '-')}`}
+                  onClick={() => { store.removeVariant(variant.name); }}
+                >
+                  remove
+                </button>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+
         <div className="sizes" data-testid="sizes">
           {SMALL_SIZES.map((size) =>
             TONES.map((tone) => (

@@ -1,5 +1,12 @@
 import { applyPatches, enablePatches, produceWithPatches, type Patch } from 'immer';
-import type { ParamValue, StageListEntry } from '@trefoil/core';
+import {
+  randomizeParams,
+  resolveParams,
+  type ParamDef,
+  type ParamValue,
+  type ParamValues,
+  type StageListEntry,
+} from '@trefoil/core';
 import { deepFreeze, type MarkState, type ProjectState } from './state.js';
 
 enablePatches();
@@ -18,6 +25,14 @@ export type Command =
   | { readonly kind: 'setMark'; readonly mark: Partial<MarkState> }
   | { readonly kind: 'setLock'; readonly paramId: string; readonly locked: boolean }
   | { readonly kind: 'setSeed'; readonly seed: string }
+  | {
+      readonly kind: 'randomize';
+      readonly seed: string;
+      readonly nextSeed: string;
+      readonly templateDefs: readonly ParamDef[];
+      readonly nestingDefs: readonly ParamDef[];
+      readonly choiceDefs: readonly ParamDef[];
+    }
   | { readonly kind: 'replaceState'; readonly state: ProjectState };
 
 export type NumericField = 'copies' | 'rotation' | 'fit' | 'alpha';
@@ -33,6 +48,22 @@ export interface Applied {
   readonly state: ProjectState;
   readonly forward: readonly Patch[];
   readonly inverse: readonly Patch[];
+}
+
+function usableValues(defs: readonly ParamDef[], values: ParamValues): ParamValues {
+  const kept: Record<string, ParamValue> = {};
+  for (const def of defs) {
+    if (!Object.hasOwn(values, def.id)) continue;
+    const value = values[def.id];
+    if (value === undefined) continue;
+    try {
+      resolveParams([def], { [def.id]: value });
+      kept[def.id] = value;
+    } catch {
+      continue;
+    }
+  }
+  return kept;
 }
 
 function reduce(draft: ProjectState, command: Command): void {
@@ -98,6 +129,54 @@ function reduce(draft: ProjectState, command: Command): void {
       mutable.seed = command.seed;
       return;
 
+    case 'randomize': {
+      const locked = new Set(mutable.locked);
+
+      mutable.templateParams = randomizeParams(
+        command.templateDefs,
+        usableValues(command.templateDefs, mutable.templateParams),
+        locked,
+        `${command.seed}:template`,
+      );
+
+      const nesting = randomizeParams(
+        command.nestingDefs,
+        usableValues(command.nestingDefs, {
+          copies: mutable.copies,
+          rotation: mutable.rotation,
+          fit: mutable.fit,
+          alpha: mutable.alpha,
+        }),
+        locked,
+        `${command.seed}:nesting`,
+      );
+      if (typeof nesting['copies'] === 'number') mutable.copies = nesting['copies'];
+      if (typeof nesting['rotation'] === 'number') mutable.rotation = nesting['rotation'];
+      if (typeof nesting['fit'] === 'number') mutable.fit = nesting['fit'];
+      if (typeof nesting['alpha'] === 'number') mutable.alpha = nesting['alpha'];
+
+      const choices: ParamValues = randomizeParams(
+        command.choiceDefs,
+        usableValues(command.choiceDefs, {
+          ending: mutable.endingId,
+          join: mutable.joinId ?? 'none',
+          palette: mutable.paletteId,
+          shapePen: mutable.shapePen,
+        }),
+        locked,
+        `${command.seed}:choices`,
+      );
+      if (typeof choices['ending'] === 'string') mutable.endingId = choices['ending'];
+      if (typeof choices['join'] === 'string') {
+        mutable.joinId = choices['join'] === 'none' ? null : choices['join'];
+      }
+      if (typeof choices['palette'] === 'string') mutable.paletteId = choices['palette'];
+      if (typeof choices['shapePen'] === 'boolean') mutable.shapePen = choices['shapePen'];
+
+      mutable.seed = command.nextSeed;
+      return;
+    }
+
     case 'replaceState': {
       for (const key of Object.keys(command.state) as (keyof ProjectState)[]) {
         (mutable as Record<string, unknown>)[key] = structuredClone(command.state[key]);
@@ -121,6 +200,7 @@ const KINDS = new Set<string>([
   'setMark',
   'setLock',
   'setSeed',
+  'randomize',
   'replaceState',
 ]);
 

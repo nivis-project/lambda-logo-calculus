@@ -134,3 +134,10 @@ label.toggle { display: flex; gap: 6px; align-items: center; padding: 2px 0; }
 .stage-head { display: flex; align-items: center; gap: 5px; font-size: 12px; padding: 3px 0; }
 .stage-head span { flex: 1 1 auto; }
 .stage-head button { font-size: 10px; padding: 1px 5px; }
+
+.variants { display: flex; gap: 8px; align-items: flex-start; }
+.variant { border: 1px solid var(--border); border-radius: 3px; padding: 4px; background: #fff; }
+.variant button { padding: 0; border: 0; background: none; display: block; }
+.variant img { width: 90px; height: 34px; object-fit: contain; display: block; }
+.variant figcaption { font-size: 9px; color: var(--muted); display: flex; gap: 4px; align-items: center; }
+.variant figcaption button { font-size: 9px; padding: 0 3px; border: 1px solid var(--border); background: #fff; }
