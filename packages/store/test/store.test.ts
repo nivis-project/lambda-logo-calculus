@@ -82,7 +82,7 @@ describe('commands', () => {
       { kind: 'setMark', mark: { size: 2 } },
       { kind: 'setLock', paramId: 'A', locked: true },
       { kind: 'setSeed', seed: 'other' },
-      { kind: 'setTemplate', templateId: 'rose', params: { A: 4, k: 5 } },
+      { kind: 'setTemplate', templateId: 'rose', templateVersion: 1, params: { A: 4, k: 5 } },
     ] satisfies Command[]) {
       const parsed = JSON.parse(JSON.stringify(command)) as Command;
       expect(applyCommand(DEFAULT_PROJECT, parsed).state, command.kind).toEqual(
@@ -100,8 +100,11 @@ describe('commands', () => {
     expect(at({ kind: 'setPalette', paletteId: 'cool' }).paletteId).toBe('cool');
     expect(at({ kind: 'setShapePen', on: false }).shapePen).toBe(false);
     expect(at({ kind: 'setSeed', seed: 'z' }).seed).toBe('z');
-    expect(at({ kind: 'setTemplate', templateId: 'rose', params: { A: 2, k: 7 } })).toMatchObject({
+    expect(
+      at({ kind: 'setTemplate', templateId: 'rose', templateVersion: 4, params: { A: 2, k: 7 } }),
+    ).toMatchObject({
       templateId: 'rose',
+      templateVersion: 4,
       templateParams: { A: 2, k: 7 },
     });
     expect(

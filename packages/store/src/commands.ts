@@ -16,7 +16,12 @@ import { deepFreeze, type MarkState, type ProjectState } from './state.js';
 enablePatches();
 
 export type Command =
-  | { readonly kind: 'setTemplate'; readonly templateId: string; readonly params: Record<string, ParamValue> }
+  | {
+      readonly kind: 'setTemplate';
+      readonly templateId: string;
+      readonly templateVersion: number;
+      readonly params: Record<string, ParamValue>;
+    }
   | { readonly kind: 'setTemplateParam'; readonly paramId: string; readonly value: ParamValue }
   | { readonly kind: 'setText'; readonly text: string }
   | { readonly kind: 'setNumber'; readonly field: NumericField; readonly value: number }
@@ -81,6 +86,7 @@ function reduce(draft: ProjectState, command: Command): void {
   switch (command.kind) {
     case 'setTemplate':
       mutable.templateId = command.templateId;
+      mutable.templateVersion = command.templateVersion;
       mutable.templateParams = { ...command.params };
       return;
 

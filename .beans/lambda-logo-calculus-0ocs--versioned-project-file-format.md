@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-0ocs
 title: Versioned project file format
-status: todo
+status: completed
 type: epic
 priority: normal
 created_at: 2026-09-30T22:04:36Z
-updated_at: 2026-09-30T22:04:45Z
+updated_at: 2026-10-01T11:17:02Z
 parent: lambda-logo-calculus-ujb5
 blocked_by:
     - lambda-logo-calculus-efhp

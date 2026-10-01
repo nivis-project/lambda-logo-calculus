@@ -16,3 +16,13 @@ export type {
 export { createProjectStore, memoryStorage } from './store.js';
 export type { ArtboardKind, SceneRegistries } from './scene.js';
 export { lockupSceneFromProject, sceneFromProject, skeletonsFromProject } from './scene.js';
+export type { LoadProblem, LoadResult, Migration } from './project.js';
+export {
+  FILE_FORMAT,
+  MIGRATIONS,
+  loadProject,
+  reportOf,
+  runMigrations,
+  saveProject,
+  validateProject,
+} from './project.js';

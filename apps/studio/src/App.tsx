@@ -25,6 +25,7 @@ import { StageList } from './controls/StageList.js';
 import { Gallery } from './controls/Gallery.js';
 import { ModulationList } from './controls/ModulationList.js';
 import { GlyphOverrides } from './controls/GlyphOverrides.js';
+import { ProjectFile } from './controls/ProjectFile.js';
 import { NESTING_PARAMS } from './nestingParams.js';
 import { useStoreState } from './useStore.js';
 import {
@@ -287,6 +288,12 @@ export function App({ store, registries }: AppProps): JSX.Element {
         <button type="button" data-testid="take-variant" onClick={() => { keepVariant('kept'); }}>
           Keep
         </button>
+        <ProjectFile
+          project={project}
+          onOpen={(opened) => {
+            store.dispatch({ kind: 'replaceState', state: opened });
+          }}
+        />
         <span data-testid="zoom-level">{zoom.toFixed(2)}</span>
       </header>
 
@@ -303,6 +310,7 @@ export function App({ store, registries }: AppProps): JSX.Element {
             store.dispatch({
               kind: 'setTemplate',
               templateId: chosen.id,
+              templateVersion: chosen.version,
               params: { ...resolveParams(chosen.params, {}).values },
             });
           }}

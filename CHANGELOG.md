@@ -6,6 +6,13 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+- A project file. Save the logo to disk and open it again, exactly as it was:
+  the template and its version, every parameter, the stage list, the modulation
+  list, the per-glyph patches, the spacing pairs, the palette, the mark and the
+  seed. A file is checked field by field on load and refused with a report
+  naming every field that is wrong, and one from a version this studio does not
+  read is refused by name rather than guessed at. Opening is one command, so it
+  undoes.
 - One letter can be wrong without the system being wrong. A per-glyph patch
   nudges, scales, respaces or re-ends a single character on top of whatever the
   parameters produced, so it survives a template change instead of freezing the

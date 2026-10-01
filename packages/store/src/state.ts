@@ -17,6 +17,7 @@ export interface MarkState {
 export interface ProjectState {
   readonly version: number;
   readonly templateId: string;
+  readonly templateVersion: number;
   readonly templateParams: ParamValues;
   readonly stages: readonly StageListEntry[];
   readonly endingId: string;
@@ -49,6 +50,7 @@ export const PROJECT_VERSION = 1;
 const DEFAULTS: ProjectState = {
   version: PROJECT_VERSION,
   templateId: 'trefoil',
+  templateVersion: 1,
   templateParams: { A: 3 },
   stages: [
     { id: 'curves', enabled: true },
@@ -85,6 +87,7 @@ export function isProjectState(value: unknown): value is ProjectState {
   return (
     typeof value['version'] === 'number' &&
     typeof value['templateId'] === 'string' &&
+    typeof value['templateVersion'] === 'number' &&
     isRecord(value['templateParams']) &&
     Array.isArray(value['stages']) &&
     typeof value['endingId'] === 'string' &&
