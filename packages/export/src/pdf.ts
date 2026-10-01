@@ -80,12 +80,34 @@ function moved(point: Vec2, matrix: Matrix): Vec2 {
 }
 
 interface FlatPath {
+  readonly kind: 'path';
   readonly contours: readonly CurveContour[];
   readonly fill: string;
   readonly opacity: number;
 }
 
-function flatten(node: SceneNode, matrix: Matrix, out: FlatPath[]): void {
+interface FlatText {
+  readonly kind: 'text';
+  readonly at: Vec2;
+  readonly text: string;
+  readonly size: number;
+  readonly fill: string;
+}
+
+type FlatItem = FlatPath | FlatText;
+
+function flatten(node: SceneNode, matrix: Matrix, out: FlatItem[]): void {
+  if (node.kind === 'text') {
+    out.push({
+      kind: 'text',
+      at: moved(node.at, matrix),
+      text: node.text,
+      size: node.size * Math.hypot(matrix[0], matrix[1]),
+      fill: node.fill,
+    });
+    return;
+  }
+
   if (node.kind === 'group') {
     const inner = multiply(matrix, matrixOf(node.transform));
     for (const child of node.children) flatten(child, inner, out);
@@ -113,20 +135,38 @@ function flatten(node: SceneNode, matrix: Matrix, out: FlatPath[]): void {
   );
 
   if (contours.length === 0) return;
-  out.push({ contours, fill: node.style.fill, opacity: node.style.opacity });
+  out.push({ kind: 'path', contours, fill: node.style.fill, opacity: node.style.opacity });
 }
 
-export function flatPathsOf(scene: Scene): readonly FlatPath[] {
-  const out: FlatPath[] = [];
+export function flatPathsOf(scene: Scene): readonly FlatItem[] {
+  const out: FlatItem[] = [];
   flatten(scene.root, IDENTITY, out);
   return out;
 }
 
-function contentFor(paths: readonly FlatPath[], states: ReadonlyMap<number, string>): string {
+export function escapePdfText(value: string): string {
+  return value.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+}
+
+function contentFor(items: readonly FlatItem[], states: ReadonlyMap<number, string>): string {
   const n = (value: number): string => value.toFixed(3);
   const lines: string[] = [];
 
-  for (const path of paths) {
+  for (const item of items) {
+    if (item.kind === 'text') {
+      const [tr, tg, tb] = rgbOf(item.fill);
+      lines.push('q');
+      lines.push(`${n(tr)} ${n(tg)} ${n(tb)} rg`);
+      lines.push('BT');
+      lines.push(`/F1 ${n(item.size)} Tf`);
+      lines.push(`1 0 0 -1 ${n(item.at[0])} ${n(item.at[1])} Tm`);
+      lines.push(`(${escapePdfText(item.text)}) Tj`);
+      lines.push('ET');
+      lines.push('Q');
+      continue;
+    }
+
+    const path = item;
     const [r, g, b] = rgbOf(path.fill);
     lines.push('q');
     const state = states.get(path.opacity);
@@ -160,7 +200,9 @@ export function sceneToPdf(scene: Scene, tolerance: number, pageScale: number): 
   const width = vw * pageScale;
   const height = vh * pageScale;
 
-  const opacities = [...new Set(paths.map((path) => path.opacity))].sort((a, b) => a - b);
+  const opacities = [
+    ...new Set(paths.filter((item) => item.kind === 'path').map((path) => path.opacity)),
+  ].sort((a, b) => a - b);
   const states = new Map<number, string>(opacities.map((value, index) => [value, `GS${index}`]));
 
   const extGState = opacities
@@ -178,7 +220,7 @@ export function sceneToPdf(scene: Scene, tolerance: number, pageScale: number): 
   const objects = [
     '<< /Type /Catalog /Pages 2 0 R >>',
     '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
-    `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width.toFixed(3)} ${height.toFixed(3)}] /Resources << /ExtGState << ${extGState} >> >> /Contents 4 0 R >>`,
+    `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width.toFixed(3)} ${height.toFixed(3)}] /Resources << /ExtGState << ${extGState} >> /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> /Contents 4 0 R >>`,
     `<< /Length ${page.length} >>\nstream\n${page}endstream`,
   ];
 

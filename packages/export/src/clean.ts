@@ -29,6 +29,7 @@ export function cleanPathNode(node: PathNode, options: CleanOptions = {}): PathN
 
 function cleanNode(node: SceneNode, options: CleanOptions): SceneNode {
   if (node.kind === 'path') return cleanPathNode(node, options);
+  if (node.kind === 'text') return node;
   return {
     ...node,
     children: node.children.map((child) => cleanNode(child, options)),

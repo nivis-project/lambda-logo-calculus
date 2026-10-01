@@ -34,6 +34,9 @@ function sceneToSvg(scene: Scene): string {
       const rule = node.style.fillRule === undefined ? '' : ` fill-rule="${node.style.fillRule}"`;
       return `${pad}<path d="${node.contours.map(round).join('')}" fill="${node.style.fill}" opacity="${node.style.opacity}"${rule}/>`;
     }
+    if (node.kind === 'text') {
+      return `${pad}<text x="${node.at[0]}" y="${node.at[1]}" font-size="${node.size}" fill="${node.fill}">${node.text}</text>`;
+    }
     const transform =
       node.transform === undefined
         ? ''

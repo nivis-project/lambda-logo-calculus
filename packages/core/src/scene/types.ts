@@ -27,7 +27,15 @@ export interface GroupNode {
   readonly glyph?: { readonly character: string; readonly index: number };
 }
 
-export type SceneNode = PathNode | GroupNode;
+export interface TextNode {
+  readonly kind: 'text';
+  readonly at: Vec2;
+  readonly text: string;
+  readonly size: number;
+  readonly fill: string;
+}
+
+export type SceneNode = PathNode | GroupNode | TextNode;
 
 export interface Scene {
   readonly viewBox: readonly [number, number, number, number];
@@ -60,12 +68,22 @@ export function groupNode(
   };
 }
 
+export function textNode(at: Vec2, text: string, size: number, fill: string): TextNode {
+  return { kind: 'text', at, text, size, fill };
+}
+
 export function countNodes(node: SceneNode): number {
-  return node.kind === 'path'
-    ? 1
-    : node.children.reduce((total, child) => total + countNodes(child), 1);
+  return node.kind === 'group'
+    ? node.children.reduce((total, child) => total + countNodes(child), 1)
+    : 1;
+}
+
+export function placeScene(scene: Scene, at: Vec2, scale: number): GroupNode {
+  return groupNode([scene.root], { translate: at, scale: [scale, scale] });
 }
 
 export function allContours(node: SceneNode): readonly (readonly Vec2[])[] {
-  return node.kind === 'path' ? node.contours : node.children.flatMap(allContours);
+  if (node.kind === 'path') return node.contours;
+  if (node.kind === 'text') return [];
+  return node.children.flatMap(allContours);
 }

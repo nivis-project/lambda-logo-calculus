@@ -1,17 +1,18 @@
 import { useMemo, useState, type JSX } from 'react';
 import { resolveParams, type ParamValue, type ParamValues, type Scene } from '@trefoil/core';
-import { BUILT_IN_EXPORTERS, createExporterRegistry } from '@trefoil/export';
+import { BUILT_IN_EXPORTERS, createExporterRegistry, type SheetInput } from '@trefoil/export';
 import { ParamPanel } from './ParamPanel.js';
 import { browserRasteriser } from '../rasterise.js';
 
 export interface ExportPanelProps {
   readonly scene: Scene;
   readonly name: string;
+  readonly sheet: Omit<SheetInput, 'ink' | 'paper'>;
 }
 
 const REGISTRY = createExporterRegistry([...BUILT_IN_EXPORTERS]);
 
-export function ExportPanel({ scene, name }: ExportPanelProps): JSX.Element {
+export function ExportPanel({ scene, name, sheet }: ExportPanelProps): JSX.Element {
   const [exporterId, setExporterId] = useState('svg');
   const [values, setValues] = useState<ParamValues>({});
   const [report, setReport] = useState('');
@@ -25,6 +26,7 @@ export function ExportPanel({ scene, name }: ExportPanelProps): JSX.Element {
         scene,
         values: resolved,
         name,
+        sheet,
         rasterise: browserRasteriser(),
       });
 

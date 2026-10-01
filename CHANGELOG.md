@@ -6,6 +6,12 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+- A brand sheet, as one more exporter. One page carrying the mark on its own,
+  the mark beside the words and above them, the clear space drawn as a frame
+  rather than stated as a rule, and the palette as labelled swatches. The clear
+  space comes from the mark's drawn outline, so a trefoil's empty corners do not
+  earn it extra room. The scene graph gained a text node to make it possible,
+  and the PDF exporter writes text in a standard font without embedding one.
 - Files a designer can hand over: SVG, PNG at 1x, 2x and 4x, and a single-page
   vector PDF. Each is one registration against one interface with its own
   parameter definitions, so the export panel is generated like every other panel

@@ -65,8 +65,14 @@ function pathData(node: PathNode, decimals: number): string {
     .join('');
 }
 
+export const TEXT_FONT = 'Helvetica, Arial, sans-serif';
+
 function escapeAttribute(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+}
+
+function escapeText(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 function render(node: SceneNode, path: string, decimals: number, depth: number): string {
@@ -75,6 +81,10 @@ function render(node: SceneNode, path: string, decimals: number, depth: number):
   if (node.kind === 'path') {
     const rule = node.style.fillRule === undefined ? '' : ` fill-rule="${node.style.fillRule}"`;
     return `${indent}<path id="${path}" d="${pathData(node, decimals)}" fill="${escapeAttribute(node.style.fill)}" opacity="${node.style.opacity}"${rule}/>`;
+  }
+
+  if (node.kind === 'text') {
+    return `${indent}<text id="${path}" x="${node.at[0].toFixed(decimals)}" y="${node.at[1].toFixed(decimals)}" font-size="${node.size.toFixed(decimals)}" font-family="${TEXT_FONT}" fill="${escapeAttribute(node.fill)}">${escapeText(node.text)}</text>`;
   }
 
   const transform =

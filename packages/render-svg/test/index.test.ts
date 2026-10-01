@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   RENDER_SVG_PACKAGE_VERSION,
+  TEXT_FONT,
   contourToPathData,
   createSvgRenderer,
   pathData,
@@ -244,5 +245,30 @@ describe('a path node carrying fitted curves', () => {
     const drawn = element.querySelector('path')?.getAttribute('d') ?? '';
     expect(drawn).toContain('C');
     expect(element.querySelector('path')?.getAttribute('fill-rule')).toBe('nonzero');
+  });
+});
+
+describe('text in a scene', () => {
+  const withText = {
+    viewBox: [0, 0, 200, 100] as const,
+    root: {
+      kind: 'group' as const,
+      children: [{ kind: 'text' as const, at: [12, 40] as const, text: 'Palette', size: 18, fill: '#223344' }],
+    },
+  };
+
+  it('draws it at its position, in its size and its fill', () => {
+    const element = host();
+    const renderer = createSvgRenderer();
+    renderer.mount(element);
+    renderer.draw(withText);
+
+    const text = element.querySelector('text');
+    expect(text?.getAttribute('x')).toBe('12');
+    expect(text?.getAttribute('y')).toBe('40');
+    expect(text?.getAttribute('font-size')).toBe('18');
+    expect(text?.getAttribute('font-family')).toBe(TEXT_FONT);
+    expect(text?.getAttribute('fill')).toBe('#223344');
+    expect(text?.textContent).toBe('Palette');
   });
 });

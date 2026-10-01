@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-4ht4
 title: Brand sheet exporter
-status: todo
+status: completed
 type: epic
 priority: normal
 created_at: 2026-09-30T22:04:36Z
-updated_at: 2026-09-30T22:04:45Z
+updated_at: 2026-10-01T12:06:28Z
 parent: lambda-logo-calculus-yp20
 blocked_by:
     - lambda-logo-calculus-kk6s

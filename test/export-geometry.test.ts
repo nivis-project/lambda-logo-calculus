@@ -68,7 +68,9 @@ function sceneFor(settings: Settings): Scene {
 }
 
 function pathNodesOf(node: SceneNode): readonly PathNode[] {
-  return node.kind === 'path' ? [node] : node.children.flatMap(pathNodesOf);
+  if (node.kind === 'path') return [node];
+  if (node.kind === 'text') return [];
+  return node.children.flatMap(pathNodesOf);
 }
 
 function polylineData(contour: readonly Vec2[]): string {

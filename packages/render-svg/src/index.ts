@@ -5,6 +5,8 @@ export const RENDER_SVG_PACKAGE_VERSION = 0 as const;
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
+export const TEXT_FONT = 'Helvetica, Arial, sans-serif';
+
 export function viewBoxForEm(width: number, height: number): string {
   const scale = FONT_UNITS_PER_EM;
   return `0 0 ${width * scale} ${height * scale}`;
@@ -63,6 +65,18 @@ export function createSvgRenderer(): Renderer {
       if (node.style.fillRule !== undefined) {
         element.setAttribute('fill-rule', node.style.fillRule);
       }
+      return element;
+    }
+
+    if (node.kind === 'text') {
+      const element = document.createElementNS(SVG_NS, 'text');
+      element.setAttribute('id', makeId());
+      element.setAttribute('x', String(node.at[0]));
+      element.setAttribute('y', String(node.at[1]));
+      element.setAttribute('font-size', String(node.size));
+      element.setAttribute('font-family', TEXT_FONT);
+      element.setAttribute('fill', node.fill);
+      element.textContent = node.text;
       return element;
     }
 

@@ -116,7 +116,9 @@ export function overlayNodes(input: OverlayInput): readonly SceneNode[] {
     const points = input.scene.root.children.flatMap((child) =>
       child.kind === 'group'
         ? child.children.flatMap((pass) => (pass.kind === 'path' ? pass.contours.flat() : []))
-        : child.contours.flat(),
+        : child.kind === 'path'
+          ? child.contours.flat()
+          : [],
     );
     const box = boundsOf(points);
     if (box !== null) nodes.push(...boxOutline(box[0], box[1], box[2], box[3], '#8a5000'));

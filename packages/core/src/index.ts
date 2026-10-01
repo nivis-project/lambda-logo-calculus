@@ -133,9 +133,17 @@ export type {
   PathStyle,
   Scene,
   SceneNode,
+  TextNode,
   Transform,
 } from './scene/types.js';
-export { allContours, countNodes, groupNode, pathNode } from './scene/types.js';
+export {
+  allContours,
+  countNodes,
+  groupNode,
+  pathNode,
+  placeScene,
+  textNode,
+} from './scene/types.js';
 export type { Palette, Rgb } from './style/palette.js';
 export {
   BASE_HUE,

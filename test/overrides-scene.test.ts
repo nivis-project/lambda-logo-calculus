@@ -83,6 +83,7 @@ function pathsOf(node: SceneNode): readonly string[] {
   if (node.kind === 'path') {
     return [node.contours.map((c) => c.map(([x, y]) => `${x.toFixed(4)},${y.toFixed(4)}`).join(' ')).join('|')];
   }
+  if (node.kind === 'text') return [];
   return node.children.flatMap(pathsOf);
 }
 

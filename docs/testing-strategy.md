@@ -53,6 +53,10 @@ A snapshot changing is not a failure by itself. It is a question: was this
 intended?
 
 Snapshots live in `test/snapshots/` and are written by `test/snapshots.test.ts`.
+The brand sheet has one of its own, written by `test/brand-sheet.test.ts`, which
+holds the mark, both lockups, the clear space frame and the palette on one page.
+It is rendered at a loose curve tolerance, because what it proves is the layout
+and not the geometry; the geometry has its own snapshots above.
 
 They are rendered at **two copies**, not the six the studio defaults to, and at
 two decimal places. A geometry regression shows up identically at two copies as

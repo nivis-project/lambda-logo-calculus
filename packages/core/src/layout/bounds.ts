@@ -31,6 +31,7 @@ function apply(point: Vec2, transform: Transform | undefined): Vec2 {
 }
 
 function walk(node: SceneNode, inherited: readonly Transform[], out: Vec2[]): void {
+  if (node.kind === 'text') return;
   if (node.kind === 'path') {
     for (const contour of node.contours) {
       for (const point of contour) {

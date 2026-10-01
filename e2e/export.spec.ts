@@ -153,3 +153,30 @@ test.describe('exporting', () => {
     }
   });
 });
+
+test.describe('the brand sheet', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => { window.localStorage.clear(); });
+    await page.goto('/');
+    await page.getByTestId('artboard-mark').locator('svg').waitFor();
+  });
+
+  test('writes a sheet holding the mark, both lockups, the clear space and the palette', async ({
+    page,
+  }) => {
+    await page.getByTestId('export-format').selectOption('brand-sheet');
+    await expect(page.getByTestId('export-params-brand-sheet')).toBeVisible();
+
+    const waiting = page.waitForEvent('download');
+    await page.getByTestId('export-run').click();
+    const file = await waiting;
+    expect(file.suggestedFilename()).toBe('trefoil-type-26.sheet.svg');
+
+    const sheet = await readFile(await file.path(), 'utf8');
+    for (const heading of ['Mark', 'Clear space', 'Lockup, beside', 'Lockup, stacked', 'Palette']) {
+      expect(sheet).toContain(`>${heading}</text>`);
+    }
+    expect(sheet).toContain('>Trefoil Type 26</text>');
+    expect((sheet.match(/hsl\([^)]*\)<\/text>/g) ?? []).length).toBe(6);
+  });
+});

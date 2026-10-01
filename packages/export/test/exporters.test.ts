@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { groupNode, pathNode, type Scene, type Vec2 } from '@trefoil/core';
+import { groupNode, pathNode, textNode, type Scene, type Vec2 } from '@trefoil/core';
 import {
   BUILT_IN_EXPORTERS,
   DEFAULT_FIT_TOLERANCE,
   ExportError,
   PNG_SCALES,
   createExporterRegistry,
+  escapePdfText,
   fileNameFor,
   pdfExporter,
   pngExporter,
@@ -52,9 +53,14 @@ function context(over: Partial<ExportContext> = {}): ExportContext {
 const text = (bytes: Uint8Array): string => new TextDecoder().decode(bytes);
 
 describe('the exporter registry', () => {
-  it('holds the three formats', () => {
+  it('holds every built-in format', () => {
     const registry = createExporterRegistry([...BUILT_IN_EXPORTERS]);
-    expect(registry.list().map((exporter) => exporter.id).sort()).toEqual(['pdf', 'png', 'svg']);
+    expect(registry.list().map((exporter) => exporter.id).sort()).toEqual([
+      'brand-sheet',
+      'pdf',
+      'png',
+      'svg',
+    ]);
   });
 
   it('refuses a duplicate id', () => {
@@ -67,7 +73,7 @@ describe('the exporter registry', () => {
   it('gives each exporter a media type, an extension and parameter definitions', () => {
     for (const exporter of BUILT_IN_EXPORTERS) {
       expect(exporter.mediaType).toMatch(/\//);
-      expect(exporter.extension).toMatch(/^[a-z]+$/);
+      expect(exporter.extension).toMatch(/^[a-z]+(\.[a-z]+)*$/);
       expect(exporter.params.length).toBeGreaterThan(0);
       for (const def of exporter.params) {
         expect(def.id).not.toBe('');
@@ -262,5 +268,39 @@ describe('the PDF exporter', () => {
     expect(result.fileName).toBe('trefoil-type.pdf');
     expect(result.mediaType).toBe('application/pdf');
     expect(text(result.bytes).startsWith('%PDF')).toBe(true);
+  });
+});
+
+describe('text in an export', () => {
+  const withText: Scene = {
+    viewBox: [0, 0, 200, 100],
+    root: groupNode([
+      pathNode([OUTER], { fill: '#000000', opacity: 1 }),
+      textNode([12, 40], 'Palette (cool) \\ 50%', 18, '#223344'),
+    ]),
+  };
+
+  it('writes the string into the SVG at its position', () => {
+    const svg = sceneToSvg(withText);
+    expect(svg).toContain('<text id="root-1" x="12.00" y="40.00" font-size="18.00"');
+    expect(svg).toContain('fill="#223344"');
+    expect(svg).toContain('Palette (cool) \\ 50%');
+  });
+
+  it('names a standard font in the PDF and shows the string', () => {
+    const written = text(sceneToPdf(withText, 0.2, 1));
+    expect(written).toContain('/Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >>');
+    expect(written).toContain('/F1 18.000 Tf');
+    expect(written).toContain('Tj');
+  });
+
+  it('undoes the page flip so the text is the right way up', () => {
+    expect(text(sceneToPdf(withText, 0.2, 1))).toMatch(/1 0 0 -1 12\.000 40\.000 Tm/);
+  });
+
+  it('escapes a bracket and a backslash', () => {
+    const written = text(sceneToPdf(withText, 0.2, 1));
+    expect(written).toContain('(Palette \\(cool\\) \\\\ 50%) Tj');
+    expect(escapePdfText('a(b)c\\d')).toBe('a\\(b\\)c\\\\d');
   });
 });

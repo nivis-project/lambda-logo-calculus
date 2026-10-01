@@ -158,6 +158,13 @@ export function App({ store, registries }: AppProps): JSX.Element {
   const stackedScene = useMemo(() => decorate(stackedBase), [decorate, stackedBase]);
   const previewUrl = useSceneImage(wordmarkBase);
 
+  const paletteColors = useMemo(() => {
+    const palette = registries.palettes.get(project.paletteId);
+    return Array.from({ length: project.copies }, (_unused, copy) =>
+      palette.colorAt(copy, project.copies, {}),
+    );
+  }, [registries, project.paletteId, project.copies]);
+
   const template = registries.templates.get(project.templateId);
   const ending = BUILT_IN_ENDINGS.find((e) => e.id === project.endingId);
 
@@ -468,7 +475,17 @@ export function App({ store, registries }: AppProps): JSX.Element {
           }}
         />
 
-        <ExportPanel scene={sideScene} name={project.text} />
+        <ExportPanel
+          scene={sideBase}
+          name={project.text}
+          sheet={{
+            title: project.text,
+            mark: markBase,
+            side: sideBase,
+            stacked: stackedBase,
+            colors: paletteColors,
+          }}
+        />
 
         <GlyphOverrides
           character={selected}
