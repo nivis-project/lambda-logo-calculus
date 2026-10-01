@@ -4,6 +4,7 @@ import type { Polyline, Vec2 } from '../stage/types.js';
 import { maxRadius, radiusAt } from '../template/sample.js';
 import type { ShapeTemplate } from '../template/types.js';
 import type { Contour } from './stroker.js';
+import { FULL_QUALITY, type SampleQuality } from '../perf/quality.js';
 
 const DEG = Math.PI / 180;
 
@@ -16,6 +17,7 @@ export interface Corner {
 }
 
 export interface JoinBuildContext {
+  readonly quality?: SampleQuality;
   readonly shapeBuilt: boolean;
   readonly template: ShapeTemplate;
   readonly templateParams: ParamValues;
@@ -107,7 +109,10 @@ export const loopJoin: Join = {
   params: LOOP_PARAMS,
   build(corner, context) {
     const radius = typeof context.params['radius'] === 'number' ? context.params['radius'] : 11;
-    const steps = typeof context.params['samples'] === 'number' ? context.params['samples'] : 72;
+    const steps =
+      typeof context.params['samples'] === 'number'
+        ? context.params['samples']
+        : (context.quality?.joinSamples ?? FULL_QUALITY.joinSamples);
     const floor =
       typeof context.params['radiusFloor'] === 'number' ? context.params['radiusFloor'] : 0.35;
 

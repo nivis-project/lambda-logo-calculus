@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { expect, test } from '@playwright/test';
+import { openStudio } from './studio.js';
 
 async function sceneOf(page: import('@playwright/test').Page): Promise<string> {
   return page.getByTestId('side-defs').innerHTML();
@@ -9,9 +10,7 @@ async function sceneOf(page: import('@playwright/test').Page): Promise<string> {
 
 test.describe('the project file', () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => { window.localStorage.clear(); });
-    await page.goto('/');
-    await page.getByTestId('artboard-mark').locator('svg').waitFor();
+    await openStudio(page);
   });
 
   test('saves the open project to a file', async ({ page }) => {

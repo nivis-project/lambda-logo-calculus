@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-sws0
 title: Worker offload and the 16 ms budget benchmark
-status: todo
+status: completed
 type: epic
 priority: normal
 created_at: 2026-09-30T22:04:36Z
-updated_at: 2026-09-30T22:04:45Z
+updated_at: 2026-10-01T12:33:29Z
 parent: lambda-logo-calculus-yp20
 blocked_by:
     - lambda-logo-calculus-kk6s

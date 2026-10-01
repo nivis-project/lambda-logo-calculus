@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
+import { openStudio } from './studio.js';
 
 test('the studio renders the wordmark from the store', async ({ page }) => {
-  await page.goto('/');
+  await openStudio(page);
   await expect(page).toHaveTitle('Trefoil Studio');
 
   const paths = page.getByTestId('side-defs').locator('path');
@@ -16,8 +17,7 @@ test('the studio renders the wordmark from the store', async ({ page }) => {
 });
 
 test('a command redraws the wordmark and can be undone', async ({ page }) => {
-  await page.goto('/');
-  await page.getByTestId('artboard-side').locator('svg').waitFor();
+  await openStudio(page);
 
   await page.evaluate(() => {
     (window as unknown as { trefoilStore: { dispatch: (c: unknown) => void } }).trefoilStore.dispatch(
@@ -37,8 +37,7 @@ test('a command redraws the wordmark and can be undone', async ({ page }) => {
 });
 
 test('the two lockups place the mark differently', async ({ page }) => {
-  await page.goto('/');
-  await page.getByTestId('artboard-stacked').locator('svg').waitFor();
+  await openStudio(page);
 
   const side = await page.getByTestId('artboard-side').locator('svg').getAttribute('viewBox');
   const stacked = await page.getByTestId('artboard-stacked').locator('svg').getAttribute('viewBox');
@@ -52,8 +51,7 @@ test('the two lockups place the mark differently', async ({ page }) => {
 });
 
 test('the wordmark is drawn live once and previewed as an image elsewhere', async ({ page }) => {
-  await page.goto('/');
-  await page.getByTestId('artboard-mark').locator('svg').waitFor();
+  await openStudio(page);
 
   await expect(page.getByTestId('side-defs').locator('path')).toHaveCount(13 * 6 + 6);
   await expect(page.getByTestId('mark-defs').locator('path')).toHaveCount(6);

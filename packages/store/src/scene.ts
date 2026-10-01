@@ -19,6 +19,8 @@ import {
   type GlyphSet,
   type Join,
   type Scene,
+  type GlyphCache,
+  type SampleQuality,
   type ShapeTemplate,
   type WorkingSkeleton,
 } from '@trefoil/core';
@@ -26,13 +28,19 @@ import type { ProjectState } from './state.js';
 
 export type ArtboardKind = 'mark' | 'side' | 'stacked';
 
+export interface SceneOptions {
+  readonly quality?: SampleQuality;
+  readonly cache?: GlyphCache;
+}
+
 export function lockupSceneFromProject(
   project: ProjectState,
   registries: SceneRegistries,
   lockupId: 'side' | 'stacked',
+  options: SceneOptions = {},
 ): Scene {
-  const wordmark = sceneFromProject(project, registries);
-  const mark = sceneFromProject({ ...project, text: 'o' }, registries);
+  const wordmark = sceneFromProject(project, registries, options);
+  const mark = sceneFromProject({ ...project, text: 'o' }, registries, options);
 
   const markBounds = boundsOfScene(mark);
   if (markBounds === null || !project.mark.enabled) return wordmark;
@@ -130,7 +138,11 @@ export function skeletonsFromProject(
     );
 }
 
-export function sceneFromProject(project: ProjectState, registries: SceneRegistries): Scene {
+export function sceneFromProject(
+  project: ProjectState,
+  registries: SceneRegistries,
+  options: SceneOptions = {},
+): Scene {
   const template: ShapeTemplate = registries.templates.get(project.templateId);
   const { values } = resolveParams(template.params, project.templateParams);
   const rotation = project.rotation * DEG;
@@ -141,6 +153,7 @@ export function sceneFromProject(project: ProjectState, registries: SceneRegistr
     rotation,
     copies: project.copies,
     fit: project.fit,
+    ...(options.quality === undefined ? {} : { quality: options.quality }),
   });
 
   const ending = registries.endings.get(project.endingId);
@@ -194,5 +207,7 @@ export function sceneFromProject(project: ProjectState, registries: SceneRegistr
     patches: project.patches,
     pairs: project.pairs,
     endingFor: (id) => registries.endings.get(id),
+    ...(options.quality === undefined ? {} : { quality: options.quality }),
+    ...(options.cache === undefined ? {} : { cache: options.cache }),
   });
 }

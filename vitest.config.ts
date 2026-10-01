@@ -13,7 +13,18 @@ export default defineConfig({
             'packages/export/test/**/*.test.ts',
             'test/**/*.test.ts',
           ],
+          exclude: ['test/budget.test.ts'],
           environment: 'node',
+        },
+      },
+      {
+        test: {
+          name: 'budget',
+          include: ['test/budget.test.ts'],
+          environment: 'node',
+          fileParallelism: false,
+          maxWorkers: 1,
+          minWorkers: 1,
         },
       },
       {

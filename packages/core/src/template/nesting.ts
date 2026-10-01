@@ -3,6 +3,7 @@ import { radiusAt } from './sample.js';
 import { parametricFit } from './parametric.js';
 import { validateCurve } from './validate.js';
 import type { SafetyWarning, ShapeTemplate } from './types.js';
+import { type SampleQuality } from '../perf/quality.js';
 
 export type NestingRoute = 'polar' | 'parametric';
 
@@ -15,6 +16,7 @@ export interface NestingInput {
   readonly rotation: number;
   readonly copies: number;
   readonly fit: number;
+  readonly quality?: SampleQuality;
 }
 
 export interface NestingResult {
@@ -36,10 +38,11 @@ export function fitForCurve(
   template: ShapeTemplate,
   params: ParamValues,
   phi: number,
+  samples = PERFECT_FIT_SAMPLES,
 ): RoutedFit {
   const validation = validateCurve(template, params);
   if (validation.starShaped && validation.nonNegative && template.kind === 'polar') {
-    return { value: perfectFit(template, params, phi), route: 'polar' };
+    return { value: perfectFit(template, params, phi, samples), route: 'polar' };
   }
   return {
     value: parametricFit(template, params, phi),
@@ -94,7 +97,12 @@ export function computeNesting(input: NestingInput): NestingResult {
 
   const params = applySafety(template, input.params, warnings);
 
-  const routed = fitForCurve(template, params, rotation);
+  const routed = fitForCurve(
+    template,
+    params,
+    rotation,
+    input.quality?.fitSamples ?? PERFECT_FIT_SAMPLES,
+  );
   const rawFit = routed.value;
   let fitted = rawFit;
   if (fitted < safety.minPerfectFit) {

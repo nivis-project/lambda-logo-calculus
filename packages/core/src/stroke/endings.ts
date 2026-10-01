@@ -15,8 +15,10 @@ export interface EndContext {
   readonly leftOffset: Vec2;
   readonly rightOffset: Vec2;
 }
+import { FULL_QUALITY, type SampleQuality } from '../perf/quality.js';
 
 export interface EndingBuildContext {
+  readonly quality?: SampleQuality;
   readonly shapeBuilt: boolean;
   readonly template: ShapeTemplate;
   readonly templateParams: ParamValues;
@@ -45,7 +47,7 @@ function shapeRing(
   cy: number,
   r: number,
   context: EndingBuildContext,
-  steps = 64,
+  steps = context.quality?.ringSteps ?? FULL_QUALITY.ringSteps,
 ): Contour {
   const params = context.templateParams;
   const peak = maxRadius(context.template, params);
@@ -140,7 +142,7 @@ export const taperedEnding: Ending = {
   params: [sizeParam('length', 'Taper length', 22, 80)],
   build(end, context) {
     if (!context.shapeBuilt) return [];
-    return [shapeRing(end.point[0], end.point[1], end.halfWidth * 0.35, context, 32)];
+    return [shapeRing(end.point[0], end.point[1], end.halfWidth * 0.35, context, Math.max(8, Math.round((context.quality?.ringSteps ?? FULL_QUALITY.ringSteps) / 2)))];
   },
 };
 

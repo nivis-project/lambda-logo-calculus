@@ -43,6 +43,7 @@ nix develop -c pnpm install
 nix develop -c pnpm dev           # the studio on 127.0.0.1:5173
 nix develop -c pnpm test          # vitest: unit, property and boundary tests
 nix develop -c pnpm test:cov      # with the coverage thresholds
+nix develop -c pnpm bench         # the render budget benchmark, run alone
 nix develop -c pnpm e2e           # playwright against the built studio
 nix develop -c pnpm lint          # eslint, includes the core boundary rules
 nix develop -c pnpm build
@@ -50,8 +51,11 @@ nix flake check                   # the ship gate, in the sandbox, no network
 ```
 
 The gate is two commands, not one. `nix flake check` runs build, lint, the test
-suite with coverage, the built-bundle boundary check and the parity comparison,
-all in the Nix sandbox with no network. `nix develop -c pnpm e2e` runs the
+suite with coverage, the built-bundle boundary check, the parity comparison and
+the render budget benchmark, all in the Nix sandbox with no network. The
+benchmark runs as its own step rather than beside the suite, because a
+wall-clock measurement taken under thirty parallel test files measures the
+machine. `nix develop -c pnpm e2e` runs the
 browser suite, which Chromium cannot run inside that sandbox; ADR 0009 records
 why and what was ruled out. `scripts/ship-change.sh` runs both and stops on
 either.

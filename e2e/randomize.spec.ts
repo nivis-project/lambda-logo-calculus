@@ -1,10 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { openStudio } from './studio.js';
 
 test.describe('randomize and variants', () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => { window.localStorage.clear(); });
-    await page.goto('/');
-    await page.getByTestId('artboard-mark').locator('svg').waitFor();
+    await openStudio(page);
   });
 
   test('redraws the wordmark and is undone by one press', async ({ page }) => {

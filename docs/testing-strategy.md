@@ -195,6 +195,39 @@ the fitter, and that belongs to the performance epic rather than this one. The
 figures above are asserted by a test, so a change to the stroker that smooths
 its output shows up as a failing expectation rather than going unnoticed.
 
+## The render budget
+
+The architecture rules say a 20-character wordmark at 12 copies re-renders under
+16 ms while a slider is dragged. `test/budget.test.ts` measures it and the gate
+runs it.
+
+It measures the median of thirty builds with the amplitude moving between them,
+the way a drag moves it, after five warm-up builds. Measured on the machine this
+was written on:
+
+| what                                    | median   |
+| --------------------------------------- | -------- |
+| draft quality, a parameter moving        | 8.4 ms   |
+| full quality, a parameter moving         | 14.3 ms  |
+| full quality, only the opacity moving    | 0.22 ms  |
+
+Before this was measured it was 19 ms at what is now full quality, so the rule
+had been broken for most of the project and nothing could have said so. What
+closed the gap: a draft sampling quality while a control is held, a glyph cache
+keyed by what the geometry actually reads, and building the pens only when
+something misses that cache.
+
+**The benchmark runs as its own gate step**, not beside the rest of the suite.
+Run alongside thirty other test files it measured 20 ms for the same work that
+takes 8 ms alone: a wall-clock figure taken under that much contention is a
+measurement of the machine, not of the pipeline. `pnpm bench` runs it; `pnpm
+test` does not.
+
+The thresholds have headroom on purpose. The draft budget is the rule's own
+16 ms against a measured 8.4, and the full-quality ceiling is 50 ms against a
+measured 14.3. A benchmark that fails on a busy laptop teaches people to ignore
+it.
+
 ## Coverage
 
 The ship gate enforces:

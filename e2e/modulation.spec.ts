@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openStudio } from './studio.js';
 
 async function shapeHash(page: import('@playwright/test').Page): Promise<number> {
   return page
@@ -14,9 +15,7 @@ async function shapeHash(page: import('@playwright/test').Page): Promise<number>
 
 test.describe('the modulation list', () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => { window.localStorage.clear(); });
-    await page.goto('/');
-    await page.getByTestId('artboard-mark').locator('svg').waitFor();
+    await openStudio(page);
   });
 
   test('ships the prototype links as the default preset', async ({ page }) => {

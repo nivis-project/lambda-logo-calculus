@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BUILT_IN_ENDINGS,
   BUILT_IN_JOINS,
@@ -13,7 +13,6 @@ import {
   type WorkingSkeleton,
 } from '@trefoil/core';
 import {
-  lockupSceneFromProject,
   sceneFromProject,
   skeletonsFromProject,
   type ProjectStore,
@@ -29,6 +28,7 @@ import { ProjectFile } from './controls/ProjectFile.js';
 import { ExportPanel } from './controls/ExportPanel.js';
 import { NESTING_PARAMS } from './nestingParams.js';
 import { useStoreState } from './useStore.js';
+import { useDragging, useSceneBuilder } from './useRenderer.js';
 import {
   NO_OVERLAYS,
   OVERLAY_IDS,
@@ -109,22 +109,31 @@ export function App({ store, registries }: AppProps): JSX.Element {
   const [markBase, setMarkBase] = useState<Scene>(EMPTY_SCENE);
   const [sideBase, setSideBase] = useState<Scene>(EMPTY_SCENE);
   const [stackedBase, setStackedBase] = useState<Scene>(EMPTY_SCENE);
+  const [renderMs, setRenderMs] = useState(0);
+  const [renderQuality, setRenderQuality] = useState('full');
+
+  const dragging = useDragging();
+  const builder = useSceneBuilder();
+  const newest = useRef(0);
 
   useEffect(() => {
-    let cancelled = false;
-    const build = (): void => {
-      if (cancelled) return;
-      setWordmarkBase(sceneFromProject(project, registries));
-      setMarkBase(sceneFromProject({ ...project, text: 'o' }, registries));
-      setSideBase(lockupSceneFromProject(project, registries, 'side'));
-      setStackedBase(lockupSceneFromProject(project, registries, 'stacked'));
-    };
-    const handle = setTimeout(build, 0);
+    const token = ++newest.current;
+
+    void (async () => {
+      const set = await builder(project, dragging);
+      if (token !== newest.current) return;
+      setWordmarkBase(set.wordmark);
+      setMarkBase(set.mark);
+      setSideBase(set.side);
+      setStackedBase(set.stacked);
+      setRenderMs(set.ms);
+      setRenderQuality(set.quality);
+    })();
+
     return () => {
-      cancelled = true;
-      clearTimeout(handle);
+      newest.current++;
     };
-  }, [project, registries]);
+  }, [project, builder, dragging]);
 
   const skeletons = useMemo((): readonly WorkingSkeleton[] => {
     if (!overlays.skeletons) return [];
@@ -303,6 +312,8 @@ export function App({ store, registries }: AppProps): JSX.Element {
           }}
         />
         <span data-testid="zoom-level">{zoom.toFixed(2)}</span>
+        <span data-testid="render-ms">{renderMs.toFixed(1)}</span>
+        <span data-testid="render-quality">{renderQuality}</span>
       </header>
 
       <aside className="panel panel-left" data-testid="panel-left">

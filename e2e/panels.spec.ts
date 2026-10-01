@@ -1,10 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { openStudio } from './studio.js';
 
 test.describe('generated parameter panels', () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => { window.localStorage.clear(); });
-    await page.goto('/');
-    await page.getByTestId('artboard-mark').locator('svg').waitFor();
+    await openStudio(page);
   });
 
   test('renders the control each kind calls for', async ({ page }) => {

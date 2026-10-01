@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openStudio } from './studio.js';
 
 async function glyphOrigin(page: import('@playwright/test').Page, character: string) {
   return page
@@ -10,9 +11,7 @@ async function glyphOrigin(page: import('@playwright/test').Page, character: str
 
 test.describe('per-glyph overrides', () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => { window.localStorage.clear(); });
-    await page.goto('/');
-    await page.getByTestId('artboard-mark').locator('svg').waitFor();
+    await openStudio(page);
   });
 
   test('marks every glyph group with its character and index', async ({ page }) => {

@@ -14,7 +14,7 @@ export type {
   Variant,
 } from './store.js';
 export { createProjectStore, memoryStorage } from './store.js';
-export type { ArtboardKind, SceneRegistries } from './scene.js';
+export type { ArtboardKind, SceneOptions, SceneRegistries } from './scene.js';
 export { lockupSceneFromProject, sceneFromProject, skeletonsFromProject } from './scene.js';
 export type { LoadProblem, LoadResult, Migration } from './project.js';
 export {

@@ -1,12 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { openStudio } from './studio.js';
 
 test.describe('the studio shell', () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => {
-      window.localStorage.clear();
-    });
-    await page.goto('/');
-    await page.getByTestId('artboard-mark').locator('svg').waitFor();
+    await openStudio(page);
   });
 
   test('lays the panels out around the canvas', async ({ page }) => {
@@ -41,9 +38,9 @@ test.describe('the studio shell', () => {
         { kind: 'setNumber', field: 'copies', value: 2 },
       );
     });
+    await expect(page.getByTestId('mark-defs').locator('path')).toHaveCount(2);
     const after = await page.getByTestId('side-defs').locator('path').count();
     expect(after).toBeLessThan(before);
-    expect(await page.getByTestId('mark-defs').locator('path').count()).toBe(2);
   });
 
   test('zooms, bounds the zoom and resets', async ({ page }) => {

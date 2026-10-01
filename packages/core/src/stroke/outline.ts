@@ -4,12 +4,14 @@ import type { ShapeTemplate } from '../template/types.js';
 import type { Ending, EndingBuildContext } from './endings.js';
 import { findCorners, type Join, type JoinBuildContext } from './joins.js';
 import type { Pen } from './pen.js';
+import type { SampleQuality } from '../perf/quality.js';
 import { flareProfile, taperProfile, PROTOTYPE_PROFILE } from './profile.js';
 import { strokeRing, strokeRun, UNIFORM_WIDTH, type Contour } from './stroker.js';
 
 export type RenderStyle = 'letter' | 'ornament';
 
 export interface OutlineOptions {
+  readonly quality?: SampleQuality;
   readonly pen: Pen;
   readonly ending: Ending;
   readonly join?: Join;
@@ -57,6 +59,7 @@ export function outlineSkeleton(
   options: OutlineOptions,
 ): GlyphOutline {
   const endingContext: EndingBuildContext = {
+    ...(options.quality === undefined ? {} : { quality: options.quality }),
     shapeBuilt: options.shapeBuilt,
     template: options.template,
     templateParams: options.templateParams,
@@ -65,6 +68,7 @@ export function outlineSkeleton(
     params: options.endingParams ?? {},
   };
   const joinContext: JoinBuildContext = {
+    ...(options.quality === undefined ? {} : { quality: options.quality }),
     shapeBuilt: options.shapeBuilt,
     template: options.template,
     templateParams: options.templateParams,

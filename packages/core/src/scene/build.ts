@@ -15,11 +15,15 @@ import {
 } from '../overrides/types.js';
 import type { Ending } from '../stroke/endings.js';
 import type { Join } from '../stroke/joins.js';
-import { roundPen, shapePen } from '../stroke/pen.js';
+import { roundPen, shapePen, type Pen } from '../stroke/pen.js';
 import type { Palette } from '../style/palette.js';
 import { passOpacity } from '../style/palette.js';
 import { advanceOf } from '../layout/text.js';
 import { groupNode, pathNode, type GroupNode, type Scene, type SceneNode } from './types.js';
+import { FULL_QUALITY, type SampleQuality } from '../perf/quality.js';
+import { hashOf } from '../perf/hash.js';
+import { createCache, type Cache } from '../perf/cache.js';
+import type { Contour } from '../stroke/stroker.js';
 
 export interface PerGlyphModulation {
   (
@@ -53,6 +57,14 @@ export interface SceneInput {
   readonly patches?: GlyphPatches;
   readonly pairs?: readonly SpacingPair[];
   readonly endingFor?: (endingId: string) => Ending | undefined;
+  readonly quality?: SampleQuality;
+  readonly cache?: GlyphCache;
+}
+
+export type GlyphCache = Cache<readonly (readonly Contour[])[]>;
+
+export function createGlyphCache(capacity = 4096): GlyphCache {
+  return createCache<readonly (readonly Contour[])[]>(capacity);
 }
 
 export function buildScene(input: SceneInput): Scene {
@@ -85,17 +97,37 @@ export function buildScene(input: SceneInput): Scene {
   const copies = input.nesting.scales.length;
   const opacity = passOpacity(input.alpha);
   const glyphGroups: SceneNode[] = [];
+  const quality = input.quality ?? FULL_QUALITY;
 
-  const pens = input.nesting.scales.map((scale, copy) =>
-    input.shapePen
-      ? shapePen(
-          input.template,
-          input.templateParams,
-          (input.metrics.strokeWidth / 2) * scale,
-          input.rotation * copy,
-        )
-      : roundPen(input.metrics.strokeWidth * scale),
-  );
+  let pens: readonly Pen[] | undefined;
+  const pensFor = (): readonly Pen[] => {
+    pens ??= input.nesting.scales.map((scale, copy) =>
+      input.shapePen
+        ? shapePen(
+            input.template,
+            input.templateParams,
+            (input.metrics.strokeWidth / 2) * scale,
+            input.rotation * copy,
+            quality.penSamples,
+            quality.supportEntries,
+          )
+        : roundPen(input.metrics.strokeWidth * scale, quality.supportEntries),
+    );
+    return pens;
+  };
+
+  const shapeKey = hashOf({
+    template: `${input.template.id}@${input.template.version}`,
+    params: input.templateParams,
+    rotation: input.rotation,
+    scales: input.nesting.scales,
+    strokeWidth: input.metrics.strokeWidth,
+    shapePen: input.shapePen,
+    join: input.join?.id ?? null,
+    style: input.style ?? 'letter',
+    quality: quality.id,
+    stageList: input.stageList ?? DEFAULT_STAGE_LIST,
+  });
 
   const colours = input.nesting.scales.map((_scale, copy) =>
     input.palette.colorAt(copy, copies, {}),
@@ -118,39 +150,67 @@ export function buildScene(input: SceneInput): Scene {
     }
 
     charIndex++;
-    const unpatched = runStages(
-      glyphFor(input.glyphs, character),
-      input.stageList ?? DEFAULT_STAGE_LIST,
-      input.stages,
-      contextFor(charIndex),
-      modulationAt(charIndex).stageParams ?? {},
-    );
-    const skeleton = applyPatch(unpatched, patch);
+    const modulated = modulationAt(charIndex);
     const ending =
       patch?.endingId === undefined
         ? input.ending
         : (input.endingFor?.(patch.endingId) ?? input.ending);
 
+    const key = hashOf({
+      shape: shapeKey,
+      character,
+      ending: ending.id,
+      patch: patch ?? null,
+      modulation: { widthFactor: modulated.widthFactor, xHeight: modulated.xHeight },
+      stageParams: modulated.stageParams ?? {},
+    });
+
+    let contoursPerCopy = input.cache?.get(key);
+    if (contoursPerCopy === undefined) {
+      const unpatched = runStages(
+        glyphFor(input.glyphs, character),
+        input.stageList ?? DEFAULT_STAGE_LIST,
+        input.stages,
+        contextFor(charIndex),
+        modulated.stageParams ?? {},
+      );
+      const skeleton = applyPatch(unpatched, patch);
+
+      const built: (readonly Contour[])[] = [];
+      const ready = pensFor();
+      for (let copy = 0; copy < copies; copy++) {
+        const pen = ready[copy];
+        if (pen === undefined) {
+          built.push([]);
+          continue;
+        }
+
+        built.push(
+          outlineSkeleton(skeleton, {
+            quality,
+            pen,
+            ending,
+            ...(input.join === undefined ? {} : { join: input.join }),
+            shapeBuilt: input.shapePen,
+            template: input.template,
+            templateParams: input.templateParams,
+            rotation: input.rotation * copy,
+            copyIndex: copy,
+            ...(input.style === undefined ? {} : { style: input.style }),
+          }).contours,
+        );
+      }
+
+      contoursPerCopy = built;
+      input.cache?.set(key, built);
+    }
+
     const passes: SceneNode[] = [];
     for (let copy = 0; copy < copies; copy++) {
-      const pen = pens[copy];
-      if (pen === undefined) continue;
-
-      const outline = outlineSkeleton(skeleton, {
-        pen,
-        ending,
-        ...(input.join === undefined ? {} : { join: input.join }),
-        shapeBuilt: input.shapePen,
-        template: input.template,
-        templateParams: input.templateParams,
-        rotation: input.rotation * copy,
-        copyIndex: copy,
-        ...(input.style === undefined ? {} : { style: input.style }),
-      });
-
-      if (outline.contours.length === 0) continue;
+      const contours = contoursPerCopy[copy];
+      if (contours === undefined || contours.length === 0) continue;
       passes.push(
-        pathNode(outline.contours, {
+        pathNode(contours, {
           fill: colours[copy] ?? '#000',
           opacity,
           fillRule: 'evenodd',

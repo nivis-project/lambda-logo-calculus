@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
+import { openStudio } from './studio.js';
 
 const FIT_TOLERANCE = 0.2;
 const ROUNDING = 0.005;
@@ -64,9 +65,7 @@ const READ = (host: Element): Measured => {
 
 test.describe('exporting', () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => { window.localStorage.clear(); });
-    await page.goto('/');
-    await page.getByTestId('artboard-mark').locator('svg').waitFor();
+    await openStudio(page);
   });
 
   test('shows the chosen exporter parameters and no others', async ({ page }) => {
@@ -156,9 +155,7 @@ test.describe('exporting', () => {
 
 test.describe('the brand sheet', () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => { window.localStorage.clear(); });
-    await page.goto('/');
-    await page.getByTestId('artboard-mark').locator('svg').waitFor();
+    await openStudio(page);
   });
 
   test('writes a sheet holding the mark, both lockups, the clear space and the palette', async ({

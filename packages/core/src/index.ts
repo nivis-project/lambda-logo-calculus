@@ -227,3 +227,10 @@ export {
 } from './overrides/types.js';
 export type { CurveCommand, CurveContour } from './scene/curves.js';
 export { curvePoints, curveToPathData, isWellFormedContour } from './scene/curves.js';
+export type { SampleQuality } from './perf/quality.js';
+export { DRAFT_QUALITY, FULL_QUALITY, QUALITIES } from './perf/quality.js';
+export { hashOf } from './perf/hash.js';
+export type { Cache } from './perf/cache.js';
+export { createCache } from './perf/cache.js';
+export type { GlyphCache } from './scene/build.js';
+export { createGlyphCache } from './scene/build.js';

@@ -11,9 +11,10 @@
     "clean": "tsc --build --clean && rm -rf packages/*/dist apps/*/dist",
     "dev": "pnpm --filter @trefoil/studio dev",
     "lint": "eslint .",
-    "test": "vitest run",
+    "test": "vitest run --project node --project dom",
+    "bench": "vitest run --project budget",
     "test:boundary": "node scripts/check-core-boundary.mjs",
-    "test:cov": "vitest run --coverage",
+    "test:cov": "vitest run --project node --project dom --coverage",
     "e2e": "playwright test",
     "parity:record": "node scripts/record-parity.mjs"
   },

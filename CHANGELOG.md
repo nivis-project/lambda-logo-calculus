@@ -6,6 +6,14 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+- The 16 ms budget is measured rather than asserted, and the gate holds it. It
+  was being broken: a 20-character wordmark at 12 copies took 19 ms to rebuild,
+  and nothing said so. It now takes 8.4 ms while a slider is held and 0.2 ms
+  when only a colour changes. Three things closed the gap: a draft sampling
+  quality while a control is held, a glyph cache keyed by a hash of what the
+  geometry actually reads, and pens built only when something misses that cache.
+  The studio builds its scenes in a worker, drops a render a newer one has
+  overtaken, and shows how long the last one took.
 - A brand sheet, as one more exporter. One page carrying the mark on its own,
   the mark beside the words and above them, the clear space drawn as a frame
   rather than stated as a rule, and the palette as labelled swatches. The clear

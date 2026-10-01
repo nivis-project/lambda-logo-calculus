@@ -184,6 +184,9 @@ importers:
       '@trefoil/templates':
         specifier: workspace:*
         version: link:../../packages/templates
+      comlink:
+        specifier: ^4.4.2
+        version: 4.4.2
       react:
         specifier: ^19.3.0
         version: 19.3.0
@@ -799,6 +802,9 @@ packages:
   chai@6.2.2:
     resolution: {integrity: sha512-NUPRluOfOiTKBKvWPtSD4PhFvWCqOi0BGStNWs57X9js7XGTprSmFoz5F0tWhR4WPjNeR9jXqdC7/UpSJTnlRg==}
     engines: {node: '>=18'}
+
+  comlink@4.4.2:
+    resolution: {integrity: sha512-OxGdvBmJuNKSCMO4NTl1L47VRp6xn2wG4F/2hYzB6tiCb709otOxtEYCSvK80PtjODfXXZu8ds+Nw5kVCjqd2g==}
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -1744,6 +1750,8 @@ snapshots:
       qified: 0.10.1
 
   chai@6.2.2: {}
+
+  comlink@4.4.2: {}
 
   cross-spawn@7.0.6:
     dependencies:
