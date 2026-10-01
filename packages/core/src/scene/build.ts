@@ -54,6 +54,21 @@ export function buildScene(input: SceneInput): Scene {
   const opacity = passOpacity(input.alpha);
   const glyphGroups: SceneNode[] = [];
 
+  const pens = input.nesting.scales.map((scale, copy) =>
+    input.shapePen
+      ? shapePen(
+          input.template,
+          input.templateParams,
+          (input.metrics.strokeWidth / 2) * scale,
+          input.rotation * copy,
+        )
+      : roundPen(input.metrics.strokeWidth * scale),
+  );
+
+  const colours = input.nesting.scales.map((_scale, copy) =>
+    input.palette.colorAt(copy, copies, {}),
+  );
+
   let cursor = 0;
   for (const character of input.text) {
     const advance = advanceOf(character, layout);
@@ -71,15 +86,8 @@ export function buildScene(input: SceneInput): Scene {
 
     const passes: SceneNode[] = [];
     for (let copy = 0; copy < copies; copy++) {
-      const scale = input.nesting.scales[copy] ?? 1;
-      const pen = input.shapePen
-        ? shapePen(
-            input.template,
-            input.templateParams,
-            (input.metrics.strokeWidth / 2) * scale,
-            input.rotation * copy,
-          )
-        : roundPen(input.metrics.strokeWidth * scale);
+      const pen = pens[copy];
+      if (pen === undefined) continue;
 
       const outline = outlineSkeleton(skeleton, {
         pen,
@@ -96,7 +104,7 @@ export function buildScene(input: SceneInput): Scene {
       if (outline.contours.length === 0) continue;
       passes.push(
         pathNode(outline.contours, {
-          fill: input.palette.colorAt(copy, copies, {}),
+          fill: colours[copy] ?? '#000',
           opacity,
           fillRule: 'evenodd',
         }),

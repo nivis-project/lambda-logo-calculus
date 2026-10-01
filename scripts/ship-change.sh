@@ -30,8 +30,9 @@ fi
 echo "==> [1/6] stage working tree (so nix flake sees new files)"
 git add -A
 
-echo "==> [2/6] gate: nix flake check"
+echo "==> [2/6] gate: nix flake check, then the browser suite"
 nix flake check
+nix develop -c pnpm e2e
 
 echo "==> [3/6] archive OpenSpec change: ${CHANGE}"
 openspec archive "${CHANGE}" --yes

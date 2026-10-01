@@ -49,10 +49,16 @@ nix develop -c pnpm build
 nix flake check                   # the ship gate, in the sandbox, no network
 ```
 
-The gate runs build, lint, the test suite with coverage, the built-bundle
-boundary check and the end-to-end suite. The dependency hash it needs lives in
-`nix/gate.nix`; a change that touches `package.json` or `pnpm-lock.yaml` updates
-that hash in the same change.
+The gate is two commands, not one. `nix flake check` runs build, lint, the test
+suite with coverage, the built-bundle boundary check and the parity comparison,
+all in the Nix sandbox with no network. `nix develop -c pnpm e2e` runs the
+browser suite, which Chromium cannot run inside that sandbox; ADR 0009 records
+why and what was ruled out. `scripts/ship-change.sh` runs both and stops on
+either.
+
+The dependency hash the sandboxed gate needs lives in `nix/gate.nix`; a change
+that touches `package.json` or `pnpm-lock.yaml` updates that hash in the same
+change.
 
 ## Version control
 
@@ -99,7 +105,7 @@ Write an ADR in `docs/adr/` before every stack or structural choice, using
 `docs/adr/0000-template.md`. Number them in sequence. An ADR that is superseded
 is marked, not deleted.
 
-The choices already made are in ADRs 0001 to 0008. Do not reopen them without
+The choices already made are in ADRs 0001 to 0009. Do not reopen them without
 writing a superseding ADR.
 
 ## Testing

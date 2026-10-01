@@ -85,6 +85,12 @@ Each milestone gate names its own end-to-end test. The suite runs in the ship
 gate, so a broken interaction blocks a commit the same way a broken function
 does.
 
+It runs in the dev shell rather than inside the Nix sandbox, because Chromium
+inside that sandbox cannot load the studio page. ADR 0009 records the
+investigation and what was ruled out. `scripts/ship-change.sh` runs it after
+`nix flake check` and stops on either failing, so the suite still gates every
+ship.
+
 ## Parity with the prototype
 
 Milestone 02 carries one more obligation. The ported core rendering the default

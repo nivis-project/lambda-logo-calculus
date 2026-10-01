@@ -8,6 +8,11 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- The studio has a shell: a top bar, a shape panel, a canvas with three
+  artboards, a letters and lockup panel, and a bottom strip with the text field
+  and a preview at 16, 32, 64 and 128 pixels on light and dark. Zoom, pan,
+  five switchable overlays and keyboard shortcuts for undo, redo, zoom and the
+  overlays.
 - The studio has state, and every change to it is a command. Undo, redo,
   autosave and variant snapshots all come from one log, so no feature has to
   implement them again. The project state is frozen, so the only way to change

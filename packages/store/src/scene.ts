@@ -6,15 +6,20 @@ import {
   createPaletteRegistry,
   createStageRegistry,
   createTemplateRegistry,
+  glyphFor,
   prototypeModulation,
   resolveParams,
+  runStages,
   type Ending,
   type GlyphSet,
   type Join,
   type Scene,
   type ShapeTemplate,
+  type WorkingSkeleton,
 } from '@trefoil/core';
 import type { ProjectState } from './state.js';
+
+export type ArtboardKind = 'mark' | 'side' | 'stacked';
 
 const DEG = Math.PI / 180;
 
@@ -26,6 +31,38 @@ export interface SceneRegistries {
   readonly endings: ReadonlyMap<string, Ending>;
   readonly joins: ReadonlyMap<string, Join>;
   readonly glyphSetId: string;
+}
+
+export function skeletonsFromProject(
+  project: ProjectState,
+  registries: SceneRegistries,
+): readonly WorkingSkeleton[] {
+  const template = registries.templates.get(project.templateId);
+  const { values } = resolveParams(template.params, project.templateParams);
+  const rotation = project.rotation * DEG;
+  const amplitude = typeof values['A'] === 'number' ? values['A'] : 3;
+  const glyphs = registries.glyphSets.get(registries.glyphSetId);
+
+  const context = {
+    template,
+    templateParams: values,
+    rotation,
+    nesting: computeNesting({
+      template,
+      params: values,
+      rotation,
+      copies: project.copies,
+      fit: project.fit,
+    }),
+    metrics: GRID,
+    modulation: prototypeModulation({ amplitude, fit: project.fit, metrics: GRID }),
+  };
+
+  return Array.from(project.text)
+    .filter((character) => character !== ' ')
+    .map((character) =>
+      runStages(glyphFor(glyphs, character), project.stages, registries.stages, context),
+    );
 }
 
 export function sceneFromProject(project: ProjectState, registries: SceneRegistries): Scene {

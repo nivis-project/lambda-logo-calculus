@@ -13,6 +13,8 @@
     "@trefoil/export": "workspace:*",
     "@trefoil/render-svg": "workspace:*",
     "@trefoil/store": "workspace:*",
-    "@trefoil/templates": "workspace:*"
+    "@trefoil/templates": "workspace:*",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   }
 }

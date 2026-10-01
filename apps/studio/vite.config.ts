@@ -3,6 +3,9 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   publicDir: resolve(import.meta.dirname, '../../reference'),
+  esbuild: {
+    jsx: 'automatic',
+  },
   build: {
     target: 'es2023',
     sourcemap: true,
