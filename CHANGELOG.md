@@ -8,6 +8,12 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- Parameters are declared once as data: a definition carries its kind, range,
+  default, lock and randomize behaviour, and resolution, validation and
+  randomize are all derived from it. Randomize respects locks and draws from a
+  stored seed, so a result is reproducible.
+- A typed registry per extension point, which refuses a duplicate id so a typo
+  cannot silently shadow a built-in module.
 - Seven architecture decision records covering the stack and structural choices
   the project already runs on, each with the alternatives that lost.
 - A gate that cannot be skipped: `nix flake check` builds, lints, runs the test
