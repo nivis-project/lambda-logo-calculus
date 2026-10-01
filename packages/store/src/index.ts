@@ -15,4 +15,4 @@ export type {
 } from './store.js';
 export { createProjectStore, memoryStorage } from './store.js';
 export type { ArtboardKind, SceneRegistries } from './scene.js';
-export { sceneFromProject, skeletonsFromProject } from './scene.js';
+export { lockupSceneFromProject, sceneFromProject, skeletonsFromProject } from './scene.js';

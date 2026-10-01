@@ -154,6 +154,15 @@ export type { LayoutMetrics, WrapResult } from './layout/text.js';
 export { advanceOf, widthOf, wrapText } from './layout/text.js';
 export type { LockupInput, LockupResult, MarkBounds, MarkSettings } from './layout/lockup.js';
 export { OPTICAL_ENLARGEMENT, layoutLockup } from './layout/lockup.js';
+export type { Bounds } from './layout/bounds.js';
+export { boundsOfScene } from './layout/bounds.js';
+export type { Lockup, LockupInputs, Placement } from './layout/registry.js';
+export {
+  BUILT_IN_LOCKUPS,
+  createLockupRegistry,
+  sideLockup,
+  stackedLockup,
+} from './layout/registry.js';
 export type { SceneInput } from './scene/build.js';
 export { buildScene } from './scene/build.js';
 

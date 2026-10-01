@@ -33,15 +33,15 @@ test.describe('the studio shell', () => {
     }
     await expect(page.getByTestId('artboard-mark').locator('svg')).toHaveCount(1);
     await expect(page.getByTestId('artboard-side').locator('svg')).toHaveCount(1);
-    await expect(page.getByTestId('artboard-stacked').locator('img')).toHaveCount(1);
+    await expect(page.getByTestId('artboard-stacked').locator('svg')).toHaveCount(1);
 
-    const before = await page.getByTestId('wordmark-defs').locator('path').count();
+    const before = await page.getByTestId('side-defs').locator('path').count();
     await page.evaluate(() => {
       (window as unknown as { trefoilStore: { dispatch: (c: unknown) => void } }).trefoilStore.dispatch(
         { kind: 'setNumber', field: 'copies', value: 2 },
       );
     });
-    const after = await page.getByTestId('wordmark-defs').locator('path').count();
+    const after = await page.getByTestId('side-defs').locator('path').count();
     expect(after).toBeLessThan(before);
     expect(await page.getByTestId('mark-defs').locator('path').count()).toBe(2);
   });
@@ -69,7 +69,7 @@ test.describe('the studio shell', () => {
   });
 
   test('draws the grid overlay at the grid metrics and only when it is on', async ({ page }) => {
-    const paths = page.getByTestId('wordmark-defs').locator('path');
+    const paths = page.getByTestId('side-defs').locator('path');
     const before = await paths.count();
 
     await page.getByTestId('overlay-grid').check();
@@ -80,7 +80,7 @@ test.describe('the studio shell', () => {
   });
 
   test('switches overlays independently', async ({ page }) => {
-    const paths = page.getByTestId('wordmark-defs').locator('path');
+    const paths = page.getByTestId('side-defs').locator('path');
     const base = await paths.count();
 
     await page.getByTestId('overlay-grid').check();
@@ -96,7 +96,7 @@ test.describe('the studio shell', () => {
   });
 
   test('the skeleton overlay follows the stage list', async ({ page }) => {
-    const paths = page.getByTestId('wordmark-defs').locator('path');
+    const paths = page.getByTestId('side-defs').locator('path');
     await page.getByTestId('overlay-skeletons').check();
     const withBend = await paths.count();
 
@@ -112,7 +112,7 @@ test.describe('the studio shell', () => {
   test('typing changes the wordmark and can be undone', async ({ page }) => {
     const input = page.getByTestId('text-input');
     await input.fill('Hi');
-    await expect(page.getByTestId('wordmark-defs').locator('path')).toHaveCount(2 * 6);
+    await expect(page.getByTestId('side-defs').locator('path')).toHaveCount(2 * 6 + 6);
 
     await page.getByTestId('undo').click();
     await expect(input).not.toHaveValue('Hi');

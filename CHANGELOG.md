@@ -6,6 +6,11 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+- A logo, not just a wordmark. Lockups are registered modules returning
+  placements: the mark beside the text or centred above it, sized against the
+  text block and enlarged 6% optically. The mark is measured by the geometry it
+  actually draws, not by the box it was rendered into, so a trefoil's empty
+  corners do not push the wordmark away.
 - Randomize, which respects every lock, draws from the seed stored in the
   project, and puts each result in a variant strip so none is lost. One press is
   one undo. Variants restore on click, can be kept by hand, and can be removed.

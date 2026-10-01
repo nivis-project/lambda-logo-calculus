@@ -13,6 +13,7 @@ import {
   type WorkingSkeleton,
 } from '@trefoil/core';
 import {
+  lockupSceneFromProject,
   sceneFromProject,
   skeletonsFromProject,
   type ProjectStore,
@@ -101,6 +102,8 @@ export function App({ store, registries }: AppProps): JSX.Element {
 
   const [wordmarkBase, setWordmarkBase] = useState<Scene>(EMPTY_SCENE);
   const [markBase, setMarkBase] = useState<Scene>(EMPTY_SCENE);
+  const [sideBase, setSideBase] = useState<Scene>(EMPTY_SCENE);
+  const [stackedBase, setStackedBase] = useState<Scene>(EMPTY_SCENE);
 
   useEffect(() => {
     let cancelled = false;
@@ -108,6 +111,8 @@ export function App({ store, registries }: AppProps): JSX.Element {
       if (cancelled) return;
       setWordmarkBase(sceneFromProject(project, registries));
       setMarkBase(sceneFromProject({ ...project, text: 'o' }, registries));
+      setSideBase(lockupSceneFromProject(project, registries, 'side'));
+      setStackedBase(lockupSceneFromProject(project, registries, 'stacked'));
     };
     const handle = setTimeout(build, 0);
     return () => {
@@ -143,8 +148,9 @@ export function App({ store, registries }: AppProps): JSX.Element {
     [overlays, skeletons, nib],
   );
 
-  const wordmark = useMemo(() => decorate(wordmarkBase), [decorate, wordmarkBase]);
   const mark = useMemo(() => decorate(markBase), [decorate, markBase]);
+  const sideScene = useMemo(() => decorate(sideBase), [decorate, sideBase]);
+  const stackedScene = useMemo(() => decorate(stackedBase), [decorate, stackedBase]);
   const previewUrl = useSceneImage(wordmarkBase);
 
   const template = registries.templates.get(project.templateId);
@@ -382,9 +388,9 @@ export function App({ store, registries }: AppProps): JSX.Element {
               <figcaption>{lockup.label}</figcaption>
               <div className="artboard-stage">
                 {lockup.id === 'side' ? (
-                  <SceneView scene={wordmark} testId="wordmark-defs" />
+                  <SceneView scene={sideScene} testId="side-defs" />
                 ) : (
-                  <img src={previewUrl} alt="" className="artboard-preview" />
+                  <SceneView scene={stackedScene} testId="stacked-defs" />
                 )}
               </div>
             </figure>

@@ -83,14 +83,22 @@ test.describe('generated parameter panels', () => {
   });
 
   test('switches, reorders and edits stages', async ({ page }) => {
-    const firstPath = page.getByTestId('wordmark-defs').locator('path').first();
-    const before = await firstPath.getAttribute('d');
+    const allPaths = page.getByTestId('side-defs').locator('path');
+    const shapeOf = async (): Promise<number> =>
+      allPaths.evaluateAll((nodes) => {
+        const joined = nodes.map((n) => n.getAttribute('d') ?? '').join('|');
+        let hash = joined.length;
+        for (let i = 0; i < joined.length; i++) hash = (hash * 31 + joined.charCodeAt(i)) | 0;
+        return hash;
+      });
+
+    const before = await shapeOf();
 
     await page.getByTestId('stage-enabled-bend').uncheck();
-    await expect(firstPath).not.toHaveAttribute('d', before ?? '');
+    await expect.poll(shapeOf).not.toBe(before);
 
     await page.getByTestId('undo').click();
-    await expect(firstPath).toHaveAttribute('d', before ?? '');
+    await expect.poll(shapeOf).toBe(before);
 
     const order = async (): Promise<string[]> =>
       page.getByTestId('stage-list').locator('li').evaluateAll((nodes) =>

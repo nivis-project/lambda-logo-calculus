@@ -8,18 +8,18 @@ test.describe('randomize and variants', () => {
   });
 
   test('redraws the wordmark and is undone by one press', async ({ page }) => {
-    const first = await page.getByTestId('wordmark-defs').locator('path').first().getAttribute('d');
+    const first = await page.getByTestId('side-defs').locator('path').first().getAttribute('d');
     const before = await page.getByTestId('value-copies').textContent();
 
     await page.getByTestId('randomize').click();
-    await expect(page.getByTestId('wordmark-defs').locator('path').first()).not.toHaveAttribute(
+    await expect(page.getByTestId('side-defs').locator('path').first()).not.toHaveAttribute(
       'd',
       first ?? '',
     );
 
     await page.getByTestId('undo').click();
     await expect(page.getByTestId('value-copies')).toHaveText(before ?? '');
-    await expect(page.getByTestId('wordmark-defs').locator('path').first()).toHaveAttribute(
+    await expect(page.getByTestId('side-defs').locator('path').first()).toHaveAttribute(
       'd',
       first ?? '',
     );
