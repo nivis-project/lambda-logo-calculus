@@ -1,5 +1,5 @@
 import type { PathNode, Scene, SceneNode, Transform } from '@trefoil/core';
-import { FONT_UNITS_PER_EM } from '@trefoil/core';
+import { FONT_UNITS_PER_EM, curveToPathData } from '@trefoil/core';
 
 export const RENDER_SVG_PACKAGE_VERSION = 0 as const;
 
@@ -20,6 +20,9 @@ export function contourToPathData(contour: readonly (readonly [number, number])[
 }
 
 export function pathData(node: PathNode): string {
+  if (node.curves !== undefined) {
+    return node.curves.map((contour) => curveToPathData(contour)).join('');
+  }
   return node.contours.map(contourToPathData).join('');
 }
 

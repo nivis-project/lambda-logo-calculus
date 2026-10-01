@@ -216,3 +216,5 @@ export {
   applyPatch,
   isEmptyPatch,
 } from './overrides/types.js';
+export type { CurveCommand, CurveContour } from './scene/curves.js';
+export { curvePoints, curveToPathData, isWellFormedContour } from './scene/curves.js';

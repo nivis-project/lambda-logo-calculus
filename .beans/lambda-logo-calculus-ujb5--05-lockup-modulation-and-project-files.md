@@ -1,10 +1,11 @@
 ---
 # lambda-logo-calculus-ujb5
 title: 05 Lockup, modulation and project files
-status: todo
+status: completed
 type: milestone
+priority: normal
 created_at: 2026-09-30T22:01:03Z
-updated_at: 2026-09-30T22:01:03Z
+updated_at: 2026-10-01T11:17:20Z
 ---
 
 The wordmark and mark become a logo. Lockups place the mark by its real outline

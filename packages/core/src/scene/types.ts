@@ -1,4 +1,5 @@
 import type { Vec2 } from '../stage/types.js';
+import type { CurveContour } from './curves.js';
 
 export interface PathStyle {
   readonly fill: string;
@@ -15,6 +16,7 @@ export interface Transform {
 export interface PathNode {
   readonly kind: 'path';
   readonly contours: readonly (readonly Vec2[])[];
+  readonly curves?: readonly CurveContour[];
   readonly style: PathStyle;
 }
 
@@ -35,8 +37,14 @@ export interface Scene {
 export function pathNode(
   contours: readonly (readonly Vec2[])[],
   style: PathStyle,
+  curves?: readonly CurveContour[],
 ): PathNode {
-  return { kind: 'path', contours, style };
+  return {
+    kind: 'path',
+    contours,
+    ...(curves === undefined ? {} : { curves }),
+    style,
+  };
 }
 
 export function groupNode(

@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-txdw
 title: Path booleans and curve fitting
-status: todo
+status: completed
 type: epic
 priority: normal
 created_at: 2026-09-30T22:04:36Z
-updated_at: 2026-09-30T22:04:45Z
+updated_at: 2026-10-01T11:37:40Z
 parent: lambda-logo-calculus-yp20
 blocked_by:
     - lambda-logo-calculus-0ocs

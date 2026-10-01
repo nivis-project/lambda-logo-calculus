@@ -141,6 +141,50 @@ snapshots take over as the baseline, and the prototype stops being authoritative
 for anything except reading. The parity suite stays in the repository as the
 record of the port, not as the thing later changes are measured against.
 
+## The export geometry
+
+Two numbers are pinned by a test rather than described, because both are claims
+about output a reader cannot check by eye.
+
+**The fitter stays inside its tolerance.** Every point of every ring lies within
+`DEFAULT_FIT_TOLERANCE` of the fitted path, measured as a distance to the path
+and not to a sample of it. A test asserts it for a circle, for a wobbling ring
+and for the wordmark, and asserts that tightening the tolerance never makes the
+worst deviation larger.
+
+**The tolerance is 0.2 font units, and it is chosen so the file gets smaller.**
+A cubic command costs about three times a line command in path data, so a
+tolerance tight enough to follow every facet produces a larger file than the
+polylines it replaced. Measured against "Hamburgefonstiv" at one copy:
+
+| tolerance | segments | path data | against the polylines |
+| --------- | -------- | --------- | --------------------- |
+| 0.05      | 3000     | 125811    | 1.17x larger          |
+| 0.1       | 2381     | 100378    | 1.07x smaller         |
+| 0.2       | 1974     | 83677     | 1.28x smaller         |
+| 0.5       | 1391     | 59795     | 1.79x smaller         |
+| 1.0       | 936      | 41211     | 2.60x smaller         |
+
+The polylines are 8581 points and 107297 bytes. 0.2 font units is one fiftieth
+of a stroke width; at a 50 mm cap height it is 0.12 mm, under what a press
+holds.
+
+**The boolean engine needs its input snapped.** `polygon-clipping` throws
+"Unable to find segment in SweepLine tree" on some glyph outlines at some
+parameter values, which ADR 0006 named as the risk it was taking. The engine
+snaps every coordinate to a grid before handing it over, at 0.0001 font units
+first and then two coarser steps if that still fails. A property test over
+random amplitude, rotation and copy count is what found it, and is what keeps it
+found.
+
+**What limits the reduction is the stroker, not the fitter.** The outlines are
+faceted: a third of their points turn by more than 15 degrees, with a median
+spacing of half a font unit. A cubic cannot span a corner, so the fitter splits
+at each one. Raising the stroker's sampling would buy more here than tightening
+the fitter, and that belongs to the performance epic rather than this one. The
+figures above are asserted by a test, so a change to the stroker that smooths
+its output shows up as a failing expectation rather than going unnoticed.
+
 ## Coverage
 
 The ship gate enforces:

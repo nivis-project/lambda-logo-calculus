@@ -192,3 +192,57 @@ describe('the SVG renderer', () => {
     }).toThrow(/has not been mounted/);
   });
 });
+
+describe('a path node carrying fitted curves', () => {
+  const curved = {
+    viewBox: [0, 0, 100, 100] as const,
+    root: {
+      kind: 'group' as const,
+      children: [
+        {
+          kind: 'path' as const,
+          contours: [
+            [
+              [0, 0],
+              [10, 0],
+              [10, 10],
+            ] as const,
+          ],
+          curves: [
+            [
+              { kind: 'move' as const, to: [0, 0] as const },
+              {
+                kind: 'cubic' as const,
+                c1: [3, 0] as const,
+                c2: [10, 3] as const,
+                to: [10, 10] as const,
+              },
+              { kind: 'close' as const },
+            ],
+          ],
+          style: { fill: '#000', opacity: 1, fillRule: 'nonzero' as const },
+        },
+      ],
+    },
+  };
+
+  it('draws the curves rather than the polylines', () => {
+    expect(pathData(curved.root.children[0])).toBe('M0.000 0.000C3.000 0.000 10.000 3.000 10.000 10.000Z');
+  });
+
+  it('draws the polylines when there are no curves', () => {
+    expect(pathData(handBuiltScene.root.children[0])).toBe(
+      contourToPathData(handBuiltScene.root.children[0].contours[0]),
+    );
+  });
+
+  it('puts the cubic in the rendered path data', () => {
+    const element = host();
+    const renderer = createSvgRenderer();
+    renderer.mount(element);
+    renderer.draw(curved);
+    const drawn = element.querySelector('path')?.getAttribute('d') ?? '';
+    expect(drawn).toContain('C');
+    expect(element.querySelector('path')?.getAttribute('fill-rule')).toBe('nonzero');
+  });
+});

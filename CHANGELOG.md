@@ -6,6 +6,15 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+- Geometry a designer can hand over. An export unites each pass into real shapes
+  with real holes, so a counter is a hole rather than a fill rule the receiving
+  tool has to agree with, and fits the stroker's polylines to Bezier curves
+  within a stated tolerance. The tolerance is 0.2 font units, chosen because it
+  is the point where the file starts getting smaller rather than larger, and the
+  measurement behind that is in the testing strategy. A property test caught the
+  boolean library losing a segment on real glyph geometry, which is the risk
+  ADR 0006 recorded when it chose that library; ADR 0010 records the snapping
+  that answers it.
 - A project file. Save the logo to disk and open it again, exactly as it was:
   the template and its version, every parameter, the stage list, the modulation
   list, the per-glyph patches, the spacing pairs, the palette, the mark and the

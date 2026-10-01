@@ -15,6 +15,7 @@
     "build": "tsc --build"
   },
   "dependencies": {
-    "@trefoil/core": "workspace:*"
+    "@trefoil/core": "workspace:*",
+    "polygon-clipping": "^0.15.7"
   }
 }
