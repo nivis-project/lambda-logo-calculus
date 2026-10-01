@@ -99,7 +99,7 @@ Write an ADR in `docs/adr/` before every stack or structural choice, using
 `docs/adr/0000-template.md`. Number them in sequence. An ADR that is superseded
 is marked, not deleted.
 
-The choices already made are in ADRs 0001 to 0007. Do not reopen them without
+The choices already made are in ADRs 0001 to 0008. Do not reopen them without
 writing a superseding ADR.
 
 ## Testing

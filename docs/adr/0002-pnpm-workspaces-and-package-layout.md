@@ -1,6 +1,6 @@
 # 0002. pnpm workspaces and the five-package layout
 
-- Status: accepted
+- Status: partly superseded by [0008](0008-templates-depend-on-core.md), which reverses the dependency direction between core and templates. Everything else here still stands.
 - Date: 2026-10-01
 - Change: `openspec/changes/archive/2026-10-01-add-pnpm-workspace-typescript`
 
@@ -33,6 +33,10 @@ apps/studio            panels, canvas, store, history, project files
 Dependencies run one way: `templates` to `core`, `core` to `render-svg` and
 `export`, and all four to `studio`. TypeScript project references mirror that
 graph, so `tsc --build` compiles in dependency order and refuses a cycle.
+
+> This direction is wrong and was reversed by ADR 0008. A template implements an
+> interface the core defines, so the templates package has to depend on the core.
+> The rest of this record is unaffected.
 
 All five packages are created now, empty apart from one exported value each,
 before any of them has real contents.

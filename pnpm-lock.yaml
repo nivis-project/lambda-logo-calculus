@@ -158,11 +158,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/templates
 
-  packages/core:
-    dependencies:
-      '@trefoil/templates':
-        specifier: workspace:*
-        version: link:../templates
+  packages/core: {}
 
   packages/export:
     dependencies:
@@ -176,7 +172,11 @@ importers:
         specifier: workspace:*
         version: link:../core
 
-  packages/templates: {}
+  packages/templates:
+    dependencies:
+      '@trefoil/core':
+        specifier: workspace:*
+        version: link:../core
 
 packages:
 

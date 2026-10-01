@@ -8,6 +8,13 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- The base curve is a registered template rather than a formula written out in
+  four places. The trefoil ships as the first one, with the prototype's nesting
+  mathematics: `perfectFit` over 720 angles and the effective scale the fit
+  slider drives.
+- The prototype's four hidden clamps are now declared safety limits that report
+  a warning naming the limit and both values, instead of a shape that quietly
+  stops responding.
 - Parameters are declared once as data: a definition carries its kind, range,
   default, lock and randomize behaviour, and resolution, validation and
   randomize are all derived from it. Randomize respects locks and draws from a
@@ -33,5 +40,8 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Changed
 
+- `packages/templates` now depends on `packages/core` rather than the reverse,
+  so the core is a leaf and the application does the wiring. ADR 0008 records
+  why; ADR 0002 is marked, not rewritten.
 - Shipping now closes the linked bean inside the gated step, so one commit holds
   the code, the archived change, the changelog entry and the bean file together.
