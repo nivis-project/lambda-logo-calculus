@@ -26,9 +26,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `pnpm --filter @trefoil/studio preview --port ${PORT} --strictPort`,
+    command: `pnpm build && pnpm --filter @trefoil/studio preview --port ${PORT} --strictPort`,
     url: `http://127.0.0.1:${PORT}`,
     reuseExistingServer: false,
-    timeout: 60_000,
+    timeout: 180_000,
   },
 });

@@ -146,24 +146,30 @@ record of the port, not as the thing later changes are measured against.
 Two numbers are pinned by a test rather than described, because both are claims
 about output a reader cannot check by eye.
 
-**The fitter stays inside its tolerance.** Every point of every ring lies within
-`DEFAULT_FIT_TOLERANCE` of the fitted path, measured as a distance to the path
-and not to a sample of it. A test asserts it for a circle, for a wobbling ring
-and for the wordmark, and asserts that tightening the tolerance never makes the
-worst deviation larger.
+**The fitter stays inside its tolerance, in both directions.** Every point of
+every ring lies within `DEFAULT_FIT_TOLERANCE` of the fitted path, and every
+point of the fitted path lies within that tolerance of the ring. The second half
+is the one that matters: a cubic can pass close to every input point and still
+bulge far away between two of them, and measuring only the input points does not
+see it. The fitter checks it by sampling the candidate curve, so it holds itself
+to nine tenths of the tolerance to leave room for what twenty-four samples miss. A test asserts both for a circle, for a wobbling ring, for a ring with a
+spike in it and for the wordmark, and asserts that tightening the tolerance never
+makes either worse.
 
 **The tolerance is 0.2 font units, and it is chosen so the file gets smaller.**
 A cubic command costs about three times a line command in path data, so a
-tolerance tight enough to follow every facet produces a larger file than the
-polylines it replaced. Measured against "Hamburgefonstiv" at one copy:
+tolerance tight enough to follow every facet would produce a larger file than
+the polylines it replaced. The fitter writes a line rather than a cubic wherever
+a span is two points long, which is what keeps the file smaller at every
+tolerance. Measured against "Hamburgefonstiv" at one copy:
 
 | tolerance | segments | path data | against the polylines |
 | --------- | -------- | --------- | --------------------- |
-| 0.05      | 3000     | 125811    | 1.17x larger          |
-| 0.1       | 2381     | 100378    | 1.07x smaller         |
-| 0.2       | 1974     | 83677     | 1.28x smaller         |
-| 0.5       | 1391     | 59795     | 1.79x smaller         |
-| 1.0       | 936      | 41211     | 2.60x smaller         |
+| 0.05      | 3452     | 96703     | 1.11x smaller         |
+| 0.1       | 2804     | 86260     | 1.24x smaller         |
+| 0.2       | 2212     | 76350     | 1.41x smaller         |
+| 0.5       | 1518     | 58804     | 1.82x smaller         |
+| 1.0       | 999      | 42464     | 2.53x smaller         |
 
 The polylines are 8581 points and 107297 bytes. 0.2 font units is one fiftieth
 of a stroke width; at a 50 mm cap height it is 0.12 mm, under what a press

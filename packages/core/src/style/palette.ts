@@ -63,3 +63,38 @@ export function createPaletteRegistry(): Registry<Palette> {
 export function passOpacity(alpha: number): number {
   return Math.min(1, 0.25 + alpha * 1.25);
 }
+
+export type Rgb = readonly [number, number, number];
+
+function hueToChannel(p: number, q: number, t: number): number {
+  const shifted = t < 0 ? t + 1 : t > 1 ? t - 1 : t;
+  if (shifted < 1 / 6) return p + (q - p) * 6 * shifted;
+  if (shifted < 1 / 2) return q;
+  if (shifted < 2 / 3) return p + (q - p) * (2 / 3 - shifted) * 6;
+  return p;
+}
+
+export function rgbOf(color: string): Rgb {
+  const hex = /^#([0-9a-f]{6})$/i.exec(color.trim());
+  if (hex?.[1] !== undefined) {
+    const value = Number.parseInt(hex[1], 16);
+    return [((value >> 16) & 255) / 255, ((value >> 8) & 255) / 255, (value & 255) / 255];
+  }
+
+  const parts = /^hsl\(\s*([-\d.]+)\s+([\d.]+)%\s+([\d.]+)%\s*\)$/i.exec(color.trim());
+  if (parts === null) return [0, 0, 0];
+
+  const hue = wrapHue(Number(parts[1])) / 360;
+  const saturation = Number(parts[2]) / 100;
+  const lightness = Number(parts[3]) / 100;
+
+  if (saturation === 0) return [lightness, lightness, lightness];
+
+  const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+  const p = 2 * lightness - q;
+  return [
+    hueToChannel(p, q, hue + 1 / 3),
+    hueToChannel(p, q, hue),
+    hueToChannel(p, q, hue - 1 / 3),
+  ];
+}

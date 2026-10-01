@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-kk6s
 title: SVG, PNG and PDF exporters
-status: todo
+status: completed
 type: epic
 priority: normal
 created_at: 2026-09-30T22:04:36Z
-updated_at: 2026-09-30T22:04:45Z
+updated_at: 2026-10-01T11:55:10Z
 parent: lambda-logo-calculus-yp20
 blocked_by:
     - lambda-logo-calculus-txdw

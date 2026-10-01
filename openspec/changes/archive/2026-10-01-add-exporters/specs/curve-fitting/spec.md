@@ -1,9 +1,4 @@
-# curve-fitting Specification
-
-## Purpose
-TBD - created by archiving change add-path-booleans-and-fitting. Update Purpose after archive.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: A polyline is fitted to cubic Beziers inside a tolerance
 
@@ -48,34 +43,3 @@ bytes.
 
 - **WHEN** any ring is fitted
 - **THEN** no coordinate of the result is `NaN` or infinite
-
-### Requirement: The tolerance is stated and justified
-
-The default tolerance SHALL be a named constant carrying the reasoning for its
-value, in font units, and SHALL be overridable per export.
-
-It SHALL be chosen so the fitted path data is smaller than the polyline path
-data it replaces. A tolerance tighter than the stroker's own faceting makes the
-file larger rather than smaller, because a cubic command costs about three times
-a line command and cannot span a corner.
-
-#### Scenario: The default is named
-
-- **WHEN** the fitter is used without a tolerance
-- **THEN** the default constant is used
-
-#### Scenario: An export chooses its own
-
-- **WHEN** a tolerance is given
-- **THEN** that value is used instead
-
-### Requirement: A short ring is kept as lines
-
-A ring too short to carry a curve SHALL be emitted as line segments rather than
-fitted, because a fitted curve through three points invents a shape that was
-never there.
-
-#### Scenario: A triangle
-
-- **WHEN** a ring of three points is fitted
-- **THEN** the result is three lines and a close, with no curve

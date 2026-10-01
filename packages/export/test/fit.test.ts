@@ -71,6 +71,30 @@ function wobble(count: number): Vec2[] {
   });
 }
 
+function spiked(count: number): Vec2[] {
+  const ring = circle(count);
+  ring.splice(Math.floor(count / 4), 0, [0, 2]);
+  return ring;
+}
+
+function distanceToRing(point: Vec2, ring: readonly Vec2[]): number {
+  const closed = [...ring, ring[0] ?? [0, 0]];
+  let best = Number.POSITIVE_INFINITY;
+  for (let i = 0; i + 1 < closed.length; i++) {
+    const a = closed[i];
+    const b = closed[i + 1];
+    if (a === undefined || b === undefined) continue;
+    best = Math.min(best, toSegment(point, a, b));
+  }
+  return best;
+}
+
+function worstStray(ring: readonly Vec2[], contour: CurveContour): number {
+  let worst = 0;
+  for (const point of flatten(contour)) worst = Math.max(worst, distanceToRing(point, ring));
+  return worst;
+}
+
 function segmentCount(contour: CurveContour): number {
   return contour.filter((command) => command.kind === 'cubic' || command.kind === 'line').length;
 }
@@ -83,6 +107,19 @@ describe('fitting a ring', () => {
         expect(worstDeviation(ring, fitted)).toBeLessThanOrEqual(tolerance * 1.001);
       }
     }
+  });
+
+  it('does not stray from the input between the points it passes through', () => {
+    for (const ring of [circle(64), spiked(40), spiked(120), wobble(180)]) {
+      for (const tolerance of [0.05, 0.2, 1]) {
+        expect(worstStray(ring, fitRing(ring, tolerance))).toBeLessThanOrEqual(tolerance * 1.001);
+      }
+    }
+  });
+
+  it('writes a span of two points as a line rather than a cubic', () => {
+    const fitted = fitRing(spiked(40), 0.05);
+    expect(fitted.some((command) => command.kind === 'line')).toBe(true);
   });
 
   it('uses far fewer segments than the ring has points', () => {

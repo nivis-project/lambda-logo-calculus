@@ -26,6 +26,7 @@ import { Gallery } from './controls/Gallery.js';
 import { ModulationList } from './controls/ModulationList.js';
 import { GlyphOverrides } from './controls/GlyphOverrides.js';
 import { ProjectFile } from './controls/ProjectFile.js';
+import { ExportPanel } from './controls/ExportPanel.js';
 import { NESTING_PARAMS } from './nestingParams.js';
 import { useStoreState } from './useStore.js';
 import {
@@ -466,6 +467,8 @@ export function App({ store, registries }: AppProps): JSX.Element {
             store.dispatch({ kind: 'setLock', paramId, locked: on });
           }}
         />
+
+        <ExportPanel scene={sideScene} name={project.text} />
 
         <GlyphOverrides
           character={selected}

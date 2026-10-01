@@ -6,6 +6,14 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+- Files a designer can hand over: SVG, PNG at 1x, 2x and 4x, and a single-page
+  vector PDF. Each is one registration against one interface with its own
+  parameter definitions, so the export panel is generated like every other panel
+  rather than written three times. The exported SVG is checked against the
+  preview in a browser, down to each glyph's extent, which is what caught the
+  curve fitter bulging away from the outline between two points it passed close
+  to, and the browser suite now builds what it tests rather than whatever was
+  built last.
 - Geometry a designer can hand over. An export unites each pass into real shapes
   with real holes, so a counter is a hole rather than a fill rule the receiving
   tool has to agree with, and fits the stroker's polylines to Bezier curves

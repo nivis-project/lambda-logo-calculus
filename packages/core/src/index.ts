@@ -136,7 +136,7 @@ export type {
   Transform,
 } from './scene/types.js';
 export { allContours, countNodes, groupNode, pathNode } from './scene/types.js';
-export type { Palette } from './style/palette.js';
+export type { Palette, Rgb } from './style/palette.js';
 export {
   BASE_HUE,
   BUILT_IN_PALETTES,
@@ -147,6 +147,7 @@ export {
   hsl,
   monochrome,
   passOpacity,
+  rgbOf,
   triadic,
   warm,
   wrapHue,

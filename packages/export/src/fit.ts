@@ -122,12 +122,44 @@ function generateCurve(
     alphaRight = chord / 3;
   }
 
+  alphaLeft = Math.min(alphaLeft, chord);
+  alphaRight = Math.min(alphaRight, chord);
+
   return [
     first,
     add(first, scale(leftTangent, alphaLeft)),
     add(last, scale(rightTangent, alphaRight)),
     last,
   ];
+}
+
+const STRAY_SAMPLES = 24;
+const STRAY_MARGIN = 0.9;
+
+function distanceToPolyline(point: Vec2, points: readonly Vec2[]): number {
+  let best = Number.POSITIVE_INFINITY;
+  for (let i = 0; i + 1 < points.length; i++) {
+    const a = points[i];
+    const b = points[i + 1];
+    if (a === undefined || b === undefined) continue;
+    const vx = b[0] - a[0];
+    const vy = b[1] - a[1];
+    const squared = vx * vx + vy * vy;
+    const t =
+      squared === 0
+        ? 0
+        : Math.min(1, Math.max(0, ((point[0] - a[0]) * vx + (point[1] - a[1]) * vy) / squared));
+    best = Math.min(best, Math.hypot(point[0] - (a[0] + t * vx), point[1] - (a[1] + t * vy)));
+  }
+  return best;
+}
+
+function strayError(points: readonly Vec2[], curve: Cubic): number {
+  let worst = 0;
+  for (let i = 1; i < STRAY_SAMPLES; i++) {
+    worst = Math.max(worst, distanceToPolyline(pointOn(curve, i / STRAY_SAMPLES), points));
+  }
+  return worst;
 }
 
 function worstError(
@@ -170,23 +202,20 @@ function fitSegment(
   leftTangent: Vec2,
   rightTangent: Vec2,
   tolerance: number,
-): { readonly curve: Cubic; readonly splitAt: number | null } {
+): { readonly curve: Cubic | null; readonly splitAt: number | null } {
   const first = points[0];
   const last = points[points.length - 1];
   if (first === undefined || last === undefined) throw new Error('no points to fit');
 
-  if (points.length === 2) {
-    const third = length(sub(last, first)) / 3;
-    return {
-      curve: [first, add(first, scale(leftTangent, third)), add(last, scale(rightTangent, third)), last],
-      splitAt: null,
-    };
-  }
+  if (points.length === 2) return { curve: null, splitAt: null };
+
+  const accepted = (candidate: Cubic, error: number): boolean =>
+    error <= tolerance && strayError(points, candidate) <= tolerance * STRAY_MARGIN;
 
   let parameters = chordParameters(points);
   let curve = generateCurve(points, parameters, leftTangent, rightTangent);
   let { error, index } = worstError(points, parameters, curve);
-  if (error <= tolerance) return { curve, splitAt: null };
+  if (accepted(curve, error)) return { curve, splitAt: null };
 
   if (error <= tolerance * 4) {
     for (let attempt = 0; attempt < MAX_REPARAMETERISATIONS; attempt++) {
@@ -196,12 +225,14 @@ function fitSegment(
       curve = next;
       error = measured.error;
       index = measured.index;
-      if (error <= tolerance) return { curve, splitAt: null };
+      if (accepted(curve, error)) return { curve, splitAt: null };
     }
   }
 
-  if (index <= 0 || index >= points.length - 1) return { curve, splitAt: null };
-  return { curve, splitAt: index };
+  const middle = Math.floor(points.length / 2);
+  const splitAt = index > 0 && index < points.length - 1 ? index : middle;
+  if (splitAt <= 0 || splitAt >= points.length - 1) return { curve, splitAt: null };
+  return { curve, splitAt };
 }
 
 interface Pending {
@@ -210,18 +241,27 @@ interface Pending {
   readonly rightTangent: Vec2;
 }
 
-function fitCubics(
+function commandFor(curve: Cubic | null, to: Vec2): CurveCommand {
+  return curve === null
+    ? { kind: 'line', to }
+    : { kind: 'cubic', c1: curve[1], c2: curve[2], to: curve[3] };
+}
+
+function fitCommands(
   points: readonly Vec2[],
   leftTangent: Vec2,
   rightTangent: Vec2,
   tolerance: number,
-): Cubic[] {
-  const cubics: Cubic[] = [];
+): CurveCommand[] {
+  const commands: CurveCommand[] = [];
   const stack: Pending[] = [{ points, leftTangent, rightTangent }];
 
   while (stack.length > 0) {
     const pending = stack.pop();
     if (pending === undefined) break;
+
+    const end = pending.points[pending.points.length - 1];
+    if (end === undefined) continue;
 
     const { curve, splitAt } = fitSegment(
       pending.points,
@@ -231,14 +271,14 @@ function fitCubics(
     );
 
     if (splitAt === null) {
-      cubics.push(curve);
+      commands.push(commandFor(curve, end));
       continue;
     }
 
     const before = pending.points[splitAt - 1];
     const after = pending.points[splitAt + 1];
     if (before === undefined || after === undefined) {
-      cubics.push(curve);
+      commands.push(commandFor(curve, end));
       continue;
     }
 
@@ -255,7 +295,7 @@ function fitCubics(
     });
   }
 
-  return cubics;
+  return commands;
 }
 
 function distinct(ring: readonly Vec2[]): Vec2[] {
@@ -292,11 +332,10 @@ export function fitRing(ring: readonly Vec2[], tolerance = DEFAULT_FIT_TOLERANCE
   if (before === undefined || after === undefined) return [];
 
   const seam = normalise(sub(after, before));
-  const cubics = fitCubics(loop, seam, scale(seam, -1), tolerance);
 
   return [
     { kind: 'move', to: first },
-    ...cubics.map((curve): CurveCommand => ({ kind: 'cubic', c1: curve[1], c2: curve[2], to: curve[3] })),
+    ...fitCommands(loop, seam, scale(seam, -1), tolerance),
     { kind: 'close' },
   ];
 }

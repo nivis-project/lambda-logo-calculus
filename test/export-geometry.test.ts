@@ -157,9 +157,9 @@ describe('fitting a real wordmark', () => {
 
   it('is measured at the figures the testing strategy records', () => {
     expect(measured.points).toBe(8581);
-    expect(measured.segments).toBe(1974);
+    expect(measured.segments).toBe(2212);
     expect(measured.polylineBytes).toBe(107297);
-    expect(measured.curveBytes).toBe(83677);
+    expect(measured.curveBytes).toBe(76350);
     expect(DEFAULT_FIT_TOLERANCE).toBe(0.2);
   });
 
