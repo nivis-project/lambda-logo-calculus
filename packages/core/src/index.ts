@@ -30,7 +30,7 @@ export type {
   ShapeTemplate,
   TemplateSafety,
 } from './template/types.js';
-export { createTemplateRegistry } from './template/registry.js';
+export { createTemplateRegistry, symmetryOf } from './template/registry.js';
 export { maxRadius, pointAt, radiusAt, sampleCurve } from './template/sample.js';
 export type { NestingInput, NestingResult } from './template/nesting.js';
 export {

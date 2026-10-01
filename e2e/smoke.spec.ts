@@ -6,7 +6,7 @@ test('the studio renders the wordmark from the ported pipeline', async ({ page }
   await expect(page).toHaveTitle('Trefoil Studio');
 
   const status = page.locator('#status');
-  await expect(status).toContainText('Templates registered: 1');
+  await expect(status).toContainText('Templates registered: 5');
   await expect(status).toContainText('perfectFit: 0.6');
   await expect(status).toContainText('Copies: 6');
   await expect(status).toContainText('Glyph groups: 13');

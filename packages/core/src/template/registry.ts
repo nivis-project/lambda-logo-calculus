@@ -1,5 +1,11 @@
+import type { ParamValues } from '../params/types.js';
 import { RegistryError, createRegistry, type Registry } from '../registry/registry.js';
 import type { ShapeTemplate } from './types.js';
+
+export function symmetryOf(template: ShapeTemplate, params: ParamValues): number | undefined {
+  if (template.symmetryFor !== undefined) return template.symmetryFor(params);
+  return template.symmetry;
+}
 
 export function createTemplateRegistry(): Registry<ShapeTemplate> {
   const inner = createRegistry<ShapeTemplate>('template');
@@ -23,6 +29,12 @@ export function createTemplateRegistry(): Registry<ShapeTemplate> {
         throw new RegistryError(
           'template',
           `module "${template.id}" declares a non-integer symmetry`,
+        );
+      }
+      if (template.symmetry !== undefined && template.symmetryFor !== undefined) {
+        throw new RegistryError(
+          'template',
+          `module "${template.id}" declares both a fixed symmetry and a symmetryFor function`,
         );
       }
       inner.register(template);

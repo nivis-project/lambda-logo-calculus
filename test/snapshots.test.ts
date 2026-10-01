@@ -14,17 +14,25 @@ import {
   type Scene,
 } from '@trefoil/core';
 import { builtInShapeTemplates, latinGlyphSet } from '@trefoil/templates';
-import { contourToPathData } from '@trefoil/render-svg';
+import type { Vec2 } from '@trefoil/core';
+
+function round(contour: readonly Vec2[]): string {
+  if (contour.length === 0) return '';
+  return `${contour
+    .map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`)
+    .join('')}Z`;
+}
 
 const DEG = Math.PI / 180;
 export const TEST_STRING = 'Hamburgefonstiv 0123';
+export const SNAPSHOT_COPIES = 2;
 
 function sceneToSvg(scene: Scene): string {
   const render = (node: Scene['root'] | Scene['root']['children'][number], depth: number): string => {
     const pad = '  '.repeat(depth);
     if (node.kind === 'path') {
       const rule = node.style.fillRule === undefined ? '' : ` fill-rule="${node.style.fillRule}"`;
-      return `${pad}<path d="${node.contours.map(contourToPathData).join('')}" fill="${node.style.fill}" opacity="${node.style.opacity}"${rule}/>`;
+      return `${pad}<path d="${node.contours.map(round).join('')}" fill="${node.style.fill}" opacity="${node.style.opacity}"${rule}/>`;
     }
     const transform =
       node.transform === undefined
@@ -66,7 +74,7 @@ function sceneFor(templateId: string): Scene {
     template,
     templateParams: values,
     rotation,
-    nesting: computeNesting({ template, params: values, rotation, copies: 6, fit: 0 }),
+    nesting: computeNesting({ template, params: values, rotation, copies: SNAPSHOT_COPIES, fit: 0 }),
     modulation: prototypeModulation({ amplitude, fit: 0, metrics: GRID }),
     stages: createStageRegistry(),
     ending: roundEnding,
@@ -87,6 +95,14 @@ describe('golden snapshots', () => {
 
   it('renders the same SVG on every run', () => {
     expect(sceneToSvg(sceneFor('trefoil'))).toBe(sceneToSvg(sceneFor('trefoil')));
+  });
+
+  it('snapshots at two copies, which is enough to catch a geometry change', () => {
+    expect(SNAPSHOT_COPIES).toBe(2);
+    const scene = sceneFor('trefoil');
+    for (const group of scene.root.children) {
+      if (group.kind === 'group') expect(group.children).toHaveLength(SNAPSHOT_COPIES);
+    }
   });
 
   it('uses a test string that exercises the alphabet', () => {

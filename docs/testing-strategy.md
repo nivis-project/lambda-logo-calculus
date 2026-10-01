@@ -53,8 +53,13 @@ A snapshot changing is not a failure by itself. It is a question: was this
 intended?
 
 Snapshots live in `test/snapshots/` and are written by `test/snapshots.test.ts`.
-They are large, because the stroker emits dense polylines; the curve fitter in
-milestone 06 will shrink them considerably.
+
+They are rendered at **two copies**, not the six the studio defaults to, and at
+two decimal places. A geometry regression shows up identically at two copies as
+at six, because every stage runs the same way for each; six copies is three
+times the bytes for no extra signal. Even so they are large, because the stroker
+emits dense polylines. The curve fitter in milestone 06 will shrink them
+considerably.
 
 **Approving a snapshot change:**
 

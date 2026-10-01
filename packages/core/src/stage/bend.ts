@@ -58,7 +58,8 @@ export function bendRun(run: Polyline, context: StageContext): Polyline {
   const factor = num(context, 'factor', 0.22);
   const threshold = num(context, 'threshold', 8);
   const steps = Math.max(2, Math.round(num(context, 'samples', 12)));
-  const lobes = context.template.symmetry ?? 3;
+  const lobes =
+    context.template.symmetryFor?.(context.templateParams) ?? context.template.symmetry ?? 3;
   const amplitude = guardedAmplitude(context);
 
   const first = run[0];

@@ -8,6 +8,10 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- Four more base curves: rose, superellipse, supershape and rounded polygon. The
+  trefoil is the rose at three lobes, which is now a test rather than a claim.
+- A template's symmetry can depend on its own parameters, so the rose follows its
+  lobe count and the polygon its side count.
 - The port is measured, not claimed. The prototype is run in a real browser and
   its output compared against the core across fifteen settings. The worst
   difference is 0.007 font units, which is the prototype's own two-decimal

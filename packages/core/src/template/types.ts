@@ -19,6 +19,7 @@ export interface TemplateSafety {
 export interface ShapeTemplate extends Registered {
   readonly kind: 'polar' | 'parametric';
   readonly symmetry?: number;
+  symmetryFor?(params: ParamValues): number;
   readonly safety: TemplateSafety;
   radius?(theta: number, params: ParamValues): number;
   point?(t: number, params: ParamValues): Point;
