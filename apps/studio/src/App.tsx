@@ -23,6 +23,7 @@ import { SceneView, sceneToDataUrl, useSceneImage } from './SceneSymbol.js';
 import { ParamPanel } from './controls/ParamPanel.js';
 import { StageList } from './controls/StageList.js';
 import { Gallery } from './controls/Gallery.js';
+import { ModulationList } from './controls/ModulationList.js';
 import { NESTING_PARAMS } from './nestingParams.js';
 import { useStoreState } from './useStore.js';
 import {
@@ -449,6 +450,11 @@ export function App({ store, registries }: AppProps): JSX.Element {
           onLock={(paramId, on) => {
             store.dispatch({ kind: 'setLock', paramId, locked: on });
           }}
+        />
+
+        <ModulationList
+          entries={project.modulation}
+          onChange={(entries) => { store.dispatch({ kind: 'setModulation', entries }); }}
         />
 
         <StageList

@@ -1,7 +1,7 @@
 import type { ParamValues } from '../params/types.js';
 import type { GlyphSet, GridMetrics } from '../glyph/types.js';
 import { glyphFor } from '../glyph/registry.js';
-import { DEFAULT_STAGE_LIST, runStages } from '../stage/pipeline.js';
+import { DEFAULT_STAGE_LIST, runStages, type StageParamOverrides } from '../stage/pipeline.js';
 import type { SkeletonStage, StageContext, StageListEntry } from '../stage/types.js';
 import type { Registry } from '../registry/registry.js';
 import type { ShapeTemplate } from '../template/types.js';
@@ -15,6 +15,17 @@ import { passOpacity } from '../style/palette.js';
 import { advanceOf } from '../layout/text.js';
 import { groupNode, pathNode, type GroupNode, type Scene, type SceneNode } from './types.js';
 
+export interface PerGlyphModulation {
+  (
+    charIndex: number,
+    charCount: number,
+  ): {
+    readonly widthFactor: number;
+    readonly xHeight: number;
+    readonly stageParams?: StageParamOverrides;
+  };
+}
+
 export interface SceneInput {
   readonly text: string;
   readonly glyphs: GlyphSet;
@@ -24,6 +35,7 @@ export interface SceneInput {
   readonly rotation: number;
   readonly nesting: NestingResult;
   readonly modulation: { readonly widthFactor: number; readonly xHeight: number };
+  readonly modulationFor?: PerGlyphModulation;
   readonly stages: Registry<SkeletonStage>;
   readonly stageList?: readonly StageListEntry[];
   readonly ending: Ending;
@@ -35,13 +47,24 @@ export interface SceneInput {
 }
 
 export function buildScene(input: SceneInput): Scene {
-  const stageContext: Omit<StageContext, 'params'> = {
-    template: input.template,
-    templateParams: input.templateParams,
-    rotation: input.rotation,
-    nesting: input.nesting,
-    metrics: input.metrics,
-    modulation: input.modulation,
+  const characters = Array.from(input.text);
+  const charCount = Math.max(1, characters.filter((c) => c !== ' ').length);
+
+  const modulationAt = (
+    charIndex: number,
+  ): { widthFactor: number; xHeight: number; stageParams?: StageParamOverrides } =>
+    input.modulationFor?.(charIndex, charCount) ?? input.modulation;
+
+  const contextFor = (charIndex: number): Omit<StageContext, 'params'> => {
+    const { widthFactor, xHeight } = modulationAt(charIndex);
+    return {
+      template: input.template,
+      templateParams: input.templateParams,
+      rotation: input.rotation,
+      nesting: input.nesting,
+      metrics: input.metrics,
+      modulation: { widthFactor, xHeight },
+    };
   };
 
   const layout = {
@@ -70,18 +93,21 @@ export function buildScene(input: SceneInput): Scene {
   );
 
   let cursor = 0;
-  for (const character of input.text) {
+  let charIndex = -1;
+  for (const character of characters) {
     const advance = advanceOf(character, layout);
     if (character === ' ') {
       cursor += advance;
       continue;
     }
 
+    charIndex++;
     const skeleton = runStages(
       glyphFor(input.glyphs, character),
       input.stageList ?? DEFAULT_STAGE_LIST,
       input.stages,
-      stageContext,
+      contextFor(charIndex),
+      modulationAt(charIndex).stageParams ?? {},
     );
 
     const passes: SceneNode[] = [];

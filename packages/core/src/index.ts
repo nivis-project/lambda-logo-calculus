@@ -87,6 +87,7 @@ export {
   prototypeModulation,
   remapY,
 } from './stage/proportions.js';
+export type { StageParamOverrides } from './stage/pipeline.js';
 export {
   BUILT_IN_STAGES,
   DEFAULT_STAGE_LIST,
@@ -163,7 +164,7 @@ export {
   sideLockup,
   stackedLockup,
 } from './layout/registry.js';
-export type { SceneInput } from './scene/build.js';
+export type { PerGlyphModulation, SceneInput } from './scene/build.js';
 export { buildScene } from './scene/build.js';
 
 export type { Token, TokenKind } from './formula/tokenise.js';
@@ -188,3 +189,22 @@ export {
   POLAR_VARIABLE,
   buildCustomTemplate,
 } from './formula/template.js';
+
+export type {
+  ModulationCurve,
+  ModulationEntry,
+  ModulationResponse,
+  ModulationSource,
+  ModulationTarget,
+  NamedTransfer,
+  NestingField,
+} from './modulation/types.js';
+export { CURVES, CURVE_NAMES, applyCurve } from './modulation/types.js';
+export type { ModulationContext, ModulationResult, SourceResult } from './modulation/evaluate.js';
+export {
+  PROTOTYPE_PRESET,
+  evaluateModulation,
+  prototypeWidthFactor,
+  prototypeXHeight,
+  sourceValue,
+} from './modulation/evaluate.js';

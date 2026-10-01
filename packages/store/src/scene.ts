@@ -10,7 +10,7 @@ import {
   boundsOfScene,
   glyphFor,
   groupNode,
-  prototypeModulation,
+  evaluateModulation,
   sideLockup,
   stackedLockup,
   resolveParams,
@@ -91,7 +91,6 @@ export function skeletonsFromProject(
   const template = registries.templates.get(project.templateId);
   const { values } = resolveParams(template.params, project.templateParams);
   const rotation = project.rotation * DEG;
-  const amplitude = typeof values['A'] === 'number' ? values['A'] : 3;
   const glyphs = registries.glyphSets.get(registries.glyphSetId);
 
   const context = {
@@ -106,7 +105,22 @@ export function skeletonsFromProject(
       fit: project.fit,
     }),
     metrics: GRID,
-    modulation: prototypeModulation({ amplitude, fit: project.fit, metrics: GRID }),
+    modulation: evaluateModulation(project.modulation, {
+      templateDefs: template.params,
+      templateParams: values,
+      nesting: {
+        copies: project.copies,
+        rotation: project.rotation,
+        fit: project.fit,
+        alpha: project.alpha,
+      },
+      copyIndex: 0,
+      copyCount: project.copies,
+      charIndex: 0,
+      charCount: Math.max(1, Array.from(project.text).length),
+      seed: project.seed,
+      metrics: GRID,
+    }).modulation,
   };
 
   return Array.from(project.text)
@@ -134,7 +148,24 @@ export function sceneFromProject(project: ProjectState, registries: SceneRegistr
 
   const join = project.joinId === null ? undefined : registries.joins.get(project.joinId);
   const glyphs: GlyphSet = registries.glyphSets.get(registries.glyphSetId);
-  const amplitude = typeof values['A'] === 'number' ? values['A'] : 3;
+  const modulationContext = {
+    templateDefs: template.params,
+    templateParams: values,
+    nesting: {
+      copies: project.copies,
+      rotation: project.rotation,
+      fit: project.fit,
+      alpha: project.alpha,
+    },
+    copyIndex: 0,
+    copyCount: project.copies,
+    charIndex: 0,
+    charCount: Math.max(1, Array.from(project.text).length),
+    seed: project.seed,
+    metrics: GRID,
+  };
+
+  const { modulation } = evaluateModulation(project.modulation, modulationContext);
 
   return buildScene({
     text: project.text,
@@ -144,7 +175,15 @@ export function sceneFromProject(project: ProjectState, registries: SceneRegistr
     templateParams: values,
     rotation,
     nesting,
-    modulation: prototypeModulation({ amplitude, fit: project.fit, metrics: GRID }),
+    modulation,
+    modulationFor: (charIndex, charCount) => {
+      const evaluated = evaluateModulation(project.modulation, {
+        ...modulationContext,
+        charIndex,
+        charCount,
+      });
+      return { ...evaluated.modulation, stageParams: evaluated.stageParams };
+    },
     stages: registries.stages,
     stageList: project.stages,
     ending,

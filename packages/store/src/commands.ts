@@ -4,6 +4,7 @@ import {
   resolveParams,
   type ParamDef,
   type ParamValue,
+  type ModulationEntry,
   type ParamValues,
   type StageListEntry,
 } from '@trefoil/core';
@@ -25,6 +26,7 @@ export type Command =
   | { readonly kind: 'setMark'; readonly mark: Partial<MarkState> }
   | { readonly kind: 'setLock'; readonly paramId: string; readonly locked: boolean }
   | { readonly kind: 'setSeed'; readonly seed: string }
+  | { readonly kind: 'setModulation'; readonly entries: readonly ModulationEntry[] }
   | {
       readonly kind: 'randomize';
       readonly seed: string;
@@ -129,6 +131,10 @@ function reduce(draft: ProjectState, command: Command): void {
       mutable.seed = command.seed;
       return;
 
+    case 'setModulation':
+      mutable.modulation = command.entries.map((entry) => ({ ...entry }));
+      return;
+
     case 'randomize': {
       const locked = new Set(mutable.locked);
 
@@ -200,6 +206,7 @@ const KINDS = new Set<string>([
   'setMark',
   'setLock',
   'setSeed',
+  'setModulation',
   'randomize',
   'replaceState',
 ]);

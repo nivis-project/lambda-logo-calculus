@@ -6,6 +6,11 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+- The prototype's two hidden links are visible and editable. The amplitude
+  driving letter width and the fit size driving the x-height are now two entries
+  in a modulation list a designer can retarget, weaken or delete. A new entry can
+  drive any stage parameter from the character's position in the word or a
+  seeded random value.
 - A logo, not just a wordmark. Lockups are registered modules returning
   placements: the mark beside the text or centred above it, sized against the
   text block and enlarged 6% optically. The mark is measured by the geometry it

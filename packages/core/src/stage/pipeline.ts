@@ -33,17 +33,23 @@ export function createStageRegistry(): Registry<SkeletonStage> {
   return registry;
 }
 
+export type StageParamOverrides = Readonly<
+  Record<string, Readonly<Record<string, number>>>
+>;
+
 export function runStages(
   glyph: GlyphSkeleton,
   list: readonly StageListEntry[],
   registry: Registry<SkeletonStage>,
   context: Omit<StageContext, 'params'>,
+  overrides: StageParamOverrides = {},
 ): WorkingSkeleton {
   let working = emptyWorking(glyph.advance, glyph.parts);
 
   for (const entry of list) {
     const stage = registry.get(entry.id);
-    const params = resolveParams(stage.params, entry.params ?? {}).values;
+    const declared = { ...(entry.params ?? {}), ...(overrides[entry.id] ?? {}) };
+    const params = resolveParams(stage.params, declared).values;
     const stageContext: StageContext = { ...context, params };
 
     if (entry.enabled) {

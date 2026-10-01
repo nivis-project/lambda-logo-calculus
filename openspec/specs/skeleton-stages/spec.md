@@ -163,13 +163,9 @@ the context's modulation, and remap every y coordinate piecewise: unchanged at
 or below the baseline, scaled linearly from the baseline to the modulated
 x-height, scaled linearly from there to the cap-height, and unchanged above it.
 
-The prototype's links are the default source of those values: the width factor
-is `0.78 + 0.5 (1 - e^-((A-1)/4))` and the modulated x-height is
-`min(capHeight - 16, xHeight (1 + 0.22 fit))`.
-
-The headroom term is defensive. Across the fit slider's own range the gain term
-never reaches it, so the cap only binds for a fit value the slider cannot
-produce.
+The stage SHALL read both values from the context. It SHALL NOT compute them
+from the amplitude or the fit size itself; the modulation list does that, and the
+prototype's two links ship as its default preset.
 
 #### Scenario: The baseline does not move
 
@@ -202,6 +198,11 @@ produce.
 - **WHEN** the Proportions stage is disabled
 - **THEN** the width factor is 1 and the x-height is unmodulated, so every
   coordinate passes through unchanged
+
+#### Scenario: The modulation list is empty
+
+- **WHEN** no modulation entry targets the width factor or the x-height
+- **THEN** the stage receives a width factor of 1 and the grid's own x-height
 
 ### Requirement: Every tunable value is a named parameter
 
@@ -254,3 +255,18 @@ so no gap appears between them.
 
 - **WHEN** the threshold is set to 180 degrees
 - **THEN** no run is split
+
+### Requirement: A stage parameter can be modulated per glyph
+
+The stage pipeline SHALL accept per-stage parameter overrides alongside the
+stage list, and SHALL merge them over the values the stage list declares.
+
+#### Scenario: A stage parameter is overridden
+
+- **WHEN** the pipeline is given an override for a stage's parameter
+- **THEN** that stage runs with the overridden value
+
+#### Scenario: No override is given
+
+- **WHEN** no override is given for a stage
+- **THEN** it runs with the values its list entry declares
