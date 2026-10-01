@@ -119,3 +119,34 @@ export {
 } from './stroke/joins.js';
 export type { GlyphOutline, OutlineOptions, RenderStyle } from './stroke/outline.js';
 export { outlineSkeleton } from './stroke/outline.js';
+
+export type {
+  GroupNode,
+  PathNode,
+  PathStyle,
+  Scene,
+  SceneNode,
+  Transform,
+} from './scene/types.js';
+export { allContours, countNodes, groupNode, pathNode } from './scene/types.js';
+export type { Palette } from './style/palette.js';
+export {
+  BASE_HUE,
+  BUILT_IN_PALETTES,
+  analogous,
+  complementary,
+  cool,
+  createPaletteRegistry,
+  hsl,
+  monochrome,
+  passOpacity,
+  triadic,
+  warm,
+  wrapHue,
+} from './style/palette.js';
+export type { LayoutMetrics, WrapResult } from './layout/text.js';
+export { advanceOf, widthOf, wrapText } from './layout/text.js';
+export type { LockupInput, LockupResult, MarkBounds, MarkSettings } from './layout/lockup.js';
+export { OPTICAL_ENLARGEMENT, layoutLockup } from './layout/lockup.js';
+export type { SceneInput } from './scene/build.js';
+export { buildScene } from './scene/build.js';

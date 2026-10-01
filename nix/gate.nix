@@ -8,7 +8,7 @@ let
   # This hash covers the whole resolved dependency tree. Any change to
   # package.json or pnpm-lock.yaml must update it in the same OpenSpec change,
   # or the gate fails with the value to paste here.
-  pnpmDepsHash = "sha256-+HlTL0M9Y/OHClLYFwd3bV3FZYm9+k/1YaWdIIZgWHc=";
+  pnpmDepsHash = "sha256-/RjLGWq2V8GOeeNrIvZZ71YNz8d1m4fTPc+4re8aTyg=";
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "trefoil-studio-gate";

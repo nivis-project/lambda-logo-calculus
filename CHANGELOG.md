@@ -8,6 +8,14 @@ All notable changes to Trefoil Studio are recorded here. The format follows
 
 ### Added
 
+- The pipeline runs end to end. Parameters go in at the top and a wordmark comes
+  out on screen, drawn with the base curve as the pen.
+- The scene graph: plain, serialisable nodes that renderers and exporters read
+  and nothing writes back to. No masks, and ids assigned by the renderer rather
+  than a global counter.
+- All six palettes with the prototype's formulas, line wrapping, and a lockup
+  that sizes the mark against the text block and stacks it when space runs out.
+- An SVG renderer that reads only the scene graph.
 - Letters now have width. The support-function stroker turns a skeleton into an
   outline, and the base curve can act as the pen, so the same shape that draws
   the mark decides how thick each letter is in each direction.

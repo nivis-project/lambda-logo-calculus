@@ -2,8 +2,22 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    include: ['packages/*/test/**/*.test.ts', 'test/**/*.test.ts'],
-    environment: 'node',
+    projects: [
+      {
+        test: {
+          name: 'node',
+          include: ['packages/core/test/**/*.test.ts', 'packages/templates/test/**/*.test.ts', 'packages/export/test/**/*.test.ts', 'test/**/*.test.ts'],
+          environment: 'node',
+        },
+      },
+      {
+        test: {
+          name: 'dom',
+          include: ['packages/render-svg/test/**/*.test.ts'],
+          environment: 'happy-dom',
+        },
+      },
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json-summary'],
