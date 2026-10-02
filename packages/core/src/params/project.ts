@@ -1,0 +1,137 @@
+import type { ParamDef } from './types.js';
+
+// The ranges milestone 02 recorded, declared once. The studio reads them; it
+// does not hold a range, a step or a default of its own.
+export const NESTING_PARAMS: readonly ParamDef[] = [
+  {
+    id: 'copies',
+    label: 'Copies',
+    kind: 'int',
+    min: 1,
+    max: 12,
+    step: 1,
+    default: 6,
+    lockable: true,
+    randomize: { min: 2, max: 10 },
+    group: 'Shape',
+  },
+  {
+    id: 'rotation',
+    label: 'Rotation per copy',
+    kind: 'angle',
+    min: 0,
+    max: 180,
+    step: 1,
+    default: 24,
+    lockable: true,
+    randomize: { min: 5, max: 120 },
+    group: 'Shape',
+  },
+  {
+    id: 'fit',
+    label: 'Fit size',
+    kind: 'number',
+    min: -1,
+    max: 1,
+    step: 0.1,
+    default: 0,
+    lockable: true,
+    randomize: { min: -0.5, max: 0.2 },
+    group: 'Shape',
+  },
+];
+
+export function appearanceParams(
+  paletteIds: readonly string[],
+  endingIds: readonly string[],
+): readonly ParamDef[] {
+  return [
+    {
+      id: 'alpha',
+      label: 'Transparency',
+      kind: 'number',
+      min: 0.05,
+      max: 0.6,
+      step: 0.01,
+      default: 0.22,
+      lockable: true,
+      randomize: { min: 0.12, max: 0.4 },
+      group: 'Letters',
+    },
+    {
+      id: 'paletteId',
+      label: 'Colour palette',
+      kind: 'enum',
+      options: paletteIds,
+      default: 'Analogous',
+      lockable: true,
+      group: 'Letters',
+    },
+    {
+      id: 'endingId',
+      label: 'Stroke endings',
+      kind: 'enum',
+      options: endingIds,
+      default: 'round',
+      lockable: true,
+      group: 'Letters',
+    },
+    {
+      id: 'shapePen',
+      label: 'Shape as pen',
+      kind: 'bool',
+      default: true,
+      lockable: false,
+      randomize: false,
+      group: 'Letters',
+    },
+  ];
+}
+
+export const MARK_PARAMS: readonly ParamDef[] = [
+  {
+    id: 'markOn',
+    label: 'Shape before the text',
+    kind: 'bool',
+    default: true,
+    lockable: false,
+    randomize: false,
+    group: 'Mark',
+  },
+  {
+    id: 'markDistance',
+    label: 'Distance to text',
+    kind: 'number',
+    min: -1,
+    max: 1,
+    step: 0.05,
+    default: 0,
+    lockable: false,
+    randomize: false,
+    group: 'Mark',
+  },
+  {
+    id: 'markHeight',
+    label: 'Height',
+    kind: 'number',
+    min: -1,
+    max: 1,
+    step: 0.05,
+    default: 0,
+    lockable: false,
+    randomize: false,
+    group: 'Mark',
+  },
+  {
+    id: 'markSize',
+    label: 'Size',
+    kind: 'number',
+    min: 0.5,
+    max: 2,
+    step: 0.05,
+    default: 1,
+    lockable: false,
+    randomize: false,
+    group: 'Mark',
+  },
+];

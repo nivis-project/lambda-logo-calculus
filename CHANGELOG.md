@@ -10,6 +10,17 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Added
 
+- Sliders, and every other control. The panel is generated from the parameter
+  declarations, so a control's range, step and default come from the parameter
+  and the studio holds none of its own. Adding a parameter puts a control on
+  the page; there is nothing to write by hand.
+- A lock beside every lockable parameter, and a Randomize that respects it. The
+  randomizing runs off the project's seed, so a variant can be reached again
+  from the seed that made it, and the seed advances on every press.
+- A reset beside every control, back to the parameter's declared default.
+- Switches for the four skeleton stages, and each stage's own parameters, named
+  apart from another stage's so two stages can both call something "samples".
+  They sit behind an Advanced toggle, out of the way until they are asked for.
 - There is something to open. A studio page that draws the logo from the scene
   graph and redraws when the text changes, with the mark beside the words. It
   holds no geometry of its own: it resolves what was chosen and hands it to the

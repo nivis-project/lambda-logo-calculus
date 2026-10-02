@@ -159,3 +159,4 @@ export type { Modulated } from './style/modulation.js';
 export { X_HEIGHT_HEADROOM, X_HEIGHT_REACH, modulate } from './style/modulation.js';
 export type { Logo, LogoInput } from './scene/logo.js';
 export { buildLogo, markBounds, markContours } from './scene/logo.js';
+export { MARK_PARAMS, NESTING_PARAMS, appearanceParams } from './params/project.js';

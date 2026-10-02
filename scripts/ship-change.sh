@@ -37,7 +37,9 @@ git add -A
 
 echo "==> [3/6] gate: nix flake check, then the browser suite"
 nix flake check
-pnpm e2e
+# Chromium cannot run in the Nix sandbox, so the browser suite runs in the dev
+# shell. The script may be called from outside it.
+if command -v pnpm >/dev/null 2>&1; then pnpm e2e; else nix develop -c pnpm e2e; fi
 
 echo "==> [4/6] archive OpenSpec change: ${CHANGE}"
 openspec archive "${CHANGE}" --yes
