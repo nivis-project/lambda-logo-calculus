@@ -10,6 +10,19 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Added
 
+- The whole alphabet is data: 69 glyph skeletons of strokes, bowls, dots and cut
+  regions on a shared grid. A glyph no longer depends on the amplitude, the
+  rotation or which switches are on, because an arc is stored as a centre, two
+  radii and two angles rather than as points somebody already sampled with the
+  parameters that happened to be in force.
+- The alphabet is extracted from the prototype rather than retyped, and a test
+  re-runs the extraction and compares, so the two cannot drift apart. The
+  extraction caught something a careful transcription would have missed: three
+  glyphs splice a second arc on by dropping the point the two share, and that is
+  now recorded on the arc rather than lost.
+- A glyph set is validated when it is registered, so a malformed glyph is
+  refused where it is added rather than where it is drawn, and an unknown
+  character falls back to a notdef instead of breaking the render.
 - The base curve and the nesting mathematics, agreeing with the prototype's own
   readouts across all 27 recorded settings: the fit, the effective scale and the
   smallest copy, to the three decimals it displays.

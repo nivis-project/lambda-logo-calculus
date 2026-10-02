@@ -1,10 +1,11 @@
 ---
 # lambda-logo-calculus-jix4
 title: The grid and the alphabet as data
-status: todo
+status: completed
 type: epic
+priority: normal
 created_at: 2026-10-02T11:09:09Z
-updated_at: 2026-10-02T11:09:09Z
+updated_at: 2026-10-02T12:00:41Z
 parent: lambda-logo-calculus-bmm5
 ---
 

@@ -41,3 +41,21 @@ export {
   perfectFit,
 } from './template/nesting.js';
 export { createTemplateRegistry } from './template/registry.js';
+
+export type {
+  ArcSegment,
+  BowlPrimitive,
+  CutRegion,
+  DotPrimitive,
+  GlyphSet,
+  GlyphSkeleton,
+  GridMetrics,
+  PointSegment,
+  SkeletonPrimitive,
+  StrokePrimitive,
+  StrokeSegment,
+} from './glyph/types.js';
+export { GRID, NOTDEF } from './glyph/types.js';
+export { GlyphError, validateGlyph, validateGlyphs } from './glyph/validate.js';
+export { latinGlyphs } from './glyph/latin.js';
+export { createGlyphSetRegistry, glyphFor, latinGlyphSet } from './glyph/registry.js';

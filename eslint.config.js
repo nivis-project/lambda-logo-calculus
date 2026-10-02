@@ -13,7 +13,7 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['*.ts', '*.js', 'scripts/*.mjs'],
+          allowDefaultProject: ['*.ts', '*.js', 'scripts/*.mjs', 'scripts/*.d.mts'],
           defaultProject: 'tsconfig.tools.json',
         },
         tsconfigRootDir: import.meta.dirname,
