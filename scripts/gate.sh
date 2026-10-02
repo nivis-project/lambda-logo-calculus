@@ -11,13 +11,13 @@ fail() {
   exit 1
 }
 
-echo "==> [1/3] build"
+echo "==> [1/4] build"
 pnpm build || fail "the build" "tsc could not compile the workspace. Run 'pnpm build' in the dev shell to see it."
 
-echo "==> [2/3] lint"
+echo "==> [2/4] lint"
 pnpm lint || fail "lint" "eslint found something. Run 'pnpm lint' in the dev shell to see it."
 
-echo "==> [3/3] test"
+echo "==> [3/4] test"
 set +e
 pnpm exec vitest run --reporter=default --reporter=json --outputFile="$REPORT"
 TEST_STATUS=$?
@@ -40,6 +40,26 @@ fi
 
 if [[ "$TEST_STATUS" -ne 0 || "$PASSED" -ne "$TOTAL" ]]; then
   fail "test" "$((TOTAL - PASSED)) of $TOTAL tests failed. The run is above."
+fi
+
+echo "==> [4/4] coverage"
+set +e
+pnpm exec vitest run --coverage --reporter=default
+COVERAGE_STATUS=$?
+set -e
+
+SUMMARY="coverage/coverage-summary.json"
+if [[ -f "$SUMMARY" ]]; then
+  node -e '
+const total = JSON.parse(require("node:fs").readFileSync(process.argv[1], "utf8")).total;
+const line = (name) => `  ${name.padEnd(11)} ${String(total[name].pct).padStart(6)}%  (${total[name].covered}/${total[name].total})`;
+console.log("gate: coverage");
+for (const name of ["statements", "branches", "functions", "lines"]) console.log(line(name));
+' "$SUMMARY"
+fi
+
+if [[ "$COVERAGE_STATUS" -ne 0 ]]; then
+  fail "coverage" "coverage fell below a threshold. The figures are above, and the floors are in vitest.config.ts: 70 percent overall, 80 percent on the core. See docs/testing-strategy.md for what the number is and is not evidence of."
 fi
 
 echo ""

@@ -10,6 +10,15 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Added
 
+- The gate measures coverage and holds a floor: 70 percent across the project,
+  80 percent on the core, on branches as well as lines. A branch nobody took is
+  what coverage is actually for, and line coverage alone will happily call it
+  tested. The figures are printed whether the gate passes or fails, so a number
+  drifting downward is visible before it crosses.
+- A testing strategy written before the port rather than during it, naming the
+  five kinds of test this project uses and what each proves that the others
+  cannot. It also says plainly what coverage is not evidence of, so the number
+  does not become the goal.
 - The prototype cannot change under the project's feet. Its digest is recorded
   and the suite checks it, so an edit, a reformat or a stray newline fails the
   gate saying that everything measured against it is now suspect, rather than

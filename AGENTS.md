@@ -45,15 +45,28 @@ nix develop -c pnpm install       # install dependencies
 nix develop -c pnpm build         # tsc --build across the workspace
 nix develop -c pnpm lint          # eslint
 nix develop -c pnpm test          # vitest
+nix develop -c pnpm test:cov      # with the coverage thresholds
 nix develop -c bash scripts/gate.sh   # the gate's own steps, by hand
 nix flake check                   # the ship gate, in the sandbox, no network
 beans list                        # the milestone and epic tree
 openspec list                     # the active changes
 ```
 
-The gate is `scripts/gate.sh`: build, then lint, then tests. It fails when a
-step fails and names which, and it fails when the suite finds no tests, because
-a gate that passes an empty project reports a verdict it did not reach.
+The gate is `scripts/gate.sh`: build, then lint, then tests, then coverage. It
+fails when a step fails and names which, and it fails when the suite finds no
+tests, because a gate that passes an empty project reports a verdict it did not
+reach.
+
+## Testing
+
+`docs/testing-strategy.md` says which kind of test to reach for and what each
+proves that the others cannot: known values, property tests, golden snapshots,
+parity against the prototype, and end to end.
+
+Coverage floors are 70 percent across the project and 80 percent on
+`packages/core/src/**`, on branches as well as lines. They are a floor and not a
+target, and the strategy document says what the number is and is not evidence
+of.
 
 ### The dependency hash
 
