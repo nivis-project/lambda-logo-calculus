@@ -36,18 +36,22 @@ function render(node: SceneNode, path: string, decimals: number, depth: number):
   if (node.kind === 'path') {
     const rule =
       node.style.fillRule === undefined ? '' : ` fill-rule="${node.style.fillRule}"`;
-    return `${indent}<path id="${path}" d="${pathData(node, decimals)}" fill="${escapeAttribute(node.style.fill)}" opacity="${String(node.style.opacity)}"${rule}/>`;
+    const alpha =
+      node.style.opacity === 1 ? '' : ` opacity="${String(node.style.opacity)}"`;
+    return `${indent}<path id="${path}" d="${pathData(node, decimals)}" fill="${escapeAttribute(node.style.fill)}"${alpha}${rule}/>`;
   }
 
   const transform =
     node.transform === undefined
       ? ''
       : ` transform="${escapeAttribute(transformToAttribute(node.transform))}"`;
+  const fill = node.fill === undefined ? '' : ` fill="${escapeAttribute(node.fill)}"`;
+  const opacity = node.opacity === undefined ? '' : ` opacity="${String(node.opacity)}"`;
   const children = node.children
     .map((child, index) => render(child, `${path}-${String(index)}`, decimals, depth + 1))
     .join('\n');
 
-  return `${indent}<g id="${path}"${transform}>\n${children}\n${indent}</g>`;
+  return `${indent}<g id="${path}"${transform}${fill}${opacity}>\n${children}\n${indent}</g>`;
 }
 
 export function sceneToSvg(scene: Scene, decimals = 2): string {

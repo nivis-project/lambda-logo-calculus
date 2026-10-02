@@ -80,3 +80,34 @@ describe('rendering a scene', () => {
     expect(JSON.stringify(scene)).toBe(before);
   });
 });
+
+describe('opacity on a group', () => {
+  it('composites the children first, then makes the result transparent', () => {
+    const pass: Scene = {
+      viewBox: [0, 0, 100, 100],
+      root: groupNode([
+        groupNode(
+          [
+            pathNode([[[0, 0], [10, 0], [10, 10]]], { fill: '#000', opacity: 1 }),
+            pathNode([[[5, 5], [15, 5], [15, 15]]], { fill: '#000', opacity: 1 }),
+          ],
+          undefined,
+          { opacity: 0.53 },
+        ),
+      ]),
+    };
+
+    const svg = sceneToSvg(pass);
+    expect(svg).toContain('<g id="root-0" opacity="0.53">');
+    // The paths carry none, so their overlap does not blend twice.
+    expect(svg.match(/<path[^>]*opacity=/g)).toBeNull();
+  });
+
+  it('writes a group fill when there is one, and nothing when there is not', () => {
+    const filled = groupNode([], undefined, { fill: 'hsl(1 2% 3%)' });
+    expect(sceneToSvg({ viewBox: [0, 0, 1, 1], root: groupNode([filled]) })).toContain(
+      'fill="hsl(1 2% 3%)"',
+    );
+    expect(sceneToSvg(scene)).not.toMatch(/<g[^>]*fill=/);
+  });
+});

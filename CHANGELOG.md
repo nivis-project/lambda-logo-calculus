@@ -172,6 +172,13 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Fixed
 
+- Fuzzy letters. Every path of a pass carried the pass's transparency, so the
+  stroke, its endings and its stamps each went transparent separately and their
+  overlaps blended twice: soft haloes at the edges, dark patches where shapes
+  met, and visible seams. The transparency now sits on the pass group, which
+  flattens the pass first and makes the result transparent, as the prototype
+  does. A group can carry an opacity and a fill for that purpose.
+
 - Pale speckles where strokes meet and at every stroke end. Every contour of a
   pass was going into one path filled with the even-odd rule, which is what
   opens a counter and which cannot tell a counter from a stamp covering a joint.

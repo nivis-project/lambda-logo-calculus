@@ -154,3 +154,20 @@ describe('scene nodes', () => {
     expect(node.style.opacity).toBe(0.5);
   });
 });
+
+describe('where the transparency goes', () => {
+  it('puts the pass opacity on the pass group and not on its paths', () => {
+    const scene = buildScene(input());
+    const glyph = scene.root.children[0];
+    if (glyph?.kind !== 'group') throw new Error('expected a glyph group');
+
+    const pass = glyph.children[0];
+    if (pass?.kind !== 'group') throw new Error('expected a pass group');
+
+    expect(pass.opacity).toBeCloseTo(0.525, 9);
+    for (const node of pass.children) {
+      if (node.kind !== 'path') throw new Error('expected a path');
+      expect(node.style.opacity).toBe(1);
+    }
+  });
+});

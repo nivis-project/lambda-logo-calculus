@@ -110,7 +110,9 @@ export function buildScene(input: SceneInput): Scene {
         });
 
         const fill = input.palette.colorAt(copy, copies);
-        const style = { fill, opacity, fillRule: 'evenodd' as const };
+        // Opacity goes on the pass group below, not here: a pass must flatten
+        // before it goes transparent or its own overlaps blend twice.
+        const style = { fill, opacity: 1, fillRule: 'evenodd' as const };
 
         const stamps: Contour[] = outline.stamps.map((stamp) =>
           stampContour(
@@ -135,7 +137,7 @@ export function buildScene(input: SceneInput): Scene {
         ];
         if (drawn.length === 0) continue;
 
-        passes.push(groupNode(drawn));
+        passes.push(groupNode(drawn, undefined, { opacity }));
       }
 
       children.push(groupNode(passes, { translate: [cursor + input.metrics.sideBearing, baseline], scale: [1, -1] }));
