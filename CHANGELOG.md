@@ -10,6 +10,11 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Added
 
+- A logo rather than a wordmark. The mark is composed into the scene where the
+  lockup puts it, beside the words or stacked above them, sized against the text
+  block and enlarged 6 percent. It is measured by the geometry it actually
+  draws, so a trefoil's empty corners do not push the words away and a lopsided
+  stack of rotated copies is still centred.
 - The port is proved. Compared against the prototype's own recorded output
   across all 27 settings, the worst difference is **0.007050 font units** over
   215,352 compared points. The rounding floor the prototype's two decimals put
