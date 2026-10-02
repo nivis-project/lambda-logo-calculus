@@ -10,6 +10,18 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Added
 
+- The base curve and the nesting mathematics, agreeing with the prototype's own
+  readouts across all 27 recorded settings: the fit, the effective scale and the
+  smallest copy, to the three decimals it displays.
+- The curve is a registered template rather than a formula written out in four
+  places, so a second curve later is a registration and not a branch.
+- Every safety limit reports instead of clamping silently. Four of them, each
+  naming the value given and the value used, so a slider that has stopped
+  responding says so rather than looking broken.
+- One amplitude floor, applied everywhere. The prototype floors the amplitude
+  where it bends letters and nowhere else, so below 1.15 its mark shows three
+  petals, its nesting collapses to nothing and its letters are bent by a curve
+  they are not drawn with. ADR 0002 records why the port does not copy that.
 - Parameters are declared once, as data: an id, a kind, a range, a default, and
   whether they can be locked and randomized. Resolution reports what it clamped
   and names both numbers, where the prototype clamps silently and lets a slider

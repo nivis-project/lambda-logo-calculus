@@ -19,3 +19,25 @@ export type { Registered, Registry } from './registry/registry.js';
 export { RegistryError, createRegistry } from './registry/registry.js';
 export type { RandomSource } from './random/seeded.js';
 export { seededRandom } from './random/seeded.js';
+
+export type { SafetyWarning, SampledPoint, ShapeTemplate, Vec2 } from './template/types.js';
+export { radiusAt, sampleCurve } from './template/sample.js';
+export {
+  AMPLITUDE_FLOOR,
+  TREFOIL_PARAMS,
+  TREFOIL_LOBES,
+  amplitudeOf,
+  builtInTemplates,
+  trefoil,
+} from './template/trefoil.js';
+export type { NestingInput, NestingResult } from './template/nesting.js';
+export {
+  COPY_SCALE_CEILING,
+  EFFECTIVE_SCALE_CEILING,
+  PERFECT_FIT_FLOOR,
+  PERFECT_FIT_SAMPLES,
+  computeNesting,
+  effectiveScale,
+  perfectFit,
+} from './template/nesting.js';
+export { createTemplateRegistry } from './template/registry.js';

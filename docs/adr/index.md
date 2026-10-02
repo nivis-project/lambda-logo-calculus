@@ -9,3 +9,4 @@ New records use `0000-template.md` and take the next number in sequence.
 | # | decision | status |
 | - | --------------------------------------------- | -------- |
 | [0001](0001-typescript-on-pnpm.md) | Strict TypeScript on pnpm, tested with Vitest | accepted |
+| [0002](0002-one-amplitude-floor.md) | One amplitude floor, applied everywhere | accepted |

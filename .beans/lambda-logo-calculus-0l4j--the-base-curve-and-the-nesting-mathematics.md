@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-0l4j
 title: The base curve and the nesting mathematics
-status: todo
+status: completed
 type: epic
 priority: normal
 created_at: 2026-10-02T11:09:09Z
-updated_at: 2026-10-02T11:09:10Z
+updated_at: 2026-10-02T11:51:30Z
 parent: lambda-logo-calculus-bmm5
 blocked_by:
     - lambda-logo-calculus-4x3k

@@ -15,7 +15,7 @@ let
   # or the sandboxed gate cannot install. To update: set it to "", build, and
   # copy the hash the failure reports. Required by name in openspec change
   # add-nix-flake-and-gate, task 4.5.
-  pnpmDepsHash = "sha256-OYu/BIYZpmkNnBG/XyUuJw0arKCbC6JVLXBoltP8sUE=";
+  pnpmDepsHash = "sha256-1iij0IksZVaqflwnurHCc2lYeuKIM6lkq+Lwjidr9Gg=";
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "lambda-logo-calculus-gate";
