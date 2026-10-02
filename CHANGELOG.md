@@ -172,6 +172,13 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Fixed
 
+- Pale speckles where strokes meet and at every stroke end. Every contour of a
+  pass was going into one path filled with the even-odd rule, which is what
+  opens a counter and which cannot tell a counter from a stamp covering a joint.
+  Each thing drawn now gets its own path, and only a ring's two sides share one.
+  The parity comparison was blind to this because the coordinates were right;
+  what was wrong was which of them shared a fill rule.
+
 - Four faults found by the parity comparison, each of which would have passed
   every test written before it. An arc that starts where the previous point ends
   was leaving a segment of no length that the turn tests read as a corner. The

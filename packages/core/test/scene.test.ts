@@ -67,14 +67,30 @@ describe('a scene', () => {
     expect(text).not.toMatch(/mask|clipPath|clip-path|filter/i);
   });
 
-  it('draws a counter as a contour with the even-odd rule', () => {
+  it('draws a counter as a pair of contours in one path, with the even-odd rule', () => {
     const scene = buildScene(input({ lines: ['o'] }));
     const group = scene.root.children[0];
     if (group?.kind !== 'group') throw new Error('expected a glyph group');
     const pass = group.children[0];
-    if (pass?.kind !== 'path') throw new Error('expected a pass');
-    expect(pass.style.fillRule).toBe('evenodd');
-    expect(pass.contours.length).toBeGreaterThan(1);
+    if (pass?.kind !== 'group') throw new Error('expected a pass group');
+
+    const ring = pass.children.find((node) => node.kind === 'path' && node.contours.length === 2);
+    if (ring?.kind !== 'path') throw new Error('expected a ring');
+    expect(ring.style.fillRule).toBe('evenodd');
+  });
+
+  it('gives each thing drawn its own path, so a stamp cannot cut a hole', () => {
+    const scene = buildScene(input({ lines: ['v'] }));
+    const group = scene.root.children[0];
+    if (group?.kind !== 'group') throw new Error('expected a glyph group');
+    const pass = group.children[0];
+    if (pass?.kind !== 'group') throw new Error('expected a pass group');
+
+    expect(pass.children.length).toBeGreaterThan(1);
+    for (const node of pass.children) {
+      if (node.kind !== 'path') throw new Error('expected a path');
+      expect(node.contours.length).toBeLessThanOrEqual(2);
+    }
   });
 
   it('gives one group per glyph and one pass per copy', () => {
@@ -101,7 +117,12 @@ describe('a scene', () => {
     const scene = buildScene(input());
     const group = scene.root.children[0];
     if (group?.kind !== 'group') throw new Error('expected a group');
-    const fills = group.children.map((pass) => (pass.kind === 'path' ? pass.style.fill : ''));
+
+    const fills = group.children.map((pass) => {
+      if (pass.kind !== 'group') return '';
+      const first = pass.children[0];
+      return first?.kind === 'path' ? first.style.fill : '';
+    });
     expect(new Set(fills).size).toBe(3);
   });
 

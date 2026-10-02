@@ -109,6 +109,9 @@ export function buildScene(input: SceneInput): Scene {
           baseRotationDegrees: (input.rotation * 180) / Math.PI,
         });
 
+        const fill = input.palette.colorAt(copy, copies);
+        const style = { fill, opacity, fillRule: 'evenodd' as const };
+
         const stamps: Contour[] = outline.stamps.map((stamp) =>
           stampContour(
             stamp.at,
@@ -123,16 +126,16 @@ export function buildScene(input: SceneInput): Scene {
           ),
         );
 
-        const contours = [...outline.contours, ...stamps];
-        if (contours.length === 0) continue;
+        // One path per thing drawn. Merging them would let a stamp covering a
+        // joint cancel the letter under it through the fill rule.
+        const drawn: SceneNode[] = [
+          ...outline.outlineGroups.map((group) => pathNode(group, style)),
+          ...outline.extras.map((extra) => pathNode([extra], style)),
+          ...stamps.map((stamp) => pathNode([stamp], style)),
+        ];
+        if (drawn.length === 0) continue;
 
-        passes.push(
-          pathNode(contours, {
-            fill: input.palette.colorAt(copy, copies),
-            opacity,
-            fillRule: 'evenodd',
-          }),
-        );
+        passes.push(groupNode(drawn));
       }
 
       children.push(groupNode(passes, { translate: [cursor + input.metrics.sideBearing, baseline], scale: [1, -1] }));

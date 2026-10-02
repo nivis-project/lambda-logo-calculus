@@ -27,7 +27,10 @@ export interface OutlineOptions {
 
 export interface GlyphOutline {
   // What the prototype writes as path coordinates: stroke outlines, bowl rings
-  // and join loops. This is what the parity comparison can compare.
+  // and join loops, grouped. A ring's two sides are one group, because they cut
+  // each other through the fill rule; everything else stands alone.
+  readonly outlineGroups: readonly (readonly Contour[])[];
+  // The same, flattened, for a comparison that only wants the coordinates.
   readonly outlines: readonly Contour[];
   // What it writes as a reference to a definition with a transform: the shapes
   // an ending adds.
@@ -217,7 +220,7 @@ export function outlineSkeleton(
   skeleton: WorkingSkeleton,
   options: OutlineOptions,
 ): GlyphOutline {
-  const outlines: Contour[] = [];
+  const outlineGroups: Contour[][] = [];
   const extras: Contour[] = [];
   const stamps: { at: Vec2; size: number }[] = [];
 
@@ -225,7 +228,7 @@ export function outlineSkeleton(
     const runs = splitRuns(stroke);
     for (const [index, run] of runs.entries()) {
       const built = strokeRun(run, options);
-      if (built.contour.length >= 3) outlines.push(built.contour);
+      if (built.contour.length >= 3) outlineGroups.push([built.contour]);
       extras.push(...built.extras.filter((extra) => extra.length >= 3));
 
       const first = run.points[0];
@@ -237,7 +240,7 @@ export function outlineSkeleton(
     }
   }
 
-  for (const ring of skeleton.rings) outlines.push(...strokeRing(ring, options));
+  for (const ring of skeleton.rings) outlineGroups.push([...strokeRing(ring, options)]);
 
   if (options.joins) {
     for (const corner of skeleton.corners) {
@@ -245,7 +248,7 @@ export function outlineSkeleton(
         corner.at[0] + corner.bisector[0] * JOIN_RADIUS * 0.9,
         corner.at[1] + corner.bisector[1] * JOIN_RADIUS * 0.9,
       ];
-      outlines.push(...strokeRing(loopAt(at, options), options));
+      outlineGroups.push([...strokeRing(loopAt(at, options), options)]);
     }
   }
 
@@ -253,7 +256,8 @@ export function outlineSkeleton(
     stamps.push({ at: [dot.x, dot.y], size: options.nibSize * 1.35 });
   }
 
-  return { outlines, extras, stamps, contours: [...outlines, ...extras] };
+  const outlines = outlineGroups.flat();
+  return { outlineGroups, outlines, extras, stamps, contours: [...outlines, ...extras] };
 }
 
 export function stampContour(
