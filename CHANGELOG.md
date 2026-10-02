@@ -10,6 +10,15 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Added
 
+- There is something to open. A studio page that draws the logo from the scene
+  graph and redraws when the text changes, with the mark beside the words. It
+  holds no geometry of its own: it resolves what was chosen and hands it to the
+  engine, where the parity comparison can see it.
+- A browser suite, run by the ship after the gate. The sandbox carries no
+  browser, so it runs in the dev shell, and it builds the studio before serving
+  it so it always tests the working tree.
+- ADR 0003: plain DOM on Vite, no framework. The studio has one piece of state
+  and one thing to do with it, which is where a framework earns least.
 - A logo rather than a wordmark. The mark is composed into the scene where the
   lockup puts it, beside the words or stacked above them, sized against the text
   block and enlarged 6 percent. It is measured by the geometry it actually

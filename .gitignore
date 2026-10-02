@@ -5,3 +5,5 @@ coverage/
 test-results/
 playwright-report/
 .vite/
+test-results/
+playwright-report/

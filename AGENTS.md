@@ -44,6 +44,8 @@ nix develop                       # the dev shell: node, pnpm, jj, git
 nix develop -c pnpm install       # install dependencies
 nix develop -c pnpm build         # tsc --build across the workspace
 nix develop -c pnpm typecheck     # tsc --noEmit, tests included
+nix develop -c pnpm dev           # the studio on 127.0.0.1:5173
+nix develop -c pnpm e2e           # playwright against the built studio
 nix develop -c pnpm lint          # eslint
 nix develop -c pnpm test          # vitest
 nix develop -c pnpm test:cov      # with the coverage thresholds
@@ -54,7 +56,10 @@ beans list                        # the milestone and epic tree
 openspec list                     # the active changes
 ```
 
-The gate is `scripts/gate.sh`: build, typecheck, lint, tests, coverage. It
+The gate is two commands, not one. `nix flake check` runs `scripts/gate.sh`:
+build, typecheck, lint, tests, coverage, inside the sandbox with no network.
+`pnpm e2e` runs the browser suite, which the sandbox cannot host because it
+carries no browser. `scripts/ship-change.sh` runs both and stops on either. It
 fails when a step fails and names which, and it fails when the suite finds no
 tests, because a gate that passes an empty project reports a verdict it did not
 reach.

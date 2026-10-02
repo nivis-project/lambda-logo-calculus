@@ -35,8 +35,9 @@ openspec validate "${CHANGE}" --type change --strict
 echo "==> [2/6] stage working tree (so nix flake sees new files)"
 git add -A
 
-echo "==> [3/6] gate: nix flake check"
+echo "==> [3/6] gate: nix flake check, then the browser suite"
 nix flake check
+pnpm e2e
 
 echo "==> [4/6] archive OpenSpec change: ${CHANGE}"
 openspec archive "${CHANGE}" --yes
