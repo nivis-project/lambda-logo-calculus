@@ -10,6 +10,17 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Added
 
+- The four transformations that give the letterforms their character are now an
+  ordered, switchable list of pure functions: curves warps arcs by the base
+  curve, bowls traces counters from it, bend bows straight runs along it, and
+  proportions scales width and remaps height. None of them reads a global, and
+  the order comes from a list rather than from where the code happens to sit.
+- A stage that is switched off can still have structural work to do. The curves
+  stage samples an arc either way; only the warp is optional. That distinction
+  is in the interface rather than in a special case.
+- The two invariants the prototype's own notes claim are now property tests: a
+  point on the baseline stays on the baseline whatever the parameters, and a
+  bowl always encloses an area.
 - The whole alphabet is data: 69 glyph skeletons of strokes, bowls, dots and cut
   regions on a shared grid. A glyph no longer depends on the amplitude, the
   rotation or which switches are on, because an arc is stored as a centre, two

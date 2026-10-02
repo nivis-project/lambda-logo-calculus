@@ -59,3 +59,24 @@ export { GRID, NOTDEF } from './glyph/types.js';
 export { GlyphError, validateGlyph, validateGlyphs } from './glyph/validate.js';
 export { latinGlyphs } from './glyph/latin.js';
 export { createGlyphSetRegistry, glyphFor, latinGlyphSet } from './glyph/registry.js';
+
+export type {
+  Dot,
+  Modulation,
+  Polyline,
+  SkeletonStage,
+  StageContext,
+  StageListEntry,
+  WorkingSkeleton,
+} from './stage/types.js';
+export { emptyWorking } from './stage/types.js';
+export { CURVES_PARAMS, curvesStage, sampleArc } from './stage/curves.js';
+export { BOWLS_PARAMS, bowlsStage, cutRing } from './stage/bowls.js';
+export { BEND_PARAMS, bendRun, bendStage } from './stage/bend.js';
+export { proportionsStage, remapHeight } from './stage/proportions.js';
+export {
+  DEFAULT_STAGE_LIST,
+  builtInStages,
+  createStageRegistry,
+  runStages,
+} from './stage/pipeline.js';
