@@ -10,6 +10,13 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Added
 
+- The prototype cannot change under the project's feet. Its digest is recorded
+  and the suite checks it, so an edit, a reformat or a stray newline fails the
+  gate saying that everything measured against it is now suspect, rather than
+  surfacing later as a parity mismatch nobody can explain. Replacing it
+  deliberately has a written procedure, and both halves have to land together.
+- A README that orients someone who has just cloned the repository, and an index
+  of the decision records.
 - A gate that is real rather than a placeholder. One command builds, lints and
   tests the project inside a Nix sandbox with no network, and refuses to pass
   when there is nothing to check: a suite that finds no tests fails, because a

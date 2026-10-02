@@ -72,14 +72,20 @@ To update it:
 
 ## The prototype
 
-`reference/trefoil-type.html` is frozen. It is read, driven and recorded. It is
-never edited, and never partially reimplemented to make a comparison easier.
+`reference/trefoil-type.html` is frozen. Its digest is recorded in
+`reference/DIGEST` and the test suite checks it, so a changed prototype fails
+the gate rather than quietly invalidating every spec written against it.
+
+It is read, driven and recorded. It is never edited, and never partially
+reimplemented to make a comparison easier. `reference/README.md` says what may
+be done to it and how it is replaced deliberately on the one occasion that is
+legitimate.
 
 ## Decisions
 
 Write an ADR in `docs/adr/` before every stack or structural choice, using
-`docs/adr/0000-template.md`. Number them in sequence. An ADR that is superseded
-is marked, not deleted.
+`docs/adr/0000-template.md`. Number them in sequence, and add it to
+`docs/adr/index.md`. An ADR that is superseded is marked, not deleted.
 
 ## Code style
 

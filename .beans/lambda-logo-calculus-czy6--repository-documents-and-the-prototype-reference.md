@@ -1,10 +1,11 @@
 ---
 # lambda-logo-calculus-czy6
 title: Repository documents and the prototype reference
-status: todo
+status: completed
 type: epic
+priority: normal
 created_at: 2026-10-02T10:27:51Z
-updated_at: 2026-10-02T10:27:51Z
+updated_at: 2026-10-02T10:51:40Z
 parent: lambda-logo-calculus-vlhc
 ---
 
