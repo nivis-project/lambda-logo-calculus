@@ -43,6 +43,7 @@ Everything runs inside the dev shell.
 nix develop                       # the dev shell: node, pnpm, jj, git
 nix develop -c pnpm install       # install dependencies
 nix develop -c pnpm build         # tsc --build across the workspace
+nix develop -c pnpm typecheck     # tsc --noEmit, tests included
 nix develop -c pnpm lint          # eslint
 nix develop -c pnpm test          # vitest
 nix develop -c pnpm test:cov      # with the coverage thresholds
@@ -53,7 +54,7 @@ beans list                        # the milestone and epic tree
 openspec list                     # the active changes
 ```
 
-The gate is `scripts/gate.sh`: build, then lint, then tests, then coverage. It
+The gate is `scripts/gate.sh`: build, typecheck, lint, tests, coverage. It
 fails when a step fails and names which, and it fails when the suite finds no
 tests, because a gate that passes an empty project reports a verdict it did not
 reach.

@@ -3,6 +3,9 @@
   "references": [
     {
       "path": "./packages/core/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/render-svg/tsconfig.build.json"
     }
   ]
 }

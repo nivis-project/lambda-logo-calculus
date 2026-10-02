@@ -142,6 +142,12 @@ importers:
 
   packages/core: {}
 
+  packages/render-svg:
+    dependencies:
+      '@trefoil/core':
+        specifier: workspace:*
+        version: link:../core
+
 packages:
 
   '@babel/helper-string-parser@7.29.7':

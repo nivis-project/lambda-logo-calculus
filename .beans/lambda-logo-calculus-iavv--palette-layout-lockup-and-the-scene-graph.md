@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-iavv
 title: Palette, layout, lockup and the scene graph
-status: todo
+status: completed
 type: epic
 priority: normal
 created_at: 2026-10-02T11:09:10Z
-updated_at: 2026-10-02T11:09:10Z
+updated_at: 2026-10-02T12:18:30Z
 parent: lambda-logo-calculus-bmm5
 blocked_by:
     - lambda-logo-calculus-gt9k

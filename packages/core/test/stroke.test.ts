@@ -20,6 +20,7 @@ import {
   supportAt,
   trefoil,
   type Contour,
+  type Ending,
   type GlyphSkeleton,
   type OutlineOptions,
   type Pen,
@@ -29,6 +30,12 @@ import {
 
 const DEG = Math.PI / 180;
 const stages = createStageRegistry();
+
+function endingNamed(id: string): Ending {
+  const found = builtInEndings.find((ending) => ending.id === id);
+  if (found === undefined) throw new Error(`no ending "${id}"`);
+  return found;
+}
 
 function letter(name: string): GlyphSkeleton {
   const found = latinGlyphs[name];
@@ -169,16 +176,16 @@ describe('the endings', () => {
   });
 
   it('adds nothing for flat', () => {
-    const flat = outlineSkeleton(skeleton('l'), options({ ending: builtInEndings[1] }));
+    const flat = outlineSkeleton(skeleton('l'), options({ ending: endingNamed('flat') }));
     const round = outlineSkeleton(skeleton('l'), options({ ending: roundEnding }));
     expect(flat.contours.length).toBeLessThan(round.contours.length);
   });
 
   it('narrows the stroke itself for a taper', () => {
-    const taper = builtInEndings.find((e) => e.id === 'taper');
-    expect(taper?.profile).toBe('taper');
-    const flare = builtInEndings.find((e) => e.id === 'flare');
-    expect(flare?.profile).toBe('flare');
+    const taper = endingNamed('taper');
+    expect(taper.profile).toBe('taper');
+    const flare = endingNamed('flare');
+    expect(flare.profile).toBe('flare');
 
     const tapered = outlineSkeleton(skeleton('l'), options({ ending: taper }));
     const plain = outlineSkeleton(skeleton('l'), options({ ending: roundEnding }));
@@ -186,10 +193,10 @@ describe('the endings', () => {
   });
 
   it('puts a ball on a curve and not on a stem', () => {
-    const ball = builtInEndings.find((e) => e.id === 'ball');
+    const ball = endingNamed('ball');
     const onStem = outlineSkeleton(skeleton('l'), options({ ending: ball }));
     const onCurve = outlineSkeleton(skeleton('c'), options({ ending: ball }));
-    const flatOnStem = outlineSkeleton(skeleton('l'), options({ ending: builtInEndings[1] }));
+    const flatOnStem = outlineSkeleton(skeleton('l'), options({ ending: endingNamed('flat') }));
 
     expect(onStem.contours.length).toBe(flatOnStem.contours.length);
     expect(onCurve.contours.length).toBeGreaterThan(0);
@@ -217,7 +224,7 @@ describe('outlining', () => {
   });
 
   it('turns a ring into two contours, so the counter stays open', () => {
-    const outline = outlineSkeleton(skeleton('o'), options({ joins: false, ending: builtInEndings[1] }));
+    const outline = outlineSkeleton(skeleton('o'), options({ joins: false, ending: endingNamed('flat') }));
     expect(outline.contours).toHaveLength(2);
   });
 
@@ -248,7 +255,7 @@ describe('outlining', () => {
         fc.boolean(),
         fc.constantFrom(...builtInEndings.map((e) => e.id)),
         (A, rot, character, shapeBuilt, endingId) => {
-          const ending = builtInEndings.find((e) => e.id === endingId);
+          const ending = endingNamed(endingId);
           const pen: Pen = shapeBuilt ? shapePen(trefoil, { A }, NIB_SIZE, rot * DEG) : roundPen(10);
           const outline = outlineSkeleton(
             runStages(letter(character), DEFAULT_STAGE_LIST, stages, context({ templateParams: { A }, rotation: rot * DEG })),

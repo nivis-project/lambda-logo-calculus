@@ -121,3 +121,37 @@ export {
 } from './stroke/outline.js';
 export type { Corner } from './stage/types.js';
 export { cornersOf } from './stage/curves.js';
+
+export type { Palette } from './style/palette.js';
+export {
+  BASE_HUE,
+  analogous,
+  builtInPalettes,
+  complementary,
+  cool,
+  createPaletteRegistry,
+  hsl,
+  letterOpacity,
+  markOpacity,
+  monochrome,
+  ornamentOpacity,
+  triadic,
+  warm,
+  wrapHue,
+} from './style/palette.js';
+export type { LayoutMetrics, WrapResult } from './layout/text.js';
+export { advanceOf, widthOf, wrapText } from './layout/text.js';
+export type { Bounds } from './layout/bounds.js';
+export { boundsOf, boundsOfContours } from './layout/bounds.js';
+export type { LockupInput, LockupResult, MarkSettings } from './layout/lockup.js';
+export {
+  OPTICAL_ENLARGEMENT,
+  SETTLE_ITERATIONS,
+  SIDE_WIDTH_LIMIT,
+  STACKED_WIDTH_LIMIT,
+  layoutLockup,
+} from './layout/lockup.js';
+export type { GroupNode, PathNode, PathStyle, Scene, SceneNode, Transform } from './scene/types.js';
+export { allContours, countNodes, groupNode, pathNode } from './scene/types.js';
+export type { SceneInput } from './scene/build.js';
+export { buildScene } from './scene/build.js';

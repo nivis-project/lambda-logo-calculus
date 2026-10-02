@@ -1,0 +1,155 @@
+import type { ParamValues } from '../params/types.js';
+import type { GlyphSet, GridMetrics } from '../glyph/types.js';
+import { glyphFor } from '../glyph/registry.js';
+import { DEFAULT_STAGE_LIST, runStages } from '../stage/pipeline.js';
+import type { SkeletonStage, StageListEntry } from '../stage/types.js';
+import type { Registry } from '../registry/registry.js';
+import type { NestingResult } from '../template/nesting.js';
+import type { ShapeTemplate } from '../template/types.js';
+import { NIB_SIZE, roundPen, shapePen, type Pen } from '../stroke/pen.js';
+import { outlineSkeleton, stampContour } from '../stroke/outline.js';
+import type { Contour, Ending } from '../stroke/endings.js';
+import { AMPLITUDE_FLOOR, amplitudeOf } from '../template/trefoil.js';
+import { letterOpacity, type Palette } from '../style/palette.js';
+import { advanceOf, type LayoutMetrics } from '../layout/text.js';
+import { groupNode, pathNode, type GroupNode, type Scene, type SceneNode } from './types.js';
+
+export interface SceneInput {
+  readonly lines: readonly string[];
+  readonly glyphs: GlyphSet;
+  readonly metrics: GridMetrics;
+  readonly template: ShapeTemplate;
+  readonly templateParams: ParamValues;
+  readonly rotation: number;
+  readonly nesting: NestingResult;
+  readonly widthFactor: number;
+  readonly xHeight: number;
+  readonly stages: Registry<SkeletonStage>;
+  readonly stageList?: readonly StageListEntry[];
+  readonly ending: Ending;
+  readonly palette: Palette;
+  readonly alpha: number;
+  readonly shapePen: boolean;
+  readonly joins: boolean;
+  readonly curvesOn: boolean;
+  readonly originX: number;
+  readonly originY: number;
+}
+
+function pensFor(input: SceneInput): readonly Pen[] {
+  return input.nesting.scales.map((scale, copy) =>
+    input.shapePen
+      ? shapePen(
+          input.template,
+          input.templateParams,
+          NIB_SIZE * scale,
+          input.rotation * copy,
+        )
+      : roundPen(input.metrics.strokeWidth),
+  );
+}
+
+export function buildScene(input: SceneInput): Scene {
+  const layout: LayoutMetrics = {
+    set: input.glyphs,
+    metrics: input.metrics,
+    widthFactor: input.widthFactor,
+  };
+
+  const pens = pensFor(input);
+  const opacity = letterOpacity(input.alpha);
+  const copies = input.nesting.scales.length;
+  const amplitude = Math.max(amplitudeOf(input.templateParams), AMPLITUDE_FLOOR);
+
+  const children: SceneNode[] = [];
+  let widest = 0;
+
+  for (const [lineIndex, line] of input.lines.entries()) {
+    const baseline = input.originY + lineIndex * input.metrics.lineHeight;
+    let cursor = input.originX;
+
+    for (const character of line) {
+      const advance = advanceOf(character, layout);
+      if (character === ' ') {
+        cursor += advance;
+        continue;
+      }
+
+      const skeleton = runStages(
+        glyphFor(input.glyphs, character),
+        input.stageList ?? DEFAULT_STAGE_LIST,
+        input.stages,
+        {
+          template: input.template,
+          templateParams: input.templateParams,
+          rotation: input.rotation,
+          metrics: input.metrics,
+          modulation: { widthFactor: input.widthFactor, xHeight: input.xHeight },
+        },
+      );
+
+      const passes: SceneNode[] = [];
+      for (let copy = 0; copy < copies; copy++) {
+        const pen = pens[copy];
+        const scale = input.nesting.scales[copy];
+        if (pen === undefined || scale === undefined) continue;
+
+        const outline = outlineSkeleton(skeleton, {
+          pen,
+          ending: input.ending,
+          shapeBuilt: input.shapePen,
+          template: input.template,
+          templateParams: input.templateParams,
+          rotation: input.rotation * copy,
+          copyIndex: copy,
+          nibSize: NIB_SIZE * scale,
+          amplitude,
+          joins: input.joins,
+          curvesOn: input.curvesOn,
+        });
+
+        const stamps: Contour[] = outline.stamps.map((stamp) =>
+          stampContour(
+            stamp.at,
+            stamp.size * scale,
+            {
+              template: input.template,
+              templateParams: input.templateParams,
+              rotation: input.rotation * copy,
+              shapeBuilt: input.shapePen,
+            },
+            input.metrics.strokeWidth,
+          ),
+        );
+
+        const contours = [...outline.contours, ...stamps];
+        if (contours.length === 0) continue;
+
+        passes.push(
+          pathNode(contours, {
+            fill: input.palette.colorAt(copy, copies),
+            opacity,
+            fillRule: 'evenodd',
+          }),
+        );
+      }
+
+      children.push(groupNode(passes, { translate: [cursor + input.metrics.sideBearing, baseline], scale: [1, -1] }));
+      cursor += advance;
+    }
+
+    widest = Math.max(widest, cursor);
+  }
+
+  const top = input.originY - input.metrics.capHeight;
+  const bottom =
+    input.originY +
+    (input.lines.length - 1) * input.metrics.lineHeight -
+    input.metrics.descender;
+
+  const root: GroupNode = groupNode(children);
+  return {
+    viewBox: [0, top, Math.max(widest, 1), Math.max(bottom - top, 1)],
+    root,
+  };
+}

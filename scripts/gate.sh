@@ -11,13 +11,16 @@ fail() {
   exit 1
 }
 
-echo "==> [1/4] build"
+echo "==> [1/5] build"
 pnpm build || fail "the build" "tsc could not compile the workspace. Run 'pnpm build' in the dev shell to see it."
 
-echo "==> [2/4] lint"
+echo "==> [2/5] typecheck, tests included"
+pnpm typecheck || fail "the typecheck" "tsc found something outside the built sources, usually in a test. Run 'pnpm typecheck' in the dev shell to see it."
+
+echo "==> [3/5] lint"
 pnpm lint || fail "lint" "eslint found something. Run 'pnpm lint' in the dev shell to see it."
 
-echo "==> [3/4] test"
+echo "==> [4/5] test"
 set +e
 pnpm exec vitest run --reporter=default --reporter=json --outputFile="$REPORT"
 TEST_STATUS=$?
@@ -42,7 +45,7 @@ if [[ "$TEST_STATUS" -ne 0 || "$PASSED" -ne "$TOTAL" ]]; then
   fail "test" "$((TOTAL - PASSED)) of $TOTAL tests failed. The run is above."
 fi
 
-echo "==> [4/4] coverage"
+echo "==> [5/5] coverage"
 set +e
 pnpm exec vitest run --coverage --reporter=default
 COVERAGE_STATUS=$?

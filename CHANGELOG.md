@@ -10,6 +10,20 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Added
 
+- Colour, a line of letters, and a mark beside them. All six palettes with the
+  formulas the prototype uses, the three different remaps of the opacity slider,
+  advances and wrapping, and a lockup that sizes the mark against the text block
+  and stacks it above when the text would otherwise break.
+- A scene graph of plain, serialisable nodes that renderers read and nothing
+  writes back to, with no masks anywhere. The prototype cuts its bowls with SVG
+  masks, which cannot be exported to PDF without rasterising; a counter here is
+  a second contour drawn with the even-odd rule.
+- An SVG renderer that reads only the scene, and takes its ids from where a node
+  sits rather than from a counter, so the same scene renders identically twice.
+- The layout takes the width it has to work in as an input. The prototype reads
+  it from the element it draws into, which is why the same parameters render
+  differently in two windows and why no output of it is reproducible without
+  also recording the width.
 - Letters now have width. The support-function stroker turns a skeleton into an
   outline, and the base curve can act as the pen, so the same shape that draws
   the mark decides how thick each letter is in each direction. Copy `i` of the
@@ -132,3 +146,7 @@ Entries describe what changed for someone using the thing, not what was edited.
 ### Changed
 
 ### Fixed
+
+- The gate was not typechecking test files. `tsc --build` compiles only the
+  published sources, so a type error in a test passed unnoticed; there was one.
+  The gate now runs a typecheck step that covers them.

@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:cov": "vitest run --coverage",
-    "parity:record": "node scripts/record-parity.mjs"
+    "parity:record": "node scripts/record-parity.mjs",
+    "typecheck": "tsc --noEmit -p packages/core/tsconfig.json && tsc --noEmit -p packages/render-svg/tsconfig.json && tsc --noEmit -p tsconfig.tools.json"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
