@@ -89,7 +89,9 @@ function sampleStroke(
     if (segment.kind === 'point') points.push([segment.x, segment.y]);
     else points.push(...sampleArc(segment, context, warp, bounds));
   }
-  return points;
+  // An arc often starts exactly where the point before it ended, which leaves a
+  // segment of no length that the turn tests then read as a corner.
+  return dedupe(points);
 }
 
 function boundsFrom(context: StageContext): {

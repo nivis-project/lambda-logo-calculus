@@ -12,10 +12,11 @@
     "test": "vitest run",
     "test:cov": "vitest run --coverage",
     "parity:record": "node scripts/record-parity.mjs",
-    "typecheck": "tsc --noEmit -p packages/core/tsconfig.json && tsc --noEmit -p packages/render-svg/tsconfig.json && tsc --noEmit -p tsconfig.tools.json"
+    "typecheck": "tsc --noEmit -p packages/core/tsconfig.json && tsc --noEmit -p packages/render-svg/tsconfig.json && tsc --noEmit -p test/tsconfig.json && tsc --noEmit -p tsconfig.tools.json"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@trefoil/core": "workspace:*",
     "@types/node": "^26.6.3",
     "@vitest/coverage-v8": "^5.0.2",
     "eslint": "^10.0.1",

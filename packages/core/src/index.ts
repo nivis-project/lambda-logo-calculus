@@ -155,3 +155,5 @@ export type { GroupNode, PathNode, PathStyle, Scene, SceneNode, Transform } from
 export { allContours, countNodes, groupNode, pathNode } from './scene/types.js';
 export type { SceneInput } from './scene/build.js';
 export { buildScene } from './scene/build.js';
+export type { Modulated } from './style/modulation.js';
+export { X_HEIGHT_HEADROOM, X_HEIGHT_REACH, modulate } from './style/modulation.js';

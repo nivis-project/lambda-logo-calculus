@@ -25,6 +25,10 @@ export interface EndingBuildContext {
   readonly rotation: number;
   readonly copyIndex: number;
   readonly nibSize: number;
+  // The rotation per copy, in degrees, before it is multiplied by the pass.
+  // The angled cut turns by it once per pass; everything else uses the pass's
+  // own rotation.
+  readonly baseRotationDegrees: number;
 }
 
 export interface Ending extends Registered {
@@ -63,8 +67,10 @@ function flatSerif(end: EndContext): boolean {
   return Math.abs(end.outward[1]) > 0.5;
 }
 
-function frame(end: EndContext): { readonly inward: Vec2; readonly across: Vec2 } {
-  if (flatSerif(end)) {
+// Only a serif lies flat on a vertical end. An angled cut keeps the stroke's
+// own frame whichever way it points.
+function frame(end: EndContext, allowFlat: boolean): { readonly inward: Vec2; readonly across: Vec2 } {
+  if (allowFlat && flatSerif(end)) {
     return { inward: [0, -Math.sign(end.outward[1])], across: [1, 0] };
   }
   return { inward: [-end.outward[0], -end.outward[1]], across: [-end.outward[1], end.outward[0]] };
@@ -98,11 +104,11 @@ export const flatEnding = ending('flat', 'Flat', () => []);
 export const angledEnding = ending('angled', 'Angled', () => [], {
   cut(end, context) {
     const degrees = context.shapeBuilt
-      ? 60 + (context.rotation / DEG) * (context.copyIndex + 1)
+      ? 60 + context.baseRotationDegrees * (context.copyIndex + 1)
       : 60;
     const radians = degrees * DEG;
     const direction: Vec2 = [Math.cos(radians), Math.sin(radians)];
-    const { inward } = frame(end);
+    const { inward } = frame(end, false);
     const limit = end.halfWidth * 2;
     return {
       left: cutAlong(end.left, inward, end.at, direction, limit),
@@ -125,7 +131,7 @@ export const flareEnding = ending('flare', 'Flared', () => [], { profile: 'flare
 
 export const wedgeEnding = ending('wedge', 'Wedge serif', (end, context) => {
   const width = end.halfWidth * 0.9;
-  const { inward, across } = frame(end);
+  const { inward, across } = frame(end, true);
   const sides: readonly (readonly [Vec2, number])[] = flatSerif(end)
     ? [
         [[end.at[0] + end.halfWidth * 0.8, end.at[1]], 1],
@@ -156,7 +162,7 @@ export const wedgeEnding = ending('wedge', 'Wedge serif', (end, context) => {
 function slabLike(id: string, label: string, reach: number, thickness: number): Ending {
   return ending(id, label, (end, context) => {
     const half = end.halfWidth + reach;
-    const { inward, across } = frame(end);
+    const { inward, across } = frame(end, true);
 
     if (context.shapeBuilt) {
       const centre: Vec2 = [

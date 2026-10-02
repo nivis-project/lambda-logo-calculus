@@ -106,6 +106,7 @@ export function buildScene(input: SceneInput): Scene {
           amplitude,
           joins: input.joins,
           curvesOn: input.curvesOn,
+          baseRotationDegrees: (input.rotation * 180) / Math.PI,
         });
 
         const stamps: Contour[] = outline.stamps.map((stamp) =>

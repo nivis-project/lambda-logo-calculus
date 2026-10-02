@@ -10,6 +10,17 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Added
 
+- The port is proved. Compared against the prototype's own recorded output
+  across all 27 settings, the worst difference is **0.007050 font units** over
+  215,352 compared points. The rounding floor the prototype's two decimals put
+  there is 0.0070711, so the two implementations agree exactly and what is left
+  is the rounding. The figure is pinned by a test.
+- The two hidden couplings are one named function rather than arithmetic buried
+  where it is used: the amplitude sets the letter width, the fit size sets the
+  x-height.
+- The outliner returns its pieces separately, so the comparison knows which
+  geometry the prototype writes as coordinates and which it writes as a
+  reference. What is not compared is stated rather than left to be noticed.
 - Colour, a line of letters, and a mark beside them. All six palettes with the
   formulas the prototype uses, the three different remaps of the opacity slider,
   advances and wrapping, and a lockup that sizes the mark against the text block
@@ -146,6 +157,13 @@ Entries describe what changed for someone using the thing, not what was edited.
 ### Changed
 
 ### Fixed
+
+- Four faults found by the parity comparison, each of which would have passed
+  every test written before it. An arc that starts where the previous point ends
+  was leaving a segment of no length that the turn tests read as a corner. The
+  angled cut was turning by the pass's own rotation instead of the rotation per
+  copy, and was borrowing the serif rule for a vertical end. And the join loop
+  was turning with each pass, where the prototype builds it once.
 
 - The gate was not typechecking test files. `tsc --build` compiles only the
   published sources, so a type error in a test passed unnoticed; there was one.

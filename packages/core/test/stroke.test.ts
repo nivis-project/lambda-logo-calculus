@@ -71,6 +71,7 @@ function options(over: Partial<OutlineOptions> = {}): OutlineOptions {
     amplitude: 3,
     joins: true,
     curvesOn: true,
+    baseRotationDegrees: 24,
     ...over,
   };
 }

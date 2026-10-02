@@ -80,9 +80,22 @@ records the container width, because the prototype's geometry depends on it. And
 a test asserts the breadth of the matrix, so the fixture cannot quietly shrink
 to the one case that happens to pass.
 
-Parity is a one-time gate. Once milestone 03 is archived, the golden snapshots
-take over as the baseline and the prototype stops being authoritative for
-anything except reading.
+**The port and the prototype agree exactly.** The measured worst difference
+across the whole matrix is **0.007050 font units**, over 215,352 compared points
+in 27 settings. That is just under the 0.0070711 floor the prototype's own
+rounding puts there, which means the two implementations do not differ at all:
+what is left is the rounding. The figure is pinned by a test, so a change that
+quietly moves the geometry has to say so.
+
+What is compared is the geometry the prototype writes as path coordinates:
+stroke outlines, bowl rings and join loops. What is not compared is the shapes
+it writes as a reference to a definition with a transform, which is how it draws
+an ending and a stamp. Resolving those would mean reimplementing its drawing,
+and reimplementing the prototype is the thing the recording exists to avoid.
+
+Parity is a one-time gate. Now that milestone 03 is archived, the golden
+snapshots take over as the baseline and the prototype stops being authoritative
+for anything except reading.
 
 ### End-to-end
 

@@ -22,11 +22,19 @@ export interface OutlineOptions {
   readonly amplitude: number;
   readonly joins: boolean;
   readonly curvesOn: boolean;
+  readonly baseRotationDegrees: number;
 }
 
 export interface GlyphOutline {
-  readonly contours: readonly Contour[];
+  // What the prototype writes as path coordinates: stroke outlines, bowl rings
+  // and join loops. This is what the parity comparison can compare.
+  readonly outlines: readonly Contour[];
+  // What it writes as a reference to a definition with a transform: the shapes
+  // an ending adds.
+  readonly extras: readonly Contour[];
   readonly stamps: readonly { readonly at: Vec2; readonly size: number }[];
+  // Everything, for a renderer that does not care which is which.
+  readonly contours: readonly Contour[];
 }
 
 function widthProfile(points: Polyline, run: Run, options: OutlineOptions): number[] {
@@ -154,6 +162,7 @@ function strokeRun(run: Run, options: OutlineOptions): {
     rotation: options.rotation,
     copyIndex: options.copyIndex,
     nibSize: options.nibSize,
+    baseRotationDegrees: options.baseRotationDegrees,
   };
 
   const extras: Contour[] = [];
@@ -185,17 +194,17 @@ function strokeRing(ring: Polyline, options: OutlineOptions): readonly Contour[]
   return [sides.left, [...sides.right].reverse()];
 }
 
+// The loop is part of the skeleton rather than of a pass: every pass draws the
+// same ring, built from the rotation per copy and not from the pass's own.
 function loopAt(bisectorPoint: Vec2, options: OutlineOptions): Contour {
   const peak = options.template.maxRadius(options.templateParams);
+  const base = options.baseRotationDegrees * (Math.PI / 180);
   const out: Vec2[] = [];
 
   for (let k = 0; k < JOIN_SAMPLES; k++) {
     const t = (k / JOIN_SAMPLES) * Math.PI * 2;
     const factor = options.curvesOn
-      ? Math.max(
-          JOIN_FLOOR,
-          options.template.radius(t - options.rotation, options.templateParams) / peak,
-        )
+      ? Math.max(JOIN_FLOOR, options.template.radius(t - base, options.templateParams) / peak)
       : 1;
     const radius = JOIN_RADIUS * factor;
     out.push([bisectorPoint[0] + radius * Math.cos(t), bisectorPoint[1] + radius * Math.sin(t)]);
@@ -208,15 +217,16 @@ export function outlineSkeleton(
   skeleton: WorkingSkeleton,
   options: OutlineOptions,
 ): GlyphOutline {
-  const contours: Contour[] = [];
+  const outlines: Contour[] = [];
+  const extras: Contour[] = [];
   const stamps: { at: Vec2; size: number }[] = [];
 
   for (const stroke of skeleton.runs) {
     const runs = splitRuns(stroke);
     for (const [index, run] of runs.entries()) {
-      const { contour, extras } = strokeRun(run, options);
-      if (contour.length >= 3) contours.push(contour);
-      contours.push(...extras.filter((extra) => extra.length >= 3));
+      const built = strokeRun(run, options);
+      if (built.contour.length >= 3) outlines.push(built.contour);
+      extras.push(...built.extras.filter((extra) => extra.length >= 3));
 
       const first = run.points[0];
       const last = run.points[run.points.length - 1];
@@ -227,7 +237,7 @@ export function outlineSkeleton(
     }
   }
 
-  for (const ring of skeleton.rings) contours.push(...strokeRing(ring, options));
+  for (const ring of skeleton.rings) outlines.push(...strokeRing(ring, options));
 
   if (options.joins) {
     for (const corner of skeleton.corners) {
@@ -235,7 +245,7 @@ export function outlineSkeleton(
         corner.at[0] + corner.bisector[0] * JOIN_RADIUS * 0.9,
         corner.at[1] + corner.bisector[1] * JOIN_RADIUS * 0.9,
       ];
-      contours.push(...strokeRing(loopAt(at, options), options));
+      outlines.push(...strokeRing(loopAt(at, options), options));
     }
   }
 
@@ -243,7 +253,7 @@ export function outlineSkeleton(
     stamps.push({ at: [dot.x, dot.y], size: options.nibSize * 1.35 });
   }
 
-  return { contours, stamps };
+  return { outlines, extras, stamps, contours: [...outlines, ...extras] };
 }
 
 export function stampContour(
