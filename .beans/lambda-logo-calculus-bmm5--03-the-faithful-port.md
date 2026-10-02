@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-bmm5
 title: 03 The faithful port
-status: todo
+status: completed
 type: milestone
 priority: normal
 created_at: 2026-10-02T10:27:26Z
-updated_at: 2026-10-02T10:28:03Z
+updated_at: 2026-10-02T12:30:00Z
 blocked_by:
     - lambda-logo-calculus-ao85
 ---
