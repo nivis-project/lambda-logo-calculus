@@ -163,3 +163,48 @@ describe('rounding happens where the viewer looks', () => {
     }
   });
 });
+
+describe('drawing the guides', () => {
+  const base: Scene = {
+    viewBox: [0, -86, 200, 114],
+    root: groupNode([]),
+  };
+
+  it('draws nothing for a scene that carries none', () => {
+    expect(sceneToSvg(base)).not.toContain('guides');
+    expect(sceneToSvg({ ...base, guides: [] })).not.toContain('guides');
+  });
+
+  it('draws a rule as a hairline that does not grow with the drawing', () => {
+    const svg = sceneToSvg({
+      ...base,
+      guides: [{ kind: 'rule', y: 0, x0: 0, x1: 200, dashed: false, label: 'baseline' }],
+    });
+
+    expect(svg).toContain('<g id="guides">');
+    expect(svg).toContain('vector-effect="non-scaling-stroke"');
+    expect(svg).toContain('x1="0.00" x2="200.00" y1="0.00" y2="0.00"');
+    expect(svg).not.toContain('stroke-dasharray');
+    expect(svg).toContain('>baseline</text>');
+  });
+
+  it('dashes every rule but the baseline, and labels only what is labelled', () => {
+    const svg = sceneToSvg({
+      ...base,
+      guides: [{ kind: 'rule', y: -56, x0: 0, x1: 200, dashed: true }],
+    });
+
+    expect(svg).toContain('stroke-dasharray="4 4"');
+    expect(svg).not.toContain('<text');
+  });
+
+  it('draws a box that is not filled', () => {
+    const svg = sceneToSvg({
+      ...base,
+      guides: [{ kind: 'box', x: 4, y: -86, width: 60, height: 114 }],
+    });
+
+    expect(svg).toContain('<rect x="4.00" y="-86.00" width="60.00" height="114.00" fill="none"');
+    expect(svg).toContain('vector-effect="non-scaling-stroke"');
+  });
+});

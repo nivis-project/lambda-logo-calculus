@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-i26n
 title: The grid overlay
-status: todo
+status: completed
 type: epic
 priority: normal
 created_at: 2026-10-02T12:43:11Z
-updated_at: 2026-10-02T12:43:11Z
+updated_at: 2026-10-02T13:41:38Z
 parent: lambda-logo-calculus-549o
 blocked_by:
     - lambda-logo-calculus-f3o5

@@ -1,4 +1,6 @@
-import type { Contour, PathNode, Scene, SceneNode, Transform } from '@trefoil/core';
+import type { Contour, Guide, PathNode, Scene, SceneNode, Transform } from '@trefoil/core';
+
+export const GUIDE_COLOR = '#8e9bab';
 
 export const RENDER_SVG_PACKAGE_VERSION = 0 as const;
 
@@ -74,10 +76,34 @@ function render(
   return `${indent}<g id="${path}"${transform}${fill}${opacity}>\n${children}\n${indent}</g>`;
 }
 
+// A guide is drawn at a width that does not grow with the drawing, so it stays
+// a hairline however far the viewBox is scaled.
+export function guideToSvg(guide: Guide, decimals = 2): string {
+  const n = (value: number): string => value.toFixed(decimals);
+  const hair = `stroke="${GUIDE_COLOR}" stroke-width="1" vector-effect="non-scaling-stroke"`;
+
+  if (guide.kind === 'box') {
+    return `<rect x="${n(guide.x)}" y="${n(guide.y)}" width="${n(guide.width)}" height="${n(guide.height)}" fill="none" ${hair} stroke-opacity="0.5"/>`;
+  }
+
+  const dash = guide.dashed ? ' stroke-dasharray="4 4"' : '';
+  const line = `<line x1="${n(guide.x0)}" x2="${n(guide.x1)}" y1="${n(guide.y)}" y2="${n(guide.y)}" ${hair}${dash}/>`;
+  if (guide.label === undefined) return line;
+
+  return `${line}<text x="3" y="${n(guide.y - 3)}" font-size="8" fill="${GUIDE_COLOR}">${escapeAttribute(guide.label)}</text>`;
+}
+
+export function guidesToSvg(scene: Scene, decimals = 2, depth = 1): string {
+  if (scene.guides === undefined || scene.guides.length === 0) return '';
+  const indent = '  '.repeat(depth);
+  const drawn = scene.guides.map((guide) => `${indent}  ${guideToSvg(guide, decimals)}`);
+  return `\n${indent}<g id="guides">\n${drawn.join('\n')}\n${indent}</g>`;
+}
+
 export function sceneToSvg(scene: Scene, decimals = 2): string {
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${scene.viewBox.map((v) => v.toFixed(decimals)).join(' ')}">`,
-    render(scene.root, 'root', decimals, 1, 1),
+    render(scene.root, 'root', decimals, 1, 1) + guidesToSvg(scene, decimals),
     '</svg>',
     '',
   ].join('\n');

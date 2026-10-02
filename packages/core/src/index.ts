@@ -151,7 +151,17 @@ export {
   STACKED_WIDTH_LIMIT,
   layoutLockup,
 } from './layout/lockup.js';
-export type { GroupNode, PathNode, PathStyle, Scene, SceneNode, Transform } from './scene/types.js';
+export type {
+  Guide,
+  GuideBox,
+  GuideRule,
+  GroupNode,
+  PathNode,
+  PathStyle,
+  Scene,
+  SceneNode,
+  Transform,
+} from './scene/types.js';
 export { allContours, countNodes, groupNode, pathNode } from './scene/types.js';
 export type { SceneInput } from './scene/build.js';
 export { buildScene } from './scene/build.js';

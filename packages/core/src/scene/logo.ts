@@ -32,6 +32,7 @@ export interface LogoInput {
   readonly joins: boolean;
   readonly curvesOn: boolean;
   readonly mark: MarkSettings;
+  readonly guides?: boolean;
 }
 
 // The mark is the nested stack itself, drawn once at unit size so it can be
@@ -110,6 +111,7 @@ export function buildLogo(input: LogoInput): Logo {
     curvesOn: input.curvesOn,
     originX,
     originY,
+    ...(input.guides === undefined ? {} : { guides: input.guides }),
   });
 
   if (lockup.placement === 'none' || drawn === null) {
@@ -158,7 +160,11 @@ export function buildLogo(input: LogoInput): Logo {
   const y1 = Math.max(text.viewBox[1] + text.viewBox[3], markY1);
 
   return {
-    scene: { viewBox: [x0, y0, x1 - x0, y1 - y0], root },
+    scene: {
+      viewBox: [x0, y0, x1 - x0, y1 - y0],
+      root,
+      ...(text.guides === undefined ? {} : { guides: text.guides }),
+    },
     lines: lockup.lines,
     placement: lockup.placement,
   };

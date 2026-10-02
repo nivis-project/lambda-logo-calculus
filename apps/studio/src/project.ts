@@ -31,6 +31,7 @@ export interface Project {
   markDistance: number;
   markHeight: number;
   markSize: number;
+  guides: boolean;
   seed: string;
 }
 
@@ -51,6 +52,7 @@ export function defaultProject(): Project {
     markDistance: 0,
     markHeight: 0,
     markSize: 1,
+    guides: false,
     seed: 'trefoil',
   };
 }
@@ -116,5 +118,6 @@ export function logoOf(project: Project, registries: Registries, available: numb
       height: project.markHeight,
       size: project.markSize,
     },
+    guides: project.guides,
   });
 }

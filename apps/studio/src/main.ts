@@ -107,6 +107,7 @@ app.innerHTML = `
     <h1>Trefoil Studio</h1>
     <div class="actions">
       <button type="button" data-testid="randomize">Randomize unlocked</button>
+      <label class="toggle"><input type="checkbox" data-testid="show-grid"> Show grid lines</label>
       <label class="toggle"><input type="checkbox" data-testid="show-advanced"> Advanced</label>
       <span class="note" data-testid="placement"></span>
     </div>
@@ -134,6 +135,10 @@ const randomizeButton = must(
 const advanced = must(
   app.querySelector<HTMLInputElement>('[data-testid="show-advanced"]'),
   'the advanced toggle',
+);
+const gridToggle = must(
+  app.querySelector<HTMLInputElement>('[data-testid="show-grid"]'),
+  'the grid toggle',
 );
 
 textField.value = project.text;
@@ -190,6 +195,12 @@ for (const entry of project.stages) {
 
 textField.addEventListener('input', () => {
   project.text = textField.value;
+  redraw();
+});
+
+gridToggle.checked = project.guides;
+gridToggle.addEventListener('change', () => {
+  project.guides = gridToggle.checked;
   redraw();
 });
 

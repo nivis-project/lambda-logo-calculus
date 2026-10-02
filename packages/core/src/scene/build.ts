@@ -12,7 +12,14 @@ import type { Contour, Ending } from '../stroke/endings.js';
 import { AMPLITUDE_FLOOR, amplitudeOf } from '../template/trefoil.js';
 import { letterOpacity, type Palette } from '../style/palette.js';
 import { advanceOf, type LayoutMetrics } from '../layout/text.js';
-import { groupNode, pathNode, type GroupNode, type Scene, type SceneNode } from './types.js';
+import {
+  groupNode,
+  pathNode,
+  type GroupNode,
+  type Guide,
+  type Scene,
+  type SceneNode,
+} from './types.js';
 
 export interface SceneInput {
   readonly lines: readonly string[];
@@ -34,6 +41,7 @@ export interface SceneInput {
   readonly curvesOn: boolean;
   readonly originX: number;
   readonly originY: number;
+  readonly guides?: boolean;
 }
 
 function pensFor(input: SceneInput): readonly Pen[] {
@@ -62,6 +70,7 @@ export function buildScene(input: SceneInput): Scene {
   const amplitude = Math.max(amplitudeOf(input.templateParams), AMPLITUDE_FLOOR);
 
   const children: SceneNode[] = [];
+  const guides: Guide[] = [];
   let widest = 0;
 
   for (const [lineIndex, line] of input.lines.entries()) {
@@ -73,6 +82,16 @@ export function buildScene(input: SceneInput): Scene {
       if (character === ' ') {
         cursor += advance;
         continue;
+      }
+
+      if (input.guides === true) {
+        guides.push({
+          kind: 'box',
+          x: cursor,
+          y: baseline - input.metrics.capHeight,
+          width: advance,
+          height: input.metrics.capHeight - input.metrics.descender,
+        });
       }
 
       const skeleton = runStages(
@@ -154,8 +173,34 @@ export function buildScene(input: SceneInput): Scene {
     input.metrics.descender;
 
   const root: GroupNode = groupNode(children);
+  const width = Math.max(widest, 1);
+
   return {
-    viewBox: [0, top, Math.max(widest, 1), Math.max(bottom - top, 1)],
+    viewBox: [0, top, width, Math.max(bottom - top, 1)],
     root,
+    ...(input.guides === true ? { guides: [...rulesFor(input, width), ...guides] } : {}),
   };
+}
+
+// The x-height is the one metric the sliders move, so the rule is drawn at the
+// x-height the letters were built with, not at the grid's nominal one.
+function rulesFor(input: SceneInput, width: number): readonly Guide[] {
+  const levels: readonly (readonly [number, string])[] = [
+    [0, 'baseline'],
+    [input.xHeight, 'x-height'],
+    [input.metrics.capHeight, 'cap'],
+    [input.metrics.descender, 'descender'],
+  ];
+
+  return input.lines.flatMap((_line, lineIndex) => {
+    const baseline = input.originY + lineIndex * input.metrics.lineHeight;
+    return levels.map(([level, label]) => ({
+      kind: 'rule' as const,
+      y: baseline - level,
+      x0: 0,
+      x1: width,
+      dashed: level !== 0,
+      ...(lineIndex === 0 ? { label } : {}),
+    }));
+  });
 }

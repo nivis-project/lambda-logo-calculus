@@ -10,6 +10,14 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Added
 
+- The grid lines, behind a switch. The baseline, the x-height, the cap line and
+  the descender are drawn across each line of text, the baseline solid and the
+  rest dashed, with a box around what every character takes. The x-height rule
+  is drawn at the x-height the letters were built with, so it moves when the fit
+  size moves, which is the one way to see the modulation happen.
+- Guides are data in the scene, beside the artwork rather than inside it. An
+  exporter builds a scene without them instead of stripping them out, and a
+  guide is drawn at a width that does not grow when the drawing is scaled.
 - Sliders, and every other control. The panel is generated from the parameter
   declarations, so a control's range, step and default come from the parameter
   and the studio holds none of its own. Adding a parameter puts a control on

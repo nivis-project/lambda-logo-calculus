@@ -93,3 +93,33 @@ test.describe('controls generated from the parameter definitions', () => {
     await expect(page.getByTestId('placement')).toHaveText(/^none, /);
   });
 });
+
+test.describe('the grid overlay', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await page.getByTestId('stage').locator('svg').waitFor();
+  });
+
+  test('appears only when the switch is on', async ({ page }) => {
+    const guides = page.getByTestId('stage').locator('#guides');
+    await expect(guides).toHaveCount(0);
+
+    await page.getByTestId('show-grid').check();
+    await expect(guides).toHaveCount(1);
+    await expect(guides.locator('line')).toHaveCount(8);
+    await expect(guides.locator('text').first()).toHaveText('baseline');
+    expect(await guides.locator('rect').count()).toBeGreaterThan(5);
+
+    await page.getByTestId('show-grid').uncheck();
+    await expect(guides).toHaveCount(0);
+  });
+
+  test('leaves the letters alone', async ({ page }) => {
+    const letters = page.getByTestId('stage').locator('path');
+    const before = await letters.count();
+
+    await page.getByTestId('show-grid').check();
+    await expect(page.getByTestId('stage').locator('#guides')).toHaveCount(1);
+    expect(await letters.count()).toBe(before);
+  });
+});

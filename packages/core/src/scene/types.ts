@@ -31,9 +31,31 @@ export interface GroupNode {
 
 export type SceneNode = PathNode | GroupNode;
 
+export interface GuideRule {
+  readonly kind: 'rule';
+  readonly y: number;
+  readonly x0: number;
+  readonly x1: number;
+  readonly dashed: boolean;
+  readonly label?: string;
+}
+
+export interface GuideBox {
+  readonly kind: 'box';
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+
+export type Guide = GuideRule | GuideBox;
+
 export interface Scene {
   readonly viewBox: readonly [number, number, number, number];
   readonly root: GroupNode;
+  // Beside the artwork, never inside it, so an exporter builds a scene without
+  // guides rather than taking them back out of one.
+  readonly guides?: readonly Guide[];
 }
 
 export function pathNode(contours: readonly Contour[], style: PathStyle): PathNode {
