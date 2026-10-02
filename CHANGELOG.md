@@ -10,6 +10,23 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Added
 
+- The prototype is described rather than assumed. All 791 lines read, and what
+  it does written down as requirements the port will have to meet: every control
+  with its range and default, the curve and the nesting search, the grid and the
+  69 glyphs, the four reshaping stages, the nine stroke endings in both their
+  forms, the layout and the six palettes.
+- Every hidden coupling named as a coupling. Three sliders quietly drive values
+  nobody named: the amplitude sets letter width, bend, taper length and flare
+  strength; the fit size sets the x-height; the transparency is remapped three
+  different ways for letters, ornaments and the mark.
+- Every clamp named as a safety limit, with its value: eight of them, sitting
+  inline with no explanation, each one able to make a slider stop responding
+  without saying so.
+- Two defects recorded rather than quietly fixed. The amplitude floor of 1.15
+  reaches the letters but not the shape they are drawn with, so below it the
+  mark and the letters disagree about what curve they are made of. And the
+  rendered geometry depends on the width of the window, so the same parameters
+  draw differently in two browsers.
 - The gate measures coverage and holds a floor: 70 percent across the project,
   80 percent on the core, on branches as well as lines. A branch nobody took is
   what coverage is actually for, and line coverage alone will happily call it

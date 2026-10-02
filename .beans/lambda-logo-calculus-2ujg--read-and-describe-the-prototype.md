@@ -1,10 +1,11 @@
 ---
 # lambda-logo-calculus-2ujg
 title: Read and describe the prototype
-status: todo
+status: completed
 type: epic
+priority: normal
 created_at: 2026-10-02T10:27:51Z
-updated_at: 2026-10-02T10:27:51Z
+updated_at: 2026-10-02T11:01:40Z
 parent: lambda-logo-calculus-ao85
 ---
 

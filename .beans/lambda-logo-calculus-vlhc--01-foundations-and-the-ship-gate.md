@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-vlhc
 title: 01 Foundations and the ship gate
-status: todo
+status: completed
 type: milestone
 priority: normal
 created_at: 2026-10-02T10:27:02Z
-updated_at: 2026-10-02T10:27:26Z
+updated_at: 2026-10-02T10:56:26Z
 ---
 
 The scaffolding every later milestone depends on: a Nix flake with a dev shell, a test harness, and a gate that cannot be skipped.
