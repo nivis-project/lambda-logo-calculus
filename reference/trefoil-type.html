@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trefoil Type — a generative alphabet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e6eaf0; --panel:#f5f7fa; --ink:#15202c; --muted:#5d6a78; --line:#c9d1dc;
+  --guide:#9fb0c4; --focus:#3b5bdb; --track:#cfd7e2;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e141c; --panel:#161e29; --ink:#e4eaf2; --muted:#8e9bab; --line:#2a3544;
+    --guide:#3d4b5e; --focus:#8ca6ff; --track:#2a3544;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e141c; --panel:#161e29; --ink:#e4eaf2; --muted:#8e9bab; --line:#2a3544;
+  --guide:#3d4b5e; --focus:#8ca6ff; --track:#2a3544;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Bricolage Grotesque",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-variant-numeric:tabular-nums;line-height:1.45}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 40px}
+header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+h1{font-size:clamp(1.5rem,4.5vw,2.3rem);font-weight:800;letter-spacing:-.02em;margin:0;line-height:1.05}
+header p{margin:0;color:var(--muted);font-size:.95rem;max-width:44ch}
+#stage{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 4px;min-height:160px;
+  display:flex;justify-content:center;align-items:flex-start;overflow:hidden}
+#stage svg{max-width:100%;height:auto;display:block}
+.empty{color:var(--muted);align-self:center;padding:40px 10px;text-align:center}
+.inputrow{display:flex;gap:8px;margin:14px 0 6px;flex-wrap:wrap}
+#txt{flex:1 1 240px;font:inherit;font-size:1.15rem;padding:12px 14px;border-radius:10px;border:1px solid var(--line);
+  background:var(--panel);color:var(--ink);min-width:0}
+button,select{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.samples{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.samples button{padding:5px 10px;font-size:.85rem;border-radius:999px;color:var(--muted)}
+.panel{display:grid;grid-template-columns:1fr;gap:18px}
+@media (min-width:760px){.panel{grid-template-columns:minmax(0,1fr) 250px}}
+.controls{display:grid;grid-template-columns:1fr;gap:12px 22px}
+@media (min-width:560px){.controls{grid-template-columns:1fr 1fr}}
+.ctl label{display:flex;justify-content:space-between;font-size:.92rem;margin-bottom:4px}
+.ctl output{color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--focus)}
+.ctl select{width:100%}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg label{flex:1;text-align:center;padding:8px 6px;cursor:pointer;font-size:.9rem;color:var(--muted);margin:0;display:block;position:relative}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg input:checked+span{color:var(--ink);font-weight:600}
+.seg label:has(input:checked){background:var(--track)}
+.seg label:has(input:focus-visible){outline:2px solid var(--focus);outline-offset:-2px}
+.modectl{grid-column:1/-1}
+.modectl .lab{font-size:.92rem;margin-bottom:4px;display:block}
+#primcap{margin:0;font-size:.82rem;color:var(--muted);text-align:center}
+.check{display:flex;align-items:center;gap:8px;font-size:.92rem}
+.prim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.prim svg{width:170px;height:170px}
+.readout{width:100%;font-size:.85rem;color:var(--muted);display:grid;grid-template-columns:1fr auto;gap:2px 10px}
+.readout b{color:var(--ink);font-weight:600}
+details{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+summary{cursor:pointer;font-weight:600}
+details p,details li{color:var(--muted);font-size:.92rem;max-width:72ch}
+details ul{padding-left:18px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.ctl .row{display:flex;align-items:baseline;gap:8px;font-size:.92rem;margin-bottom:4px}
+.ctl .row label:first-child{flex:1}
+.ctl output{color:var(--muted)}
+.lock{display:flex;align-items:center;gap:4px;font-size:.8rem;color:var(--muted);cursor:pointer}
+.ctl.locked input[type=range],.ctl.locked select{opacity:.45}
+fieldset.inf{grid-column:1/-1;border:1px solid var(--line);border-radius:12px;margin:0;padding:10px 12px 12px}
+fieldset.inf legend{font-size:.92rem;padding:0 4px}
+.infgrid{display:grid;grid-template-columns:1fr;gap:8px 18px}
+@media (min-width:480px){.infgrid{grid-template-columns:1fr 1fr}}
+.infgrid label{display:grid;grid-template-columns:auto 1fr;gap:0 8px;font-size:.9rem;cursor:pointer}
+.infgrid small{grid-column:2;color:var(--muted);font-size:.8rem;line-height:1.3}
+.infgrid label.off{opacity:.45}
+#markset.off .controls{opacity:.45}
+#markset legend .check{font-size:.92rem}
+</style>
+</head>
+<body>
+<svg id="lib" width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="libdefs"></defs></svg>
+<div class="wrap">
+  <header>
+    <h1>Trefoil Type</h1>
+    <p>Every letter is drawn from one shape: nested, rotated copies of r = A + cos 3θ. The sliders reshape the letters themselves.</p>
+  </header>
+
+  <div id="stage" role="img" aria-label="Rendered text"></div>
+
+  <div class="inputrow">
+    <input id="txt" type="text" maxlength="80" value="Trefoil Type 26" aria-label="Text to render" autocomplete="off" spellcheck="false">
+    <button id="rnd" type="button">Randomize unlocked</button>
+  </div>
+  <div class="samples" aria-label="Sample strings">
+    <button type="button" data-s="abcdefghijklm">a–m</button>
+    <button type="button" data-s="nopqrstuvwxyz">n–z</button>
+    <button type="button" data-s="ABCDEFGHIJKLM">A–M</button>
+    <button type="button" data-s="NOPQRSTUVWXYZ">N–Z</button>
+    <button type="button" data-s="0123456789">0–9</button>
+    <button type="button" data-s="Hello, world!">Hello, world!</button>
+  </div>
+
+  <div class="panel">
+    <div class="controls">
+      <div class="modectl"><span class="lab" id="modelab">Draw letters with</span>
+        <div class="seg" role="radiogroup" aria-labelledby="modelab">
+          <label><input type="radio" name="mode" value="letter" checked><span>Shape as pen</span></label>
+          <label><input type="radio" name="mode" value="orn"><span>Plain pen + ornaments</span></label>
+        </div>
+      </div>
+      <div class="ctl" data-k="A"><div class="row"><label for="A">A/B ratio</label><output id="oA"></output><label class="lock"><input type="checkbox" data-lock="A">Lock</label></div><input id="A" type="range" min="1" max="20" step="0.1"></div>
+      <div class="ctl" data-k="n"><div class="row"><label for="n">Copies</label><output id="on"></output><label class="lock"><input type="checkbox" data-lock="n">Lock</label></div><input id="n" type="range" min="1" max="12" step="1"></div>
+      <div class="ctl" data-k="rot"><div class="row"><label for="rot">Rotation per copy</label><output id="orot"></output><label class="lock"><input type="checkbox" data-lock="rot">Lock</label></div><input id="rot" type="range" min="0" max="180" step="1"></div>
+      <div class="ctl" data-k="fit"><div class="row"><label for="fit">Fit size</label><output id="ofit"></output><label class="lock"><input type="checkbox" data-lock="fit">Lock</label></div><input id="fit" type="range" min="-1" max="1" step="0.1"></div>
+      <div class="ctl" data-k="alpha"><div class="row"><label for="alpha">Transparency</label><output id="oalpha"></output><label class="lock"><input type="checkbox" data-lock="alpha">Lock</label></div><input id="alpha" type="range" min="0.05" max="0.6" step="0.01"></div>
+      <div class="ctl" data-k="pal"><div class="row"><label for="pal">Color palette</label><label class="lock"><input type="checkbox" data-lock="pal">Lock</label></div>
+        <select id="pal">
+          <option>Monochrome</option><option>Analogous</option><option>Complementary</option>
+          <option>Triadic</option><option>Warm</option><option>Cool</option>
+        </select>
+      </div>
+      <div class="ctl" data-k="end"><div class="row"><label for="end">Stroke endings</label><label class="lock"><input type="checkbox" data-lock="end">Lock</label></div>
+        <select id="end">
+          <option value="round">Round</option><option value="flat">Flat</option><option value="angled">Angled</option>
+          <option value="taper">Tapered</option><option value="flare">Flared</option><option value="wedge">Wedge serif</option>
+          <option value="slab">Slab serif</option><option value="hair">Hairline serif</option><option value="ball">Ball (curves only)</option>
+        </select>
+      </div>
+      <fieldset class="inf">
+        <legend>What the shape changes</legend>
+        <div class="infgrid">
+          <label data-inf="curves"><input type="checkbox" data-inf="curves" checked>Curves<small>Arcs in n, s, u, j… follow the curve. Uses A/B and rotation.</small></label>
+          <label data-inf="bowls"><input type="checkbox" data-inf="bowls" checked>Bowls<small>o, b, d, O, 8… take the curve's outline. Uses A/B and rotation.</small></label>
+          <label data-inf="bend"><input type="checkbox" data-inf="bend" checked>Bent strokes<small>Stems and diagonals bow along the curve. Uses A/B and rotation.</small></label>
+          <label data-inf="prop"><input type="checkbox" data-inf="prop" checked>Proportions<small>A/B sets letter width, fit size sets x-height.</small></label>
+          <label data-inf="joins"><input type="checkbox" data-inf="joins" checked>Looped joins<small>Sharp corners in v, M, Z… get a loop of the shape.</small></label>
+          <label data-inf="nib"><input type="checkbox" data-inf="nib" checked>Pen nib<small>Strokes are drawn with the shape. Off: a round pen.</small></label>
+          <label data-inf="ends"><input type="checkbox" data-inf="ends" checked>Shape endings<small>Balls, slabs, wedges and round ends are made of the shape; cuts, flares and tapers follow the sliders.</small></label>
+        </div>
+      </fieldset>
+      <fieldset class="inf" id="markset">
+        <legend><label class="check"><input id="mon" type="checkbox" checked> Shape before the text</label></legend>
+        <div class="controls" style="margin-top:4px">
+          <div class="ctl"><div class="row"><label for="mx">Distance to text</label><output id="omx"></output></div><input id="mx" type="range" min="-1" max="1" step="0.05"></div>
+          <div class="ctl"><div class="row"><label for="my">Height</label><output id="omy"></output></div><input id="my" type="range" min="-1" max="1" step="0.05"></div>
+          <div class="ctl"><div class="row"><label for="ms">Size</label><output id="oms"></output></div><input id="ms" type="range" min="0.5" max="2" step="0.05"></div>
+          <div class="ctl" style="align-self:end"><button id="mreset" type="button" style="width:100%">Reset placement</button></div>
+        </div>
+      </fieldset>
+      <label class="check"><input id="grid" type="checkbox"> Show grid lines</label>
+    </div>
+    <div class="prim">
+      <svg id="primsvg" viewBox="-1.05 -1.05 2.1 2.1" aria-label="Shape primitive preview"></svg>
+      <p id="primcap"></p>
+      <div class="readout">
+        <span>perfectFit</span><b id="rpf"></b>
+        <span>effectiveScale</span><b id="ref"></b>
+        <span>smallest copy</span><b id="rmin"></b>
+        <span>letter width</span><b id="rsx"></b>
+        <span>x-height</span><b id="rxh"></b>
+      </div>
+    </div>
+  </div>
+
+  <details>
+    <summary>How the letters are built</summary>
+    <p>Each letter starts as a skeleton on a shared grid, and every part of that skeleton is then reshaped by the curve. Each switch under "What the shape changes" turns one of these steps on or off; Lock freezes a slider and keeps Randomize away from it.</p>
+    <ul>
+      <li>Grid: baseline 0, cap-height and ascender 86, descender −28. With Proportions on, x-height moves between about 45 and 68 with fit size, and letter width scales between 0.78× (A = 1) and about 1.28× (A = 20). Sidebearing stays 9, word space 28.</li>
+      <li>Curves: each arc's radius is multiplied by A + cos 3(θ − rotation), normalised so the arc still starts and ends exactly where it joins a stem.</li>
+      <li>Bowls: closed bowls trace the curve itself, rotated by the rotation slider and stretched to the bowl's box. They're shared by every pass, so counters stay open.</li>
+      <li>Bent strokes: every straight stroke bows sideways by up to a fifth of its length, strongest at low A, with the direction set by the stroke's angle and the rotation slider. Ends stay put, so letters still meet the baseline.</li>
+      <li>Looped joins: corners sharper than 50° get a small loop of the curve tucked inside the angle.</li>
+      <li>Pen nib: copy i of the stack is the pen for pass i, so copies, rotation and fit size set stroke contrast and the inline effect. Off, every pass uses a round pen 10 units wide.</li>
+      <li>Stroke endings apply to free stroke ends only; ends that meet another stroke stay joined. Ball puts balls on curved ends and cuts stems flat, as most ball-terminal fonts do. Serifs on vertical strokes lie flat along the baseline, x-height or cap line; on horizontal strokes (T, E, Z arms) they stand upright. With Shape endings on: round ends, balls (a lobe pointing outward, like a teardrop), slabs, hairlines and wedges are copies of the shape; angled cuts turn with each pass's rotation; flares grow and tapers lengthen as A/B drops. Off, they are plain circles, rectangles, triangles, a fixed 30° cut, a fixed flare and a fixed taper.</li>
+      <li>In "Plain pen + ornaments" the reshaped skeleton is drawn with a round 10-unit stroke, bowls are filled with the stack, and stroke ends get small stacks as terminals. Joins and nib don't apply there.</li>
+      <li>Shape before the text: by default the mark is as tall as the text block — cap-height to baseline for one line, first cap-height to second baseline for two lines or more — enlarged 6% because a lobed shape looks smaller than a letter of the same height. It is centred on that block and set 0.6 of its radius away from the first letter. It is placed by its real outline rather than the curve's centre, so lopsided shapes still sit centred. The three sliders shift, raise or lower, and scale it from there. When the screen is too narrow for that without breaking words, the mark sits above the text instead, cap-height tall and left-aligned; then Distance moves it along the line and Height changes the space below it.</li>
+      <li>Copies are clamped at 1.6× the first one when fit size pushes the scale above 1.</li>
+    </ul>
+  </details>
+</div>
+<script>
+(() => {
+  // ---------- grid & rules ----------
+  const G = { W:10, XH:56, CAP:86, DESC:-28, SB:9, TR:8, DOT:7, SPACE:28, LINE:150, TOP:100, PAD:14 };
+  const W = G.W, X = G.XH, C = G.CAP, D = G.DESC;
+  const BASE_HUE = 322, NIB = 6.5, INSET = 5, JR = 11;
+
+  const state = { A:3, n:6, rot:24, fit:0, alpha:0.22, pal:'Analogous', end:'round', grid:false, mode:'letter', mark:{ on:true, x:0, y:0, size:1 }, text:'Trefoil Type 26',
+    inf:{ curves:true, bowls:true, bend:true, prop:true, joins:true, nib:true, ends:true },
+    lock:{ A:false, n:false, rot:false, fit:false, alpha:false, pal:false, end:false } };
+
+  const f2 = v => +v.toFixed(2);
+  const DEG = Math.PI/180;
+  const Ae = () => Math.max(state.A, 1.15);
+  const PHI = () => state.rot*DEG;
+
+  // ---------- skeleton helpers (curve-aware) ----------
+  const rc = a => Ae() + Math.cos(3*(a - PHI()));
+  function arc(cx,cy,rx,ry,a0,a1){
+    const n = Math.max(8, Math.ceil(Math.abs(a1-a0)/6)), o = [];
+    const r0 = rc(a0*DEG), r1 = rc(a1*DEG);
+    for (let i=0;i<=n;i++){
+      const u = i/n, a = (a0+(a1-a0)*u)*DEG;
+      let rho = 1;
+      if (state.inf.curves) rho = Math.min(1.5, Math.max(0.5, rc(a)/((1-u)*r0+u*r1)));
+      o.push([cx+rx*rho*Math.cos(a), cy+ry*rho*Math.sin(a)]);
+    }
+    return o;
+  }
+  const S = (...pts) => ({ t:'s', p:pts });
+  const SA = (...segs) => ({ t:'s', p:[].concat(...segs) });
+  const B = (cx,cy,rx,ry,cuts=[]) => ({ t:'b', cx,cy,rx,ry,cuts });
+  const Dt = (x,y,r=G.DOT) => ({ t:'d', x,y,r });
+  const g = (w, ...parts) => ({ w, parts });
+
+  function buildGlyphs(){ return {
+    a: g(48, B(22,28,22,28), S([43,0],[43,X])),
+    b: g(48, S([5,0],[5,C]), B(26,28,22,28)),
+    c: g(48, B(24,28,24,28,[[33,17,60,40]])),
+    d: g(48, B(22,28,22,28), S([43,0],[43,C])),
+    e: g(48, B(24,28,24,28,[[30,7,60,24]]), S([2,30],[46,30])),
+    f: g(40, SA([[12,0],[12,70]], arc(26,70,14,14,180,30)), S([0,X],[30,X])),
+    g: g(48, B(22,28,22,28), SA([[43,X],[43,-8]], arc(22,-8,21,17,0,-160))),
+    h: g(48, S([5,0],[5,C]), SA(arc(24,34,19,22,180,0), [[43,0]])),
+    i: g(14, S([7,0],[7,X]), Dt(7,X+16)),
+    j: g(26, SA([[19,X],[19,-10]], arc(7,-10,12,16,0,-160)), Dt(19,X+16)),
+    k: g(46, S([5,0],[5,C]), S([44,X],[7,22]), S([20,29],[46,0])),
+    l: g(14, S([7,0],[7,C])),
+    m: g(72, S([5,0],[5,X]), SA(arc(20.5,36,15.5,20,180,0), [[36,0]]), SA(arc(51.5,36,15.5,20,180,0), [[67,0]])),
+    n: g(48, S([5,0],[5,X]), SA(arc(24,34,19,22,180,0), [[43,0]])),
+    o: g(48, B(24,28,24,28)),
+    p: g(48, S([5,X],[5,D]), B(26,28,22,28)),
+    q: g(48, B(22,28,22,28), S([43,X],[43,D])),
+    r: g(36, S([5,0],[5,X]), S(...arc(24,34,19,22,180,60))),
+    s: g(48, S(...arc(24,42,19,14,20,270), ...arc(24,14,19,14,90,-160).slice(1))),
+    t: g(36, SA([[14,70],[14,14]], arc(26,14,12,14,180,300)), S([0,X],[32,X])),
+    u: g(48, SA([[5,X],[5,22]], arc(24,22,19,22,180,360)), S([43,X],[43,0])),
+    v: g(48, S([0,X],[24,0],[48,X])),
+    w: g(72, S([0,X],[18,0],[36,48],[54,0],[72,X])),
+    x: g(48, S([2,0],[46,X]), S([2,X],[46,0])),
+    y: g(48, S([0,X],[26,4]), S([48,X],[14,D])),
+    z: g(48, S([2,X],[46,X],[2,0],[46,0])),
+    A: g(60, S([0,0],[30,C],[60,0]), S([12,30],[48,30])),
+    B: g(56, S([5,0],[5,C]), B(28,64.5,22,21.5), B(30,21.5,26,21.5)),
+    C: g(62, B(32,43,30,43,[[42,30,70,57]])),
+    D: g(58, S([5,0],[5,C]), B(30,43,28,43)),
+    E: g(52, S([50,C],[5,C],[5,0],[50,0]), S([5,43],[42,43])),
+    F: g(50, S([50,C],[5,C],[5,0]), S([5,43],[42,43])),
+    G: g(62, B(32,43,30,43,[[42,40,70,64]]), S([34,36],[60,36])),
+    H: g(60, S([5,0],[5,C]), S([55,0],[55,C]), S([5,43],[55,43])),
+    I: g(14, S([7,0],[7,C])),
+    J: g(46, SA([[40,C],[40,22]], arc(22,22,18,22,0,-180))),
+    K: g(56, S([5,0],[5,C]), S([52,C],[6,34]), S([22,50],[54,0])),
+    L: g(50, S([5,C],[5,0],[48,0])),
+    M: g(72, S([5,0],[5,C],[36,20],[67,C],[67,0])),
+    N: g(60, S([5,0],[5,C],[55,0],[55,C])),
+    O: g(64, B(32,43,32,43)),
+    P: g(54, S([5,0],[5,C]), B(28,62,24,24)),
+    Q: g(64, B(32,43,32,43), S([38,18],[62,-6])),
+    R: g(56, S([5,0],[5,C]), B(28,62,24,24), S([26,38],[54,0])),
+    S: g(56, S(...arc(28,64.5,23,21.5,20,270), ...arc(28,21.5,25,21.5,90,-160).slice(1))),
+    T: g(56, S([0,C],[56,C]), S([28,C],[28,0])),
+    U: g(60, SA([[5,C],[5,30]], arc(30,30,25,30,180,360), [[55,C]])),
+    V: g(60, S([0,C],[30,0],[60,C])),
+    W: g(80, S([0,C],[20,0],[40,64],[60,0],[80,C])),
+    X: g(60, S([2,0],[58,C]), S([2,C],[58,0])),
+    Y: g(60, S([0,C],[30,42],[60,C]), S([30,42],[30,0])),
+    Z: g(60, S([4,C],[56,C],[4,0],[56,0])),
+    '0': g(56, B(28,43,28,43)),
+    '1': g(40, S([10,68],[28,C],[28,0])),
+    '2': g(56, SA(arc(28,62,23,22,160,-20), [[4,0],[54,0]])),
+    '3': g(52, S(...arc(26,64.5,21,21.5,150,-90), ...arc(26,21.5,24,21.5,90,-150).slice(1))),
+    '4': g(58, S([44,0],[44,C],[2,24],[56,24])),
+    '5': g(56, S([50,C],[10,C],[8,50]), S(...arc(28,28,24,28,140,-150))),
+    '6': g(56, B(28,28,26,28), S(...arc(34,40,32,44,80,180))),
+    '7': g(56, S([2,C],[54,C],[18,0])),
+    '8': g(56, B(28,65,20,21), B(28,22,25,22)),
+    '9': g(56, B(28,58,26,28), S(...arc(22,46,32,44,-100,0))),
+    '.': g(14, Dt(7,7)),
+    ',': g(16, Dt(8,7), S([9,2],[3,-12])),
+    '!': g(14, S([7,C],[7,26]), Dt(7,7)),
+    '?': g(52, SA(arc(26,64,20,20,160,-70), [[26,30]]), Dt(26,7)),
+    '-': g(32, S([2,30],[30,30])),
+    "'": g(14, S([7,C],[7,62])),
+    '\u0000': g(40, B(20,28,20,28)),
+  }; }
+  let GL = {};
+  const glyph = ch => GL[ch] || GL['\u0000'];
+
+  // ---------- primitive ----------
+  const N = 144;
+  const R = (t,A) => A + Math.cos(3*t);
+  function perfectFit(A, phi){
+    let m = Infinity;
+    for (let k=0;k<720;k++){
+      const t = k/720*2*Math.PI, num = R(t,A), den = R(t-phi,A);
+      if (den <= 1e-9) continue;
+      m = Math.min(m, num/den);
+    }
+    return isFinite(m) ? Math.max(m,0) : 1;
+  }
+  const HSL = (h,s,l) => `hsl(${((h%360)+360)%360} ${s}% ${l}%)`;
+  function color(i,n){
+    const f = n>1 ? i/(n-1) : 0;
+    switch(state.pal){
+      case 'Monochrome': return HSL(BASE_HUE,62,30+f*38);
+      case 'Analogous': return HSL(BASE_HUE-35+f*70,70,50);
+      case 'Complementary': return HSL(i%2 ? BASE_HUE+180 : BASE_HUE,70,44+f*14);
+      case 'Triadic': return HSL(BASE_HUE+(i%3)*120,68,50);
+      case 'Warm': return HSL(345+f*65,78,52);
+      case 'Cool': return HSL(170+f*100,62,48);
+    }
+  }
+
+  let P = null, M = { sx:1, xh:X };
+  function ymap(y){
+    if (y <= 0) return y;
+    if (y <= X) return y*M.xh/X;
+    if (y <= C) return M.xh + (y-X)*(C-M.xh)/(C-X);
+    return y;
+  }
+  const tf = q => [q[0]*M.sx, ymap(q[1])];
+
+  function computePrim(){
+    const { A, n, rot, fit } = state, phi = rot*DEG, Mx = A+1;
+    const pf = perfectFit(A, phi);
+    const eff = Math.min(Math.pow(Math.max(pf,0.02), 1-5*fit), 1.5);
+    const copies = [];
+    for (let i=0;i<n;i++) copies.push({ s:Math.min(Math.pow(eff,i),1.6), r:i*phi, col:color(i,n) });
+    const unit = [];
+    for (let k=0;k<N;k++){ const t=k/N*2*Math.PI, r=R(t,A)/Mx; unit.push([r*Math.cos(t), r*Math.sin(t), t]); }
+    const defs = copies.map((c,i) => {
+      let d = '';
+      for (let k=0;k<N;k++){
+        const t=k/N*2*Math.PI, r=R(t,A)/Mx*c.s, a=t+c.r;
+        d += (k?'L':'M') + (r*Math.cos(a)).toFixed(4) + ' ' + (r*Math.sin(a)).toFixed(4);
+      }
+      return `<path id="pc${i}" d="${d}Z" vector-effect="non-scaling-stroke"/>`;
+    }).join('') + '<circle id="nibc" r="1"/>';
+    document.getElementById('libdefs').innerHTML = defs;
+    const round = new Float32Array(360).fill(W/2);
+    const nibs = copies.map(c => {
+      if (!state.inf.nib) return round;
+      const pts = [];
+      for (let k=0;k<N;k++){ const t=k/N*2*Math.PI, r=R(t,A)/Mx*c.s*NIB, a=t+c.r; pts.push([r*Math.cos(a), r*Math.sin(a)]); }
+      const h = new Float32Array(360);
+      for (let d=0; d<360; d++){
+        const ca=Math.cos(d*DEG), sa=Math.sin(d*DEG); let m=0;
+        for (const q of pts){ const v=q[0]*ca+q[1]*sa; if (v>m) m=v; }
+        h[d]=m;
+      }
+      return h;
+    });
+    M = state.inf.prop
+      ? { sx: 0.78 + 0.5*(1-Math.exp(-(A-1)/4)), xh: Math.min(C-16, X*(1+0.22*fit)) }
+      : { sx: 1, xh: X };
+    const bb = { x0:Infinity, x1:-Infinity, y0:Infinity, y1:-Infinity };
+    for (const c of copies) for (let k=0;k<N;k++){
+      const t=k/N*2*Math.PI, r=R(t,A)/Mx*c.s, a=t+c.r, x=r*Math.cos(a), y=r*Math.sin(a);
+      if (x<bb.x0) bb.x0=x; if (x>bb.x1) bb.x1=x; if (y<bb.y0) bb.y0=y; if (y>bb.y1) bb.y1=y;
+    }
+    P = { pf, eff, copies, unit, nibs, bb };
+    GL = buildGlyphs();
+    document.getElementById('rpf').textContent = pf.toFixed(3);
+    document.getElementById('ref').textContent = eff.toFixed(3);
+    document.getElementById('rmin').textContent = copies[copies.length-1].s.toFixed(3) + '×';
+    document.getElementById('rsx').textContent = M.sx.toFixed(2) + '×';
+    document.getElementById('rxh').textContent = M.xh.toFixed(0);
+  }
+
+  // ---------- skeleton processing ----------
+  function dedupe(raw){ return raw.filter((q,j) => j===0 || Math.hypot(q[0]-raw[j-1][0], q[1]-raw[j-1][1]) > 1e-6); }
+  function turn(a,b,c){
+    const a1=Math.atan2(b[1]-a[1], b[0]-a[0]), a2=Math.atan2(c[1]-b[1], c[0]-b[0]);
+    let d = Math.abs(a2-a1); return d>Math.PI ? 2*Math.PI-d : d;
+  }
+  function processStroke(raw){
+    const p = dedupe(raw), corners = [];
+    for (let j=1;j<p.length-1;j++){
+      if (turn(p[j-1],p[j],p[j+1]) > 50*DEG){
+        const v1=[p[j-1][0]-p[j][0], p[j-1][1]-p[j][1]], v2=[p[j+1][0]-p[j][0], p[j+1][1]-p[j][1]];
+        const l1=Math.hypot(...v1), l2=Math.hypot(...v2);
+        let bx=v1[0]/l1+v2[0]/l2, by=v1[1]/l1+v2[1]/l2;
+        bx *= M.sx; const bl=Math.hypot(bx,by)||1;
+        corners.push({ pt: tf(p[j]), bis:[bx/bl, by/bl] });
+      }
+    }
+    const out = [p[0]];
+    for (let j=0;j<p.length-1;j++){
+      const a=p[j], b=p[j+1], dx=b[0]-a[0], dy=b[1]-a[1], L=Math.hypot(dx,dy);
+      if (state.inf.bend && L > 8){
+        const al = Math.atan2(dy,dx), amp = L*0.22*Math.cos(3*al - PHI())/Ae();
+        const nx=-dy/L, ny=dx/L;
+        for (let k=1;k<=12;k++){ const u=k/12, o=amp*Math.sin(Math.PI*u); out.push([a[0]+dx*u+nx*o, a[1]+dy*u+ny*o]); }
+      } else out.push(b);
+    }
+    return { pts: out.map(tf), corners };
+  }
+  function splitRuns(p){
+    const runs = []; let cur = [p[0]];
+    for (let j=1;j<p.length-1;j++){
+      cur.push(p[j]);
+      if (turn(p[j-1],p[j],p[j+1]) > 25*DEG){ runs.push(cur); cur=[p[j]]; }
+    }
+    cur.push(p[p.length-1]); runs.push(cur);
+    return runs.filter(r => r.length > 1);
+  }
+  const shapeRho = t => state.inf.bowls ? Math.max(0.35, (state.A + Math.cos(3*(t - PHI() - Math.PI/2)))/(state.A+1)) : 1;
+  function bowlSkeleton(p){
+    const q = P.unit.map(([,,t]) => { const r = shapeRho(t); return [r*Math.cos(t), r*Math.sin(t)]; });
+    let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity;
+    for (const [x,y] of q){ x0=Math.min(x0,x); x1=Math.max(x1,x); y0=Math.min(y0,y); y1=Math.max(y1,y); }
+    const mx=(x0+x1)/2, my=(y0+y1)/2, hx=(x1-x0)/2||1, hy=(y1-y0)/2||1;
+    const sk = q.map(([x,y]) => [p.cx+(x-mx)/hx*(p.rx-INSET), p.cy+(y-my)/hy*(p.ry-INSET)]);
+    const keep = sk.map(([x,y]) => !p.cuts.some(([a,b,c,d]) => x>=a && x<=c && y>=b && y<=d));
+    if (keep.every(Boolean)) return { closed: sk.map(tf) };
+    const s0 = keep.indexOf(false), runs = []; let cur = [];
+    for (let k=1;k<=sk.length;k++){
+      const i = (s0+k)%sk.length;
+      if (keep[i]) cur.push(tf(sk[i])); else { if (cur.length>1) runs.push(cur); cur=[]; }
+    }
+    if (cur.length>1) runs.push(cur);
+    return { runs };
+  }
+  function ringPts(c){
+    const cx = c.pt[0]+c.bis[0]*JR*0.9, cy = c.pt[1]+c.bis[1]*JR*0.9, o = [];
+    for (let k=0;k<72;k++){
+      const t = k/72*2*Math.PI;
+      const r = JR*(state.inf.curves ? Math.max(0.35,(state.A+Math.cos(3*(t-PHI())))/(state.A+1)) : 1);
+      o.push([cx+r*Math.cos(t), cy+r*Math.sin(t)]);
+    }
+    return o;
+  }
+
+  // ---------- letterform mode ----------
+  const sup = (h,ang) => h[((Math.round(ang/DEG)%360)+360)%360];
+  const pt = q => f2(q[0])+' '+f2(q[1]);
+  function offsets(run, h, closed){
+    const n = run.length, Lf = [], Rt = [];
+    for (let j=0;j<n;j++){
+      const a = closed ? run[(j-1+n)%n] : run[Math.max(j-1,0)];
+      const b = closed ? run[(j+1)%n] : run[Math.min(j+1,n-1)];
+      const tx=b[0]-a[0], ty=b[1]-a[1], l=Math.hypot(tx,ty)||1, nx=-ty/l, ny=tx/l;
+      const ang = Math.atan2(ny,nx), h1 = sup(h,ang), h2 = sup(h,ang+Math.PI);
+      Lf.push([run[j][0]+nx*h1, run[j][1]+ny*h1]);
+      Rt.push([run[j][0]-nx*h2, run[j][1]-ny*h2]);
+    }
+    return [Lf, Rt];
+  }
+  function totalTurn(r){ let t=0; for (let j=1;j<r.length-1;j++) t += turn(r[j-1],r[j],r[j+1]); return t; }
+  function letterGeom(def){
+    const runs = [], loops = [], joints = [], dots = [];
+    for (const p of def.parts){
+      if (p.t==='s'){
+        const { pts, corners } = processStroke(p.p);
+        const rs = splitRuns(pts);
+        rs.forEach((r,j) => {
+          runs.push({ pts:r, fs: j===0, fe: j===rs.length-1, curved: totalTurn(r) > 20*DEG });
+          if (j>0) joints.push(r[0]);
+          if (j<rs.length-1) joints.push(r[r.length-1]);
+        });
+        if (state.inf.joins) for (const c of corners) loops.push(ringPts(c));
+      } else if (p.t==='b'){
+        const sk = bowlSkeleton(p);
+        if (sk.closed) loops.push(sk.closed);
+        else for (const r of sk.runs) runs.push({ pts:r, fs:true, fe:true, curved:true });
+      } else if (p.t==='d') dots.push(tf([p.x,p.y]));
+    }
+    const kept = [];
+    for (const e of joints) if (!kept.some(k => Math.hypot(k[0]-e[0],k[1]-e[1])<0.5)) kept.push(e);
+    return { runs, loops, joints:kept, dots };
+  }
+  const norm = (x,y) => { const l=Math.hypot(x,y)||1; return [x/l,y/l]; };
+  const cross = (a,b) => a[0]*b[1]-a[1]*b[0];
+  // move an offset end point along the stroke so the end is cut along direction c
+  function cutPoint(P0, t, E, c, lim){
+    const den = cross(t,c); if (Math.abs(den) < 0.25) return P0;
+    const a = cross([E[0]-P0[0], E[1]-P0[1]], c)/den;
+    const k = Math.max(-lim, Math.min(lim, a));
+    return [P0[0]+t[0]*k, P0[1]+t[1]*k];
+  }
+  function resample(pts, step){
+    const o = [pts[0]];
+    for (let j=1;j<pts.length;j++){
+      const a=pts[j-1], b=pts[j], k=Math.max(1, Math.ceil(Math.hypot(b[0]-a[0], b[1]-a[1])/step));
+      for (let q=1;q<=k;q++) o.push([a[0]+(b[0]-a[0])*q/k, a[1]+(b[1]-a[1])*q/k]);
+    }
+    return o;
+  }
+  function runShape(run, h, i){
+    const E = state.end, tw = state.inf.ends;
+    const p = (E==='taper' || E==='flare') ? resample(run.pts, 3) : run.pts, n = p.length;
+    const sLen = [0]; for (let j=1;j<n;j++) sLen.push(sLen[j-1] + Math.hypot(p[j][0]-p[j-1][0], p[j][1]-p[j-1][1]));
+    const L = sLen[n-1];
+    const wf = new Array(n).fill(1);
+    if (E==='taper' || E==='flare'){
+      const TL = Math.min(L*0.45, tw ? 10 + 30/Ae() : 22), FL = Math.min(L*0.4, 16), amp = tw ? Math.min(1, 0.15 + 0.9/Ae()) : 0.4;
+      for (let j=0;j<n;j++){
+        for (const [free, d] of [[run.fs, sLen[j]], [run.fe, L - sLen[j]]]){
+          if (!free) continue;
+          if (E==='taper') wf[j] *= Math.pow(Math.max(0.12, Math.min(1, d/TL)), 0.8);
+          else if (d < FL) wf[j] *= 1 + amp*Math.pow(1 - d/FL, 2);
+        }
+      }
+    }
+    const Lf = [], Rt = [];
+    for (let j=0;j<n;j++){
+      const a = p[Math.max(j-1,0)], b = p[Math.min(j+1,n-1)];
+      const [tx,ty] = norm(b[0]-a[0], b[1]-a[1]), nx=-ty, ny=tx, ang=Math.atan2(ny,nx);
+      const h1 = sup(h,ang)*wf[j], h2 = sup(h,ang+Math.PI)*wf[j];
+      Lf.push([p[j][0]+nx*h1, p[j][1]+ny*h1]); Rt.push([p[j][0]-nx*h2, p[j][1]-ny*h2]);
+    }
+    const extras = [];
+    const ends = [];
+    if (run.fs) ends.push({ E:p[0], out:norm(p[0][0]-p[1][0], p[0][1]-p[1][1]), L:0 });
+    if (run.fe) ends.push({ E:p[n-1], out:norm(p[n-1][0]-p[n-2][0], p[n-1][1]-p[n-2][1]), L:n-1 });
+    for (const e of ends){
+      const j = e.L;
+      let tIn = [-e.out[0], -e.out[1]], nrm = [-e.out[1], e.out[0]];
+      // serifs on vertical-ish ends sit flat on the baseline / x-height / cap line, as in most serif faces
+      const flatSerif = (E==='slab' || E==='hair' || E==='wedge') && Math.abs(e.out[1]) > 0.5;
+      if (flatSerif){ tIn = [0, -Math.sign(e.out[1])]; nrm = [1, 0]; }
+      const hw = Math.max(Math.hypot(Lf[j][0]-e.E[0], Lf[j][1]-e.E[1]), Math.hypot(Rt[j][0]-e.E[0], Rt[j][1]-e.E[1]), 1);
+      const deg = flatSerif ? Math.atan2(-tIn[1], -tIn[0])/DEG : Math.atan2(e.out[1], e.out[0])/DEG;
+      const use = (x,y,rotDeg,sx,sy) => `<use href="#pc${i}" transform="translate(${f2(x)} ${f2(y)}) rotate(${f2(rotDeg)}) scale(${f2(sx)} ${f2(sy)})"/>`;
+      const poly = pts => `<path d="M${pts.map(pt).join('L')}Z"/>`;
+      if (E==='angled'){
+        const ca = (tw ? 60 + state.rot*(i+1) : 60)*DEG, c = [Math.cos(ca), Math.sin(ca)];
+        Lf[j] = cutPoint(Lf[j], tIn, e.E, c, hw*2); Rt[j] = cutPoint(Rt[j], tIn, e.E, c, hw*2);
+      } else if (E==='round'){
+        extras.push(tw ? use(e.E[0], e.E[1], 0, NIB, NIB) : `<circle cx="${f2(e.E[0])}" cy="${f2(e.E[1])}" r="${f2(hw)}"/>`);
+      } else if (E==='taper'){
+        if (tw) extras.push(use(e.E[0], e.E[1], deg, NIB*0.35, NIB*0.35));
+      } else if (E==='wedge'){
+        const sw = hw*0.9;
+        const sides = flatSerif ? [[[e.E[0]+hw*0.8, e.E[1]], 1], [[e.E[0]-hw*0.8, e.E[1]], -1]] : [[Lf[j], 1], [Rt[j], -1]];
+        for (const [P0, side] of sides){
+          const o = [nrm[0]*side, nrm[1]*side];
+          if (tw) extras.push(use(P0[0]+o[0]*sw*0.35+tIn[0]*sw*0.35, P0[1]+o[1]*sw*0.35+tIn[1]*sw*0.35, Math.atan2(o[1],o[0])/DEG, sw*0.9, sw*0.9));
+          else extras.push(poly([[P0[0]+o[0]*sw, P0[1]+o[1]*sw], P0, [P0[0]+tIn[0]*sw*1.8, P0[1]+tIn[1]*sw*1.8]]));
+        }
+      } else if (E==='slab' || E==='hair'){
+        const a2 = hw + (E==='slab' ? 6 : 8), th = E==='slab' ? 6 : 1.6;
+        if (tw) extras.push(use(e.E[0]+tIn[0]*th/2, e.E[1]+tIn[1]*th/2, deg, th, a2*1.1));
+        else extras.push(poly([[e.E[0]+nrm[0]*a2, e.E[1]+nrm[1]*a2], [e.E[0]+nrm[0]*a2+tIn[0]*th, e.E[1]+nrm[1]*a2+tIn[1]*th],
+                               [e.E[0]-nrm[0]*a2+tIn[0]*th, e.E[1]-nrm[1]*a2+tIn[1]*th], [e.E[0]-nrm[0]*a2, e.E[1]-nrm[1]*a2]]));
+      } else if (E==='ball' && run.curved){
+        const rb = hw*1.35, cx = e.E[0]+e.out[0]*rb*0.35, cy = e.E[1]+e.out[1]*rb*0.35;
+        extras.push(tw ? use(cx, cy, deg, rb*1.15, rb*1.15) : `<circle cx="${f2(cx)}" cy="${f2(cy)}" r="${f2(rb)}"/>`);
+      }
+    }
+    return `<path d="M${[...Lf,...Rt.reverse()].map(pt).join('L')}Z"/>` + extras.join('');
+  }
+  function glyphLetter(def){
+    const geo = letterGeom(def), op = Math.min(1, 0.25 + state.alpha*1.25);
+    let out = '';
+    P.copies.forEach((c,i) => {
+      const h = P.nibs[i];
+      let paths = '';
+      for (const r of geo.runs) paths += runShape(r, h, i);
+      for (const l of geo.loops){ const [Lf,Rt] = offsets(l,h,true); paths += `<path d="M${Lf.map(pt).join('L')}ZM${Rt.reverse().map(pt).join('L')}Z"/>`; }
+      const stamp = (q,k) => state.inf.nib
+        ? `<use href="#pc${i}" transform="translate(${f2(q[0])} ${f2(q[1])}) scale(${f2(k)})"/>`
+        : `<use href="#nibc" transform="translate(${f2(q[0])} ${f2(q[1])}) scale(${f2(k*W/2/NIB)})"/>`;
+      out += `<g fill="${c.col}" stroke="none" opacity="${f2(op)}">${paths}${geo.joints.map(e=>stamp(e,NIB)).join('')}${geo.dots.map(d=>stamp(d,NIB*1.35)).join('')}</g>`;
+    });
+    return out;
+  }
+
+  // ---------- ornament mode ----------
+  function stack(tx,ty,sx,sy,sw=0.8,fo=state.alpha){
+    return `<g transform="translate(${f2(tx)} ${f2(ty)}) scale(${f2(sx)} ${f2(sy)})" fill-opacity="${f2(fo)}" stroke-opacity=".75" stroke-width="${sw}">`
+      + P.copies.map((c,i) => `<use href="#pc${i}" fill="${c.col}" stroke="${c.col}"/>`).join('') + '</g>';
+  }
+  let maskId = 0, maskDefs = '';
+  function tfBox(cx,cy,rx,ry){ const t=ymap(cy+ry), b=ymap(cy-ry); return { cx:cx*M.sx, cy:(t+b)/2, rx:rx*M.sx, ry:(t-b)/2 }; }
+  function bowlOrn(p0){
+    const p = tfBox(p0.cx,p0.cy,p0.rx,p0.ry);
+    const id = 'bm' + (maskId++), c0 = P.copies[0].col;
+    const hole = P.unit.map(([ux,uy]) => {
+      const dx=p.rx*ux, dy=p.ry*uy, l=Math.hypot(dx,dy), k = l>W ? (l-W)/l : 0;
+      return f2(p.cx+dx*k) + ' ' + f2(p.cy+dy*k);
+    });
+    const hd = 'M' + hole.join('L') + 'Z';
+    const cuts = p0.cuts.map(([x0,y0,x1,y1]) => { const a=tf([x0,y0]), b=tf([x1,y1]); return `<rect x="${f2(a[0])}" y="${f2(a[1])}" width="${f2(b[0]-a[0])}" height="${f2(b[1]-a[1])}" fill="#000"/>`; }).join('');
+    maskDefs += `<mask id="${id}"><rect x="${f2(p.cx-3*p.rx)}" y="${f2(p.cy-3*p.ry)}" width="${f2(6*p.rx)}" height="${f2(6*p.ry)}" fill="#fff"/><path d="${hd}" fill="#000"/>${cuts}</mask>`;
+    return `<g mask="url(#${id})">${stack(p.cx,p.cy,p.rx,p.ry)}<path d="${hd}" fill="none" stroke="${c0}" stroke-width="2" vector-effect="non-scaling-stroke" opacity=".9"/></g>`;
+  }
+  function glyphOrn(def){
+    const c0 = P.copies[0].col, op = Math.min(1, 0.45 + state.alpha*1.2);
+    let bowls='', strokes='', blobs='';
+    const ends = [];
+    for (const p of def.parts){
+      if (p.t==='b') bowls += bowlOrn(p);
+      else if (p.t==='s'){
+        const { pts } = processStroke(p.p);
+        strokes += `<path d="M${pts.map(pt).join('L')}" fill="none" stroke="${c0}" stroke-opacity="${op}" stroke-width="${W}" stroke-linecap="round" stroke-linejoin="round"/>`;
+        ends.push(pts[0], pts[pts.length-1]);
+      } else if (p.t==='d'){ const q = tf([p.x,p.y]); blobs += stack(q[0],q[1],p.r,p.r); }
+    }
+    const kept = [];
+    for (const e of ends) if (!kept.some(k => Math.hypot(k[0]-e[0],k[1]-e[1])<4)) kept.push(e);
+    for (const e of kept) blobs += stack(e[0],e[1],G.TR,G.TR);
+    return bowls + strokes + blobs;
+  }
+
+  // ---------- layout ----------
+  const adv = ch => ch===' ' ? G.SPACE : glyph(ch).w*M.sx + 2*G.SB;
+  const width = s => [...s].reduce((a,c)=>a+adv(c),0);
+  let wrapBroke = false;
+  function wrap(text, maxW){
+    const pieces = []; wrapBroke = false;
+    for (const w of text.split(' ')){
+      if (width(w) <= maxW){ pieces.push(w); continue; }
+      let cur = ''; wrapBroke = true;
+      for (const ch of w){ if (cur && width(cur+ch) > maxW){ pieces.push(cur); cur=''; } cur += ch; }
+      pieces.push(cur);
+    }
+    const lines = []; let cur = null;
+    for (const w of pieces){
+      if (cur===null) cur = w;
+      else if (width(cur)+G.SPACE+width(w) <= maxW) cur += ' ' + w;
+      else { lines.push(cur); cur = w; }
+    }
+    if (cur!==null) lines.push(cur);
+    return lines;
+  }
+  const stage = document.getElementById('stage');
+  function render(){
+    const text = state.text;
+    if (!text.trim()){ stage.innerHTML = '<div class="empty">Type something above to set it in Trefoil Type.</div>'; return; }
+    const cw = Math.max(200, stage.clientWidth - 8);
+    const u = Math.min(1.3, Math.max(0.62, cw/560));
+    const avail = cw/u - 2*G.PAD, mk = state.mark, bb = P.bb;
+    const bw = bb.x1-bb.x0, bh = bb.y1-bb.y0;
+    let lines, k = 0, gap = 0, above = false, reserve = 0, nL = 1;
+    // side lockup: mark as tall as the text block (one or two lines), optically enlarged 6%
+    for (let it=0; it<4; it++){
+      if (mk.on){
+        k = Math.min((C + (Math.min(nL,2)-1)*G.LINE)*1.06/bh, avail*0.3/bw) * mk.size;
+        gap = k*bh/2*(0.6 + 0.8*mk.x);
+        reserve = Math.max(0, bw*k + gap);
+      }
+      lines = wrap(text, Math.max(60, avail - reserve));
+      if (lines.length === nL) break;
+      nL = lines.length;
+    }
+    // too narrow for a side lockup without breaking words: stack the mark above the text
+    if (mk.on && wrapBroke){
+      above = true; reserve = 0;
+      k = Math.min(C*1.06/bh, avail*0.6/bw) * mk.size;
+      lines = wrap(text, avail);
+    }
+    const markW = bw*k, markH = bh*k;
+    const vgap = above ? markH*0.45*(1 - 0.8*mk.y) : 0;
+    const top0 = above ? G.PAD + markH + vgap + C : G.TOP;
+    const x0 = G.PAD + reserve;
+    const textW = Math.max(...lines.map(width));
+    const totalW = Math.max(x0 + textW + G.PAD, mk.on ? markW + 2*G.PAD : 0);
+    const H = top0 + (lines.length-1)*G.LINE - G.DESC + 26;
+    let mLeft, mcy;
+    if (above){ mLeft = G.PAD + (mk.x >= 0 ? mk.x*Math.max(0, textW - markW) : mk.x*markW*0.5); mcy = G.PAD + markH/2; }
+    else { mLeft = G.PAD; mcy = (G.TOP - C + G.TOP + (Math.min(lines.length,2)-1)*G.LINE)/2 - mk.y*C*0.5; }
+    const mtx = mLeft - bb.x0*k, mty = mcy - (bb.y0+bb.y1)/2*k;
+    const vx0 = mk.on ? Math.min(0, mLeft - 8) : 0;
+    const vy0 = mk.on ? Math.min(0, mcy - markH/2 - 8) : 0, vy1 = mk.on ? Math.max(H, mcy + markH/2 + 8) : H;
+    maskId = 0; maskDefs = '';
+    let body = '', guides = '';
+    lines.forEach((line, li) => {
+      const base = top0 + li*G.LINE;
+      if (state.grid){
+        for (const [v,lab] of [[0,'baseline'],[M.xh,'x-height'],[C,'cap'],[D,'descender']]){
+          guides += `<line x1="0" x2="${f2(totalW)}" y1="${f2(base-v)}" y2="${f2(base-v)}" stroke="var(--guide)" stroke-width="1" stroke-dasharray="${v===0?'':'4 4'}" vector-effect="non-scaling-stroke"/>`;
+          if (li===0) guides += `<text x="3" y="${f2(base-v-3)}" font-size="8" fill="var(--muted)" font-family="inherit">${lab}</text>`;
+        }
+      }
+      let x = x0;
+      for (const ch of line){
+        if (ch!==' '){
+          const def = glyph(ch);
+          if (state.grid) guides += `<rect x="${f2(x)}" y="${base-C}" width="${f2(adv(ch))}" height="${C-D}" fill="none" stroke="var(--guide)" stroke-opacity=".5" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
+          body += `<g transform="translate(${f2(x+G.SB)} ${base}) scale(1 -1)">${state.mode==='letter' ? glyphLetter(def) : glyphOrn(def)}</g>`;
+        }
+        x += adv(ch);
+      }
+    });
+    const markSVG = mk.on ? stack(mtx, mty, k, k, 1, state.mode==='letter' ? Math.min(0.9, 0.05 + state.alpha*1.5) : state.alpha) : '';
+    stage.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${f2(vx0)} ${f2(vy0)} ${f2(totalW-vx0)} ${f2(vy1-vy0)}" width="${f2((totalW-vx0)*u)}" height="${f2((vy1-vy0)*u)}"><defs>${maskDefs}</defs>${guides}${markSVG}${body}</svg>`;
+    stage.setAttribute('aria-label', 'Rendered text: ' + text);
+  }
+  function renderPrim(){
+    document.getElementById('primsvg').innerHTML = stack(0,0,1,1,1);
+    document.getElementById('primcap').textContent = state.mode==='letter'
+      ? 'The shape. Each copy is the pen for one pass over the letter.'
+      : 'The ornament stamped on bowls and stroke ends.';
+  }
+
+  // ---------- controls ----------
+  const fmt = { A:v=>(+v).toFixed(1), n:v=>v, rot:v=>v+'°', fit:v=>(+v).toFixed(1), alpha:v=>(+v).toFixed(2) };
+  function syncUI(){
+    for (const k of Object.keys(fmt)){
+      document.getElementById(k).value = state[k];
+      document.getElementById('o'+k).textContent = fmt[k](state[k]);
+    }
+    document.getElementById('pal').value = state.pal;
+    document.getElementById('end').value = state.end;
+    document.getElementById('grid').checked = state.grid;
+    document.getElementById('txt').value = state.text;
+    for (const k of Object.keys(state.lock)){
+      const el = document.getElementById(k), box = document.querySelector(`.ctl[data-k="${k}"]`);
+      el.disabled = state.lock[k]; box.classList.toggle('locked', state.lock[k]);
+      document.querySelector(`[data-lock="${k}"]`).checked = state.lock[k];
+    }
+    const endOff = state.mode==='orn';
+    document.getElementById('end').disabled = endOff || state.lock.end;
+    document.querySelector('.ctl[data-k="end"]').classList.toggle('locked', endOff || state.lock.end);
+    document.querySelectorAll('.infgrid label').forEach(l => {
+      const k = l.dataset.inf, cb = l.querySelector('input');
+      cb.checked = state.inf[k];
+      const na = state.mode==='orn' && (k==='joins' || k==='nib' || k==='ends');
+      cb.disabled = na; l.classList.toggle('off', na);
+    });
+  }
+  function update(){ computePrim(); renderPrim(); render(); }
+  const mfmt = { mx:v=>(v>0?'+':'')+(+v).toFixed(2), my:v=>(v>0?'+':'')+(+v).toFixed(2), ms:v=>(+v).toFixed(2)+'×' };
+  const mkey = { mx:'x', my:'y', ms:'size' };
+  function syncMark(){
+    for (const id of Object.keys(mkey)){
+      const el = document.getElementById(id);
+      el.value = state.mark[mkey[id]]; el.disabled = !state.mark.on;
+      document.getElementById('o'+id).textContent = mfmt[id](state.mark[mkey[id]]);
+    }
+    document.getElementById('mon').checked = state.mark.on;
+    document.getElementById('mreset').disabled = !state.mark.on;
+    document.getElementById('markset').classList.toggle('off', !state.mark.on);
+  }
+  for (const id of Object.keys(mkey)){
+    document.getElementById(id).addEventListener('input', e => {
+      state.mark[mkey[id]] = +e.target.value;
+      document.getElementById('o'+id).textContent = mfmt[id](state.mark[mkey[id]]);
+      render();
+    });
+  }
+  document.getElementById('mon').addEventListener('change', e => { state.mark.on = e.target.checked; syncMark(); render(); });
+  document.getElementById('mreset').addEventListener('click', () => { Object.assign(state.mark, { x:0, y:0, size:1 }); syncMark(); render(); });
+  for (const k of Object.keys(fmt)){
+    document.getElementById(k).addEventListener('input', e => {
+      state[k] = +e.target.value;
+      document.getElementById('o'+k).textContent = fmt[k](state[k]);
+      update();
+    });
+  }
+  document.getElementById('pal').addEventListener('change', e => { state.pal = e.target.value; update(); });
+  document.getElementById('end').addEventListener('change', e => { state.end = e.target.value; render(); });
+  document.querySelectorAll('[data-lock]').forEach(cb => cb.addEventListener('change', () => { state.lock[cb.dataset.lock] = cb.checked; syncUI(); }));
+  document.querySelectorAll('input[data-inf]').forEach(cb => cb.addEventListener('change', () => { state.inf[cb.dataset.inf] = cb.checked; update(); }));
+  document.querySelectorAll('input[name=mode]').forEach(r => r.addEventListener('change', e => { state.mode = e.target.value; syncUI(); renderPrim(); render(); }));
+  document.getElementById('grid').addEventListener('change', e => { state.grid = e.target.checked; render(); });
+  document.getElementById('txt').addEventListener('input', e => { state.text = e.target.value; render(); });
+  document.querySelectorAll('.samples button').forEach(b => b.addEventListener('click', () => {
+    state.text = b.dataset.s; document.getElementById('txt').value = state.text; render();
+  }));
+  const pals = ['Monochrome','Analogous','Complementary','Triadic','Warm','Cool'];
+  document.getElementById('rnd').addEventListener('click', () => {
+    const r = (a,b,s) => Math.round((a + Math.random()*(b-a))/s)*s;
+    const next = { A:+r(1.2,8,0.1).toFixed(1), n:r(2,10,1), rot:r(5,120,1), fit:+r(-0.5,0.2,0.1).toFixed(1),
+      alpha:+r(0.12,0.4,0.01).toFixed(2), pal:pals[Math.floor(Math.random()*pals.length)],
+      end:['round','flat','angled','taper','flare','wedge','slab','hair','ball'][Math.floor(Math.random()*9)] };
+    for (const k of Object.keys(next)) if (!state.lock[k]) state[k] = next[k];
+    syncUI(); update();
+  });
+  let rt; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(render, 60); }).observe(stage);
+
+  syncUI(); syncMark(); update();
+})();
+</script>
+</body>
+</html>
