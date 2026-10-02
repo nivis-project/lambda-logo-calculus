@@ -3,7 +3,8 @@ import { resolveParams } from '../params/resolve.js';
 import type { ArcSegment, GlyphSkeleton, StrokeSegment } from '../glyph/types.js';
 import { radiusAt } from '../template/sample.js';
 import type { Vec2 } from '../template/types.js';
-import type { Polyline, SkeletonStage, StageContext, WorkingSkeleton } from './types.js';
+import { CORNER_TURN, dedupe, normalise, turnBetween } from '../stroke/geometry.js';
+import type { Corner, Polyline, SkeletonStage, StageContext, WorkingSkeleton } from './types.js';
 
 const DEG = Math.PI / 180;
 
@@ -105,6 +106,29 @@ function boundsFrom(context: StageContext): {
   };
 }
 
+// A corner is measured here, on the sampled stroke, because the bend stage
+// replaces a straight segment with twelve points and a bisector taken from
+// those is the bisector of a different angle. Required by name in openspec
+// change add-stroker-endings-joins, task 1.1.
+export function cornersOf(points: Polyline): Corner[] {
+  const p = dedupe(points);
+  const out: Corner[] = [];
+
+  for (let j = 1; j < p.length - 1; j++) {
+    const before = p[j - 1];
+    const here = p[j];
+    const after = p[j + 1];
+    if (before === undefined || here === undefined || after === undefined) continue;
+    if (turnBetween(before, here, after) <= CORNER_TURN * DEG) continue;
+
+    const first = normalise(before[0] - here[0], before[1] - here[1]);
+    const second = normalise(after[0] - here[0], after[1] - here[1]);
+    out.push({ at: here, bisector: normalise(first[0] + second[0], first[1] + second[1]) });
+  }
+
+  return out;
+}
+
 function build(
   working: WorkingSkeleton,
   glyph: GlyphSkeleton,
@@ -114,13 +138,19 @@ function build(
   const bounds = boundsFrom(context);
   const runs = [...working.runs];
   const dots = [...working.dots];
+  const corners = [...working.corners];
 
   for (const part of glyph.parts) {
-    if (part.kind === 'stroke') runs.push(sampleStroke(part.segments, context, warp, bounds));
-    else if (part.kind === 'dot') dots.push({ x: part.x, y: part.y, r: part.r });
+    if (part.kind === 'stroke') {
+      const sampled = sampleStroke(part.segments, context, warp, bounds);
+      runs.push(sampled);
+      corners.push(...cornersOf(sampled));
+    } else if (part.kind === 'dot') {
+      dots.push({ x: part.x, y: part.y, r: part.r });
+    }
   }
 
-  return { ...working, runs, dots };
+  return { ...working, runs, dots, corners };
 }
 
 export const curvesStage: SkeletonStage = {

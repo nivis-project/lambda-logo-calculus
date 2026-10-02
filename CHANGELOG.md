@@ -10,6 +10,19 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Added
 
+- Letters now have width. The support-function stroker turns a skeleton into an
+  outline, and the base curve can act as the pen, so the same shape that draws
+  the mark decides how thick each letter is in each direction. Copy `i` of the
+  nested stack is the pen for pass `i`.
+- All nine stroke endings, each in a shape-built and a plain form, plus the
+  looped join. Serifs on vertical stems lie flat; balls appear only on curved
+  ends. Taper and flare are a width profile on the stroker rather than added
+  geometry, so a tapered end narrows the stroke itself.
+- An ending applies to a free end and never to a joint, and a joint is covered
+  by a stamp of the pen so two runs read as one stroke.
+- The working skeleton carries its corners, measured before the bend stage
+  smooths them. A bisector taken after bending is the bisector of a different
+  angle, which would have put every loop in the wrong place.
 - The four transformations that give the letterforms their character are now an
   ordered, switchable list of pure functions: curves warps arcs by the base
   curve, bowls traces counters from it, bend bows straight runs along it, and

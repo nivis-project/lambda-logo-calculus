@@ -1,6 +1,7 @@
 import type { GridMetrics } from '../glyph/types.js';
 import type { Vec2 } from '../template/types.js';
-import type { Dot, Polyline, SkeletonStage, StageContext } from './types.js';
+import { normalise } from '../stroke/geometry.js';
+import type { Corner, Dot, Polyline, SkeletonStage, StageContext } from './types.js';
 
 export function remapHeight(y: number, metrics: GridMetrics, xHeight: number): number {
   if (y <= 0) return y;
@@ -31,6 +32,13 @@ function moveDot(dot: Dot, context: StageContext): Dot {
   return { x, y, r: dot.r };
 }
 
+function moveCorner(corner: Corner, context: StageContext): Corner {
+  return {
+    at: move(corner.at, context),
+    bisector: normalise(corner.bisector[0] * context.modulation.widthFactor, corner.bisector[1]),
+  };
+}
+
 export const proportionsStage: SkeletonStage = {
   id: 'proportions',
   version: 1,
@@ -43,6 +51,7 @@ export const proportionsStage: SkeletonStage = {
       runs: working.runs.map((run) => moveRun(run, context)),
       rings: working.rings.map((ring) => moveRun(ring, context)),
       dots: working.dots.map((dot) => moveDot(dot, context)),
+      corners: working.corners.map((corner) => moveCorner(corner, context)),
     };
   },
 };

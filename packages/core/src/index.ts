@@ -80,3 +80,44 @@ export {
   createStageRegistry,
   runStages,
 } from './stage/pipeline.js';
+
+export type { Pen } from './stroke/pen.js';
+export { NIB_SIZE, PEN_SAMPLES, SUPPORT_ENTRIES, roundPen, shapePen, supportAt } from './stroke/pen.js';
+export type { Run } from './stroke/geometry.js';
+export {
+  CORNER_TURN,
+  CURVED_TURN,
+  SPLIT_TURN,
+  cross,
+  dedupe,
+  isCurved,
+  normalise,
+  resample,
+  splitRuns,
+  totalTurn,
+  turnBetween,
+} from './stroke/geometry.js';
+export type { Contour, EndContext, Ending, EndingBuildContext } from './stroke/endings.js';
+export {
+  angledEnding,
+  ballEnding,
+  builtInEndings,
+  createEndingRegistry,
+  flareEnding,
+  flatEnding,
+  hairEnding,
+  roundEnding,
+  slabEnding,
+  taperEnding,
+  wedgeEnding,
+} from './stroke/endings.js';
+export type { GlyphOutline, OutlineOptions } from './stroke/outline.js';
+export {
+  JOIN_FLOOR,
+  JOIN_RADIUS,
+  JOIN_SAMPLES,
+  outlineSkeleton,
+  stampContour,
+} from './stroke/outline.js';
+export type { Corner } from './stage/types.js';
+export { cornersOf } from './stage/curves.js';

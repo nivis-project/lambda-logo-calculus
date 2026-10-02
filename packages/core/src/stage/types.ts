@@ -11,11 +11,17 @@ export interface Dot {
   readonly r: number;
 }
 
+export interface Corner {
+  readonly at: Vec2;
+  readonly bisector: Vec2;
+}
+
 export interface WorkingSkeleton {
   readonly advance: number;
   readonly runs: readonly Polyline[];
   readonly rings: readonly Polyline[];
   readonly dots: readonly Dot[];
+  readonly corners: readonly Corner[];
 }
 
 export interface Modulation {
@@ -51,5 +57,5 @@ export interface StageListEntry {
 }
 
 export function emptyWorking(advance: number): WorkingSkeleton {
-  return { advance, runs: [], rings: [], dots: [] };
+  return { advance, runs: [], rings: [], dots: [], corners: [] };
 }
