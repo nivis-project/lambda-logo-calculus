@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-ao85
 title: 02 The prototype described
-status: todo
+status: completed
 type: milestone
 priority: normal
 created_at: 2026-10-02T10:27:26Z
-updated_at: 2026-10-02T10:28:03Z
+updated_at: 2026-10-02T11:08:35Z
 blocked_by:
     - lambda-logo-calculus-vlhc
 ---

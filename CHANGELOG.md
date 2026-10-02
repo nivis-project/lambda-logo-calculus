@@ -10,6 +10,15 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Added
 
+- Parameters are declared once, as data: an id, a kind, a range, a default, and
+  whether they can be locked and randomized. Resolution reports what it clamped
+  and names both numbers, where the prototype clamps silently and lets a slider
+  stop responding without saying so.
+- A typed registry per extension point, refusing a duplicate id so a typo cannot
+  shadow a built-in module.
+- Randomize draws from a stored seed, so the same seed gives the same result and
+  a logo can be returned to. The prototype draws unseeded and cannot. That is a
+  deliberate departure, and the reason is written down.
 - The prototype's own output is recorded, across 27 settings that vary the
   amplitude, the rotation, the fit size, the copy count, all nine endings and
   all six palettes. The recorder drives the real prototype in a real browser;
