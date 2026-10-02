@@ -7,6 +7,7 @@ priority: normal
 created_at: 2026-10-02T10:27:51Z
 updated_at: 2026-10-02T10:51:40Z
 parent: lambda-logo-calculus-vlhc
+openspec-link: openspec/changes/archive/2026-10-02-add-frozen-prototype-reference
 ---
 
 The documents a later milestone reads from, and the prototype frozen at a stable path.

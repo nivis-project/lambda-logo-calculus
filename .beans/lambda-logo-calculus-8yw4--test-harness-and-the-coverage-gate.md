@@ -9,6 +9,7 @@ updated_at: 2026-10-02T10:56:15Z
 parent: lambda-logo-calculus-vlhc
 blocked_by:
     - lambda-logo-calculus-hfsz
+openspec-link: openspec/changes/archive/2026-10-02-add-coverage-gate-and-testing-strategy
 ---
 
 The thresholds the gate enforces, and the kinds of test this project uses.

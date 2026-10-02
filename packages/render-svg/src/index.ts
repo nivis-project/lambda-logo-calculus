@@ -30,7 +30,25 @@ function escapeAttribute(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 }
 
-function render(node: SceneNode, path: string, decimals: number, depth: number): string {
+// Rounding is a statement about what the viewer can see, so it is made in the
+// root's coordinate space. A group that scales its children by 400 buys them
+// the decimals that scale costs.
+export function decimalsAtScale(decimals: number, scale: number): number {
+  return scale <= 1 ? decimals : decimals + Math.ceil(Math.log10(scale));
+}
+
+function scaleOf(transform: Transform | undefined): number {
+  if (transform?.scale === undefined) return 1;
+  return Math.max(Math.abs(transform.scale[0]), Math.abs(transform.scale[1]));
+}
+
+function render(
+  node: SceneNode,
+  path: string,
+  decimals: number,
+  depth: number,
+  scale: number,
+): string {
   const indent = '  '.repeat(depth);
 
   if (node.kind === 'path') {
@@ -38,7 +56,8 @@ function render(node: SceneNode, path: string, decimals: number, depth: number):
       node.style.fillRule === undefined ? '' : ` fill-rule="${node.style.fillRule}"`;
     const alpha =
       node.style.opacity === 1 ? '' : ` opacity="${String(node.style.opacity)}"`;
-    return `${indent}<path id="${path}" d="${pathData(node, decimals)}" fill="${escapeAttribute(node.style.fill)}"${alpha}${rule}/>`;
+    const places = decimalsAtScale(decimals, scale);
+    return `${indent}<path id="${path}" d="${pathData(node, places)}" fill="${escapeAttribute(node.style.fill)}"${alpha}${rule}/>`;
   }
 
   const transform =
@@ -47,8 +66,9 @@ function render(node: SceneNode, path: string, decimals: number, depth: number):
       : ` transform="${escapeAttribute(transformToAttribute(node.transform))}"`;
   const fill = node.fill === undefined ? '' : ` fill="${escapeAttribute(node.fill)}"`;
   const opacity = node.opacity === undefined ? '' : ` opacity="${String(node.opacity)}"`;
+  const inner = scale * scaleOf(node.transform);
   const children = node.children
-    .map((child, index) => render(child, `${path}-${String(index)}`, decimals, depth + 1))
+    .map((child, index) => render(child, `${path}-${String(index)}`, decimals, depth + 1, inner))
     .join('\n');
 
   return `${indent}<g id="${path}"${transform}${fill}${opacity}>\n${children}\n${indent}</g>`;
@@ -57,7 +77,7 @@ function render(node: SceneNode, path: string, decimals: number, depth: number):
 export function sceneToSvg(scene: Scene, decimals = 2): string {
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${scene.viewBox.map((v) => v.toFixed(decimals)).join(' ')}">`,
-    render(scene.root, 'root', decimals, 1),
+    render(scene.root, 'root', decimals, 1, 1),
     '</svg>',
     '',
   ].join('\n');

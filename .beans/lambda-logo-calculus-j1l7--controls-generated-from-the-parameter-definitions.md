@@ -9,6 +9,7 @@ updated_at: 2026-10-02T13:31:37Z
 parent: lambda-logo-calculus-549o
 blocked_by:
     - lambda-logo-calculus-f3o5
+openspec-link: openspec/changes/archive/2026-10-02-add-generated-controls
 ---
 
 Every control comes from a declaration. A hand-written slider is a defect.

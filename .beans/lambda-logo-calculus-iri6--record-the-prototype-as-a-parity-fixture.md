@@ -9,6 +9,7 @@ updated_at: 2026-10-02T11:08:32Z
 parent: lambda-logo-calculus-ao85
 blocked_by:
     - lambda-logo-calculus-2ujg
+openspec-link: openspec/changes/archive/2026-10-02-record-the-parity-fixture
 ---
 
 Drive the prototype in a real browser, through its own controls, and record what it renders.

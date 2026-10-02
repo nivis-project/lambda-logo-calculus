@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { groupNode, pathNode, type Scene } from '@trefoil/core';
+import { groupNode, pathNode, type Contour, type Scene } from '@trefoil/core';
 import {
   RENDER_SVG_PACKAGE_VERSION,
   contourToPathData,
@@ -109,5 +109,57 @@ describe('opacity on a group', () => {
       'fill="hsl(1 2% 3%)"',
     );
     expect(sceneToSvg(scene)).not.toMatch(/<g[^>]*fill=/);
+  });
+});
+
+describe('rounding happens where the viewer looks', () => {
+  const ring: Contour = [
+    [0.123456, 0.987654],
+    [-0.654321, 0.111111],
+    [0.5, -0.5],
+  ];
+
+  function pathOf(scale: number): string {
+    const scaled: Scene = {
+      viewBox: [0, 0, 100, 100],
+      root: groupNode([pathNode([ring], { fill: '#000', opacity: 1 })], {
+        scale: [scale, scale],
+      }),
+    };
+    const match = / d="([^"]+)"/.exec(sceneToSvg(scaled));
+    if (match?.[1] === undefined) throw new Error('no path was rendered');
+    return match[1];
+  }
+
+  it('leaves a path at scale 1 exactly as it was', () => {
+    expect(pathOf(1)).toBe('M0.12 0.99L-0.65 0.11L0.50 -0.50Z');
+  });
+
+  it('leaves a mirrored path alone, because a mirror is not a magnifier', () => {
+    const mirrored: Scene = {
+      viewBox: [0, 0, 100, 100],
+      root: groupNode([pathNode([ring], { fill: '#000', opacity: 1 })], { scale: [1, -1] }),
+    };
+    expect(sceneToSvg(mirrored)).toContain('M0.12 0.99');
+  });
+
+  it('buys back the decimals a scale costs', () => {
+    expect(pathOf(400)).toBe('M0.12346 0.98765L-0.65432 0.11111L0.50000 -0.50000Z');
+    expect(pathOf(10)).toBe('M0.123 0.988L-0.654 0.111L0.500 -0.500Z');
+  });
+
+  it('keeps the error in root space inside the bound it has at scale 1', () => {
+    const bound = 0.5 * 10 ** -2;
+
+    for (const scale of [1, 7, 120, 950]) {
+      const numbers = [...pathOf(scale).matchAll(/-?\d+\.\d+/g)].map((m) => Number(m[0]));
+      const wanted = ring.flat();
+
+      for (const [index, value] of numbers.entries()) {
+        const want = wanted[index];
+        if (want === undefined) throw new Error('a coordinate went missing');
+        expect(Math.abs(value - want) * scale).toBeLessThanOrEqual(bound + 1e-12);
+      }
+    }
   });
 });

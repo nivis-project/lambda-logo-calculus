@@ -7,6 +7,7 @@ priority: normal
 created_at: 2026-10-02T11:09:09Z
 updated_at: 2026-10-02T11:12:32Z
 parent: lambda-logo-calculus-bmm5
+openspec-link: openspec/changes/archive/2026-10-02-add-params-registry-and-seed
 ---
 
 Parameters declared as data, a typed registry per extension point, and randomness that comes from a stored seed.

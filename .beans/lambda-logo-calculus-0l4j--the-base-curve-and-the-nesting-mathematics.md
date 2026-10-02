@@ -9,6 +9,7 @@ updated_at: 2026-10-02T11:51:30Z
 parent: lambda-logo-calculus-bmm5
 blocked_by:
     - lambda-logo-calculus-4x3k
+openspec-link: openspec/changes/archive/2026-10-02-add-curve-and-nesting
 ---
 
 The curve, the fit search, the effective scale and the copies, with every clamp reported rather than applied silently.

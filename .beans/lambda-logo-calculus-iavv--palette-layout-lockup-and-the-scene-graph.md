@@ -9,6 +9,7 @@ updated_at: 2026-10-02T12:18:30Z
 parent: lambda-logo-calculus-bmm5
 blocked_by:
     - lambda-logo-calculus-gt9k
+openspec-link: openspec/changes/archive/2026-10-02-add-palette-layout-scene
 ---
 
 The six palettes, advances and wrapping, the mark's placement, and a serialisable scene graph a renderer reads.

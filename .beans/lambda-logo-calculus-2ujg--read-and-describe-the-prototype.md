@@ -7,6 +7,7 @@ priority: normal
 created_at: 2026-10-02T10:27:51Z
 updated_at: 2026-10-02T11:01:40Z
 parent: lambda-logo-calculus-ao85
+openspec-link: openspec/changes/archive/2026-10-02-describe-the-prototype
 ---
 
 Specs written from reading `reference/trefoil-type.html`, not from memory.

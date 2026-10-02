@@ -9,6 +9,7 @@ updated_at: 2026-10-02T12:06:15Z
 parent: lambda-logo-calculus-bmm5
 blocked_by:
     - lambda-logo-calculus-jix4
+openspec-link: openspec/changes/archive/2026-10-02-add-skeleton-stages
 ---
 
 Curves, bowls, bend and proportions as an ordered list of pure functions, each switchable, none reading a global.

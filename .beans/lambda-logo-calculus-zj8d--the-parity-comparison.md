@@ -9,6 +9,7 @@ updated_at: 2026-10-02T12:29:49Z
 parent: lambda-logo-calculus-bmm5
 blocked_by:
     - lambda-logo-calculus-iavv
+openspec-link: openspec/changes/archive/2026-10-02-add-parity-comparison
 ---
 
 Compare the port against the recorded fixture within the derived tolerance, and hand the baseline over to golden snapshots.

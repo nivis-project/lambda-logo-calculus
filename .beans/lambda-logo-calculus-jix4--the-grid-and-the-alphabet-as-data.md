@@ -7,6 +7,7 @@ priority: normal
 created_at: 2026-10-02T11:09:09Z
 updated_at: 2026-10-02T12:00:41Z
 parent: lambda-logo-calculus-bmm5
+openspec-link: openspec/changes/archive/2026-10-02-add-grid-and-alphabet
 ---
 
 69 glyph skeletons of strokes, bowls, dots and cut regions on a shared grid, with arcs stored as arcs.

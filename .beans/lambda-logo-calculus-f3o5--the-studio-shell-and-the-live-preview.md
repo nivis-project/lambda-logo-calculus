@@ -9,6 +9,7 @@ updated_at: 2026-10-02T12:55:28Z
 parent: lambda-logo-calculus-549o
 blocked_by:
     - lambda-logo-calculus-985x
+openspec-link: openspec/changes/archive/2026-10-02-add-studio-shell
 ---
 
 A page that opens, draws, and redraws when something changes.

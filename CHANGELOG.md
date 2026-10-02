@@ -183,6 +183,13 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Fixed
 
+- The mark's outline is smooth. The renderer rounded every coordinate to two
+  decimals in whatever space it found it in; the mark is drawn at unit size and
+  scaled up by about four hundred, so two decimals there was a one percent
+  wobble, magnified along with the shape. Rounding now happens in the space the
+  viewer sees, so a shape drawn small and scaled up is as accurate as one drawn
+  large. The letters are drawn at scale 1 and did not move.
+
 - Fuzzy letters. Every path of a pass carried the pass's transparency, so the
   stroke, its endings and its stamps each went transparent separately and their
   overlaps blended twice: soft haloes at the edges, dark patches where shapes

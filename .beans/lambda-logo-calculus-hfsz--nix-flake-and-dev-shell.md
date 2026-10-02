@@ -7,6 +7,7 @@ priority: normal
 created_at: 2026-10-02T10:27:51Z
 updated_at: 2026-10-02T10:48:57Z
 parent: lambda-logo-calculus-vlhc
+openspec-link: openspec/changes/archive/2026-10-02-add-nix-flake-and-gate
 ---
 
 A flake with a dev shell carrying the toolchain, so every machine and every check resolve the same versions.

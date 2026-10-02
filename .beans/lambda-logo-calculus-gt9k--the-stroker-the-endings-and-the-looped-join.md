@@ -9,6 +9,7 @@ updated_at: 2026-10-02T12:12:36Z
 parent: lambda-logo-calculus-bmm5
 blocked_by:
     - lambda-logo-calculus-gqqf
+openspec-link: openspec/changes/archive/2026-10-02-add-stroker-endings-joins
 ---
 
 The support-function stroker, run splitting, free ends, nine endings in two forms each, and the looped join.

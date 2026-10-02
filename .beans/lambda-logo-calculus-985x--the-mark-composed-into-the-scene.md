@@ -7,6 +7,7 @@ priority: normal
 created_at: 2026-10-02T12:43:11Z
 updated_at: 2026-10-02T12:48:33Z
 parent: lambda-logo-calculus-549o
+openspec-link: openspec/changes/archive/2026-10-02-compose-the-mark
 ---
 
 The lockup already computes where the mark goes. Nothing applies it.
