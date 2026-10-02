@@ -9,6 +9,7 @@ updated_at: 2026-10-02T13:41:38Z
 parent: lambda-logo-calculus-549o
 blocked_by:
     - lambda-logo-calculus-f3o5
+openspec-link: openspec/changes/archive/2026-10-02-add-grid-overlay
 ---
 
 The baseline, the x-height, the cap line and the descender, drawn across the page.

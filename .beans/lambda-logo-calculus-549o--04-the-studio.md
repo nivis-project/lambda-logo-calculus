@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-549o
 title: 04 The studio
-status: todo
+status: completed
 type: milestone
 priority: normal
 created_at: 2026-10-02T12:42:54Z
-updated_at: 2026-10-02T12:42:54Z
+updated_at: 2026-10-02T13:41:47Z
 blocked_by:
     - lambda-logo-calculus-bmm5
 ---
