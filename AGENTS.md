@@ -46,6 +46,7 @@ nix develop -c pnpm build         # tsc --build across the workspace
 nix develop -c pnpm lint          # eslint
 nix develop -c pnpm test          # vitest
 nix develop -c pnpm test:cov      # with the coverage thresholds
+nix develop -c pnpm parity:record # re-record the prototype's output
 nix develop -c bash scripts/gate.sh   # the gate's own steps, by hand
 nix flake check                   # the ship gate, in the sandbox, no network
 beans list                        # the milestone and epic tree

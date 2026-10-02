@@ -1,0 +1,770 @@
+{
+ "recordedFrom": "reference/trefoil-type.html",
+ "containerWidth": 1066,
+ "viewportWidth": 1160,
+ "text": "bongivT3",
+ "rounding": {
+  "decimals": 2,
+  "perAxis": 0.005,
+  "asDistance": 0.007071067811865476,
+  "tolerance": 0.02
+ },
+ "recordings": [
+  {
+   "file": "00-A3-n6-r24-f0-round-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 6,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 6,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "0.127×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "01-A1.2-n6-r24-f0-round-analogous.json",
+   "asked": {
+    "A": 1.2,
+    "n": 6,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "actual": {
+    "A": 1.2,
+    "n": 6,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.203",
+    "effectiveScale": "0.203",
+    "smallestCopy": "0.000×",
+    "letterWidth": "0.80×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "02-A8-n6-r24-f0-round-analogous.json",
+   "asked": {
+    "A": 8,
+    "n": 6,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "actual": {
+    "A": 8,
+    "n": 6,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.862",
+    "effectiveScale": "0.862",
+    "smallestCopy": "0.477×",
+    "letterWidth": "1.19×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "03-A20-n6-r24-f0-round-analogous.json",
+   "asked": {
+    "A": 20,
+    "n": 6,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "actual": {
+    "A": 20,
+    "n": 6,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.943",
+    "effectiveScale": "0.943",
+    "smallestCopy": "0.745×",
+    "letterWidth": "1.28×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "04-A3-n1-r24-f0-round-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 1,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 1,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "1.000×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "05-A3-n12-r24-f0-round-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 12,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 12,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "0.011×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "06-A3-n6-r0-f0-round-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 6,
+    "rot": 0,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 6,
+    "rot": 0,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "1.000",
+    "effectiveScale": "1.000",
+    "smallestCopy": "1.000×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "07-A3-n6-r60-f0-round-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 6,
+    "rot": 60,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 6,
+    "rot": 60,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.500",
+    "effectiveScale": "0.500",
+    "smallestCopy": "0.031×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "08-A3-n6-r120-f0-round-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 6,
+    "rot": 120,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 6,
+    "rot": 120,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "1.000",
+    "effectiveScale": "1.000",
+    "smallestCopy": "1.000×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "09-A3-n6-r180-f0-round-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 6,
+    "rot": 180,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 6,
+    "rot": 180,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.500",
+    "effectiveScale": "0.500",
+    "smallestCopy": "0.031×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "10-A3-n6-r24-f-1-round-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 6,
+    "rot": 24,
+    "fit": -1,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 6,
+    "rot": 24,
+    "fit": -1,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.084",
+    "smallestCopy": "0.000×",
+    "letterWidth": "0.98×",
+    "xHeight": "44"
+   }
+  },
+  {
+   "file": "11-A3-n6-r24-f-0.5-round-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 6,
+    "rot": 24,
+    "fit": -0.5,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 6,
+    "rot": 24,
+    "fit": -0.5,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.236",
+    "smallestCopy": "0.001×",
+    "letterWidth": "0.98×",
+    "xHeight": "50"
+   }
+  },
+  {
+   "file": "12-A3-n6-r24-f0.5-round-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 6,
+    "rot": 24,
+    "fit": 0.5,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 6,
+    "rot": 24,
+    "fit": 0.5,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "1.500",
+    "smallestCopy": "1.600×",
+    "letterWidth": "0.98×",
+    "xHeight": "62"
+   }
+  },
+  {
+   "file": "13-A3-n6-r24-f1-round-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 6,
+    "rot": 24,
+    "fit": 1,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 6,
+    "rot": 24,
+    "fit": 1,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "1.500",
+    "smallestCopy": "1.600×",
+    "letterWidth": "0.98×",
+    "xHeight": "68"
+   }
+  },
+  {
+   "file": "14-A3-n3-r24-f0-flat-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "flat"
+   },
+   "actual": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "flat"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "0.438×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "15-A3-n3-r24-f0-angled-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "angled"
+   },
+   "actual": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "angled"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "0.438×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "16-A3-n3-r24-f0-taper-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "taper"
+   },
+   "actual": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "taper"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "0.438×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "17-A3-n3-r24-f0-flare-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "flare"
+   },
+   "actual": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "flare"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "0.438×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "18-A3-n3-r24-f0-wedge-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "wedge"
+   },
+   "actual": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "wedge"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "0.438×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "19-A3-n3-r24-f0-slab-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "slab"
+   },
+   "actual": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "slab"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "0.438×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "20-A3-n3-r24-f0-hair-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "hair"
+   },
+   "actual": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "hair"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "0.438×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "21-A3-n3-r24-f0-ball-analogous.json",
+   "asked": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "ball"
+   },
+   "actual": {
+    "A": 3,
+    "n": 3,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Analogous",
+    "end": "ball"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "0.438×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "22-A3-n2-r24-f0-round-monochrome.json",
+   "asked": {
+    "A": 3,
+    "n": 2,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.05,
+    "pal": "Monochrome",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 2,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.05,
+    "pal": "Monochrome",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "0.662×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "23-A3-n2-r24-f0-round-complementary.json",
+   "asked": {
+    "A": 3,
+    "n": 2,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.6,
+    "pal": "Complementary",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 2,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.6,
+    "pal": "Complementary",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "0.662×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "24-A3-n2-r24-f0-round-triadic.json",
+   "asked": {
+    "A": 3,
+    "n": 2,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Triadic",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 2,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Triadic",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "0.662×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "25-A3-n2-r24-f0-round-warm.json",
+   "asked": {
+    "A": 3,
+    "n": 2,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Warm",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 2,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Warm",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "0.662×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  },
+  {
+   "file": "26-A3-n2-r24-f0-round-cool.json",
+   "asked": {
+    "A": 3,
+    "n": 2,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Cool",
+    "end": "round"
+   },
+   "actual": {
+    "A": 3,
+    "n": 2,
+    "rot": 24,
+    "fit": 0,
+    "alpha": 0.22,
+    "pal": "Cool",
+    "end": "round"
+   },
+   "readouts": {
+    "perfectFit": "0.662",
+    "effectiveScale": "0.662",
+    "smallestCopy": "0.662×",
+    "letterWidth": "0.98×",
+    "xHeight": "56"
+   }
+  }
+ ]
+}

@@ -61,9 +61,24 @@ driving the prototype itself. Nothing of it is reimplemented to make the
 recording, because a reimplementation would prove only that two transcriptions
 agree.
 
-The tolerance is derived, not chosen. The prototype rounds what it writes, and
-that rounding sets a floor below which no comparison can be tighter however
-correct both sides are. The derivation is written down with the number.
+The tolerance is derived, not chosen, and here is the derivation.
+
+The prototype rounds every coordinate it writes to two decimal places. A
+coordinate can therefore be out by up to 0.005 in each axis however correct both
+sides are, which as a distance is `sqrt(2) * 0.005`, about **0.00707 font
+units**. No comparison against the prototype's output can be tighter than that.
+
+The tolerance is **0.02 font units**: roughly three times the floor, and tight
+enough to catch an error of one five-hundredth of a stroke width. The numbers
+live in `test/parity/index.json` and a test checks the arithmetic, so the
+tolerance cannot drift away from the rounding it came from.
+
+The recording itself has three guards. It stores what each control actually took
+as well as what it was asked for, and a test fails when they differ, so a
+snapped slider is never compared against an unsnapped expectation. It fixes and
+records the container width, because the prototype's geometry depends on it. And
+a test asserts the breadth of the matrix, so the fixture cannot quietly shrink
+to the one case that happens to pass.
 
 Parity is a one-time gate. Once milestone 03 is archived, the golden snapshots
 take over as the baseline and the prototype stops being authoritative for

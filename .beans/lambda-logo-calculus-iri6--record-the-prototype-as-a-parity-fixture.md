@@ -1,11 +1,11 @@
 ---
 # lambda-logo-calculus-iri6
 title: Record the prototype as a parity fixture
-status: todo
+status: completed
 type: epic
 priority: normal
 created_at: 2026-10-02T10:27:51Z
-updated_at: 2026-10-02T10:28:03Z
+updated_at: 2026-10-02T11:08:32Z
 parent: lambda-logo-calculus-ao85
 blocked_by:
     - lambda-logo-calculus-2ujg

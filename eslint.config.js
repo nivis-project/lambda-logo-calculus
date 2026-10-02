@@ -13,7 +13,7 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['*.ts', '*.js'],
+          allowDefaultProject: ['*.ts', '*.js', 'scripts/*.mjs'],
           defaultProject: 'tsconfig.tools.json',
         },
         tsconfigRootDir: import.meta.dirname,
@@ -22,7 +22,13 @@ export default tseslint.config(
     },
   },
   {
-    files: ['**/*.js'],
+    files: ['**/*.js', 'scripts/**/*.mjs'],
     extends: [tseslint.configs.disableTypeChecked],
+  },
+  {
+    // The recorder runs half in node and half inside the page it drives.
+    // Required by name in openspec change record-the-parity-fixture, task 2.1.
+    files: ['scripts/record-parity.mjs'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
 );

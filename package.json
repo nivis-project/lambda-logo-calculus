@@ -10,7 +10,8 @@
     "build": "tsc --build",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:cov": "vitest run --coverage"
+    "test:cov": "vitest run --coverage",
+    "parity:record": "node scripts/record-parity.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -18,6 +19,7 @@
     "@vitest/coverage-v8": "^5.0.2",
     "eslint": "^10.0.1",
     "globals": "^17.12.0",
+    "playwright": "^1.63.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.0",
     "vitest": "^5.0.2"

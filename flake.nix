@@ -27,6 +27,12 @@
             pkgs.git
           ];
 
+          env = {
+            PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
+            PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
+            PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
+          };
+
           shellHook = ''
             echo "lambda-logo-calculus: node $(node --version), pnpm $(pnpm --version), jj $(jj --version | cut -d' ' -f2)"
           '';

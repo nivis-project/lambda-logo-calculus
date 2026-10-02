@@ -10,6 +10,21 @@ Entries describe what changed for someone using the thing, not what was edited.
 
 ### Added
 
+- The prototype's own output is recorded, across 27 settings that vary the
+  amplitude, the rotation, the fit size, the copy count, all nine endings and
+  all six palettes. The recorder drives the real prototype in a real browser;
+  nothing of it is reimplemented, because a reimplementation would prove only
+  that two transcriptions agree.
+- Three guards keep the recording honest. It stores what each control actually
+  took as well as what it was asked for, so a snapped slider is never compared
+  against an unsnapped expectation. It fixes and records the container width,
+  because the prototype's geometry depends on it. And a test asserts the breadth
+  of the matrix, so the fixture cannot quietly shrink to the one case that
+  passes.
+- The parity tolerance is derived rather than chosen: the prototype rounds to
+  two decimals, which puts a floor of 0.00707 font units under any comparison,
+  and the tolerance is 0.02. A test checks the arithmetic, so it cannot drift
+  away from the rounding it came from.
 - The prototype is described rather than assumed. All 791 lines read, and what
   it does written down as requirements the port will have to meet: every control
   with its range and default, the curve and the nesting search, the grid and the
